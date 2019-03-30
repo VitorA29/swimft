@@ -1,0 +1,4 @@
+#!/bin/bash
+
+wget https://swift.org/builds/swift-5.0-release/ubuntu1804/swift-5.0-RELEASE/swift-5.0-RELEASE-ubuntu18.04.tar.gz
+echo Hello, World!
