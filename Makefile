@@ -1,20 +1,41 @@
-BIN = ./bin
-SRC = ./src
+SRC_FROM_BIN = ../../../../src
+OUTPUT_FOLDER = ./output
+OUT_FROM_BIN = ../../../../output
 ENV = ./enviroment
-SWIFT_BIN = ./swift-5.0-RELEASE-ubuntu18.04/usr/bin
-TAR_FILE_NAME= swift-5.0-RELEASE-ubuntu18.04.tar.gz
+SWIFT_RELEASE = swift-5.0-RELEASE-ubuntu18.04
+SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
 
-.SILENT: setup_swift
+.SILENT: install_swift download_swift prepare_output compile_src clean_output run_tests
 
-setup_swift: install
+all: download_swift compile_src run_tests
+
+build: clean_output compile_src
+
+run_tests: compile_src
+	cd $(OUTPUT_FOLDER) && \
+	./helloworld;
+
+compile_src: prepare_output
+	cd $(SWIFT_BIN) && \
+	./swiftc -o $(OUT_FROM_BIN)/helloworld $(SRC_FROM_BIN)/helloworld.swift;
+
+prepare_output:
+	if [ ! -d $(OUTPUT_FOLDER) ]; \
+	then mkdir $(OUTPUT_FOLDER); fi
+
+install_swift:
+	if [ ! -d $(ENV) ]; \
+	then \
+		sudo apt-get install clang libicu-dev; fi
+
+download_swift: install_swift
 	if [ ! -d $(ENV) ]; \
 	then \
 		mkdir $(ENV); \
 		cd $(ENV) && \
-		wget https://swift.org/builds/swift-5.0-release/ubuntu1804/swift-5.0-RELEASE/swift-5.0-RELEASE-ubuntu18.04.tar.gz && \
-		tar -xvzf $(TAR_FILE_NAME) && \
-		rm $(TAR_FILE_NAME) && \
-		cd $(SWIFT_BIN) && \
-		export PATH=pwd:$PATH; fi
-install:
-	sudo apt-get install clang libicu-dev;
+		wget https://swift.org/builds/swift-5.0-release/ubuntu1804/swift-5.0-RELEASE/$(SWIFT_RELEASE).tar.gz && \
+		tar -xvzf $(SWIFT_RELEASE).tar.gz && \
+		rm $(SWIFT_RELEASE).tar.gz; fi
+
+clean_output:
+	rm -r $(OUTPUT_FOLDER);
