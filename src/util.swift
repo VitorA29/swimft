@@ -5,9 +5,14 @@ public class Node<T>
 	var next: Node<T>?
 	weak var previus: Node<T>?
 
-	init(value: T)
+	init (value: T)
 	{
 		self.value = value
+	}
+	
+	public func print_node ()
+	{
+		print(value, terminator:"")
 	}
 }
 
@@ -16,7 +21,7 @@ public class Pile<T>
 {
 	private var top: Node<T>?
 
-	init()
+	init ()
 	{
 		top = nil
 	}
@@ -30,16 +35,29 @@ public class Pile<T>
 		}
 		else
 		{
-			return top
+			return top?.value
 		}
 	}
 
-	public func push(value: T)
+	public func push (value: T)
 	{
 		let new = Node(value: value)
 		new.next = self.top
 		top?.previus = new
 		top = new
+	}
+
+	public func print_pile ()
+	{
+		var cursor: Node<T>? = top
+		print("[ ", terminator:"")
+		while (cursor != nil)
+		{
+			cursor?.print_node()
+			print(" ", terminator:"")
+			cursor = cursor?.next
+		}
+		print("]")
 	}
 }
 
@@ -50,26 +68,73 @@ public class Tree3<T>
 	public var left: Tree3<T>?
 	public var middle: Tree3<T>?
 	public var right: Tree3<T>?
+	private var degree: Int
 
-	init(value: T)
+	init (value: T)
 	{
 		self.key = value
 		self.left = nil
 		self.middle = nil
 		self.right = nil
+		self.degree = 0
 	}
 
-	public func insert(Tree3<T>?: T)
+	public func insert(tree: Tree3<T> )
 	{
-		if(self.middle == nil)
+		if (self.degree == 0)
 		{
-			self.middle = T
+			self.middle = tree
+			self.degree += 1
 		}
-		else if (self.right == nil)
+		else
 		{
-			self.left = middle
-			self.middle  = nil
-			self.right = T
+			if (self.degree == 1)
+			{
+				self.left = self.middle
+				self.middle  = nil
+			}
+			else
+			{
+				self.middle = self.right
+			}
+			self.right = tree
+			self.degree += 1
 		}
+	}
+
+	public func print_tree ()
+	{
+		print("<'\(self.key)'", terminator:"")
+
+		// left path
+		if (self.left == nil)
+		{
+			print("<nil>", terminator:"")
+		}
+		else
+		{
+			self.left?.print_tree()
+		}
+		
+		// middle path
+		if (self.middle == nil)
+		{
+			print("<nil>", terminator:"")
+		}
+		else
+		{
+			self.middle?.print_tree()
+		}
+
+		// right path
+		if (self.right == nil)
+		{
+			print("<nil>", terminator:"")
+		}
+		else
+		{
+			self.right?.print_tree()
+		}
+		print(">", terminator:"")
 	}
 }

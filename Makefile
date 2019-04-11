@@ -13,11 +13,11 @@ build: clean_output compile_src
 
 run_tests: compile_src
 	cd $(OUTPUT_FOLDER) && \
-	./helloworld;
+	./main;
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \
-	./swiftc -o $(OUT_FROM_BIN)/helloworld $(SRC_FROM_BIN)/helloworld.swift;
+	./swiftc -o $(OUT_FROM_BIN)/main $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/util.swift;
 
 prepare_output:
 	if [ ! -d $(OUTPUT_FOLDER) ]; \

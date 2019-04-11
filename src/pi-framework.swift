@@ -1,5 +1,3 @@
-import util
-
 func transformer (Tree3<String>? ast_imp) -> Tree3<String>?
 {
 	if (ast_imp == nil)
