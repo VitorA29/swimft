@@ -17,7 +17,7 @@ run_tests: compile_src
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \
-	./swiftc -o $(OUT_FROM_BIN)/main $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/util.swift;
+	./swiftc -o $(OUT_FROM_BIN)/main $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/util.swift $(SRC_FROM_BIN)/pi-framework.swift;
 
 prepare_output:
 	if [ ! -d $(OUTPUT_FOLDER) ]; \

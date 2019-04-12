@@ -1,106 +1,115 @@
-func transformer (Tree3<String>? ast_imp) -> Tree3<String>?
+public class PiFramework
 {
-	if (ast_imp == nil)
+	func transformer (ast_imp: Tree3<String>?) -> Tree3<String>?
 	{
-		return nil
-	}
-	
-	var ast_pi: Tree<String>? = nil
-	if (ast_imp.middle.key == "<op>")
-	{
-		switch (ast_imp.middle.middle.key)
+		if (ast_imp == nil)
 		{
-			case "*":
-				result = Tree3<String>("MUL")
-				break
-			case "/":
-				result = Tree3<String>("DIV")
-				break
-			case "+":
-				result = Tree3<String>("SUM")
-				break
-			case "-":
-				result = Tree3<String>("SUB")
-				break
-			default:
-				exit(1)
+			return nil
 		}
-		result.insert(transformer(ast_imp.left))
-		result.insert(transformer(ast_imp.right))
-	}
-	else
-	{
-		switch (ast_imp.middle.key)
+		
+		var ast_pi: Tree3<String>
+		if (ast_imp?.middle?.key == "<op>")
 		{
-			case "<digit>":
-				result = Tree3<String>("NUM")
-				break
-			case "<bool>":
-				result = Tree3<String>("BOL")
-				break
-			default:
-				exit(1)
+			switch (ast_imp?.middle?.middle?.key)
+			{
+				case "*":
+					ast_pi = Tree3<String>(value: "MUL")
+					break
+				case "/":
+					ast_pi = Tree3<String>(value: "DIV")
+					break
+				case "+":
+					ast_pi = Tree3<String>(value: "SUM")
+					break
+				case "-":
+					ast_pi = Tree3<String>(value: "SUB")
+					break
+				default:
+					print("Invalid case in line 28")
+					return nil
+			}
+			ast_pi.insert(tree: transformer(ast_imp: ast_imp?.left))
+			ast_pi.insert(tree: transformer(ast_imp: ast_imp?.right))
 		}
-		result.insert(transformer(ast_imp.middle.middle.key))
+		else
+		{
+			switch (ast_imp?.middle?.key)
+			{
+				case "<digit>":
+					ast_pi = Tree3<String>(value: "NUM")
+					break
+				case "<bool>":
+					ast_pi = Tree3<String>(value: "BOL")
+					break
+				default:
+					print("Invalid case in line 45")
+					return nil
+			}
+			ast_pi.insert(tree: transformer(ast_imp: ast_imp?.middle?.middle))
+		}
+		return ast_pi
 	}
-	return result
-}
 
-func delta (Pile<Tree3<String>> control, Pile<Tree3<String>> value, Pile<String> storage, Pile<String> enviroment)
-{
-	command_tree = control.pop()
-	if (command_tree.key.beginWith("#")
+	func delta (control: Pile<Tree3<String>>, value: Pile<Tree3<String>>, storage: Pile<String>, enviroment: Pile<String>)
 	{
-		var operation: Int
-		var number_tree1 = value.pop().middle.key
-		var number_tree2 = value.pop().middle.key
-		switch (command_tree.key)
+		let command_tree: Tree3<String> = control.pop()!
+		if (command_tree.key.hasPrefix("#"))
 		{
-			case "#MUL":
-				operation = number_tree1*number_tree2
-				break
-			case "#DIV":
-				operation = number_tree1/number_tree2
-				break
-			case "#SUM":
-				operation = number_tree1+number_tree2
-				break
-			case "#SUB":
-				operation = number_tree1-number_tree2
-				break
-			default:
-				exit(1)
+			var operation: Int
+			let number_tree1: Int = Int(value.pop()!.middle!.key)!
+			let number_tree2: Int = Int(value.pop()!.middle!.key)!
+			switch (command_tree.key)
+			{
+				case "#MUL":
+					operation = number_tree1*number_tree2
+					break
+				case "#DIV":
+					operation = number_tree1/number_tree2
+					break
+				case "#SUM":
+					operation = number_tree1+number_tree2
+					break
+				case "#SUB":
+					operation = number_tree1-number_tree2
+					break
+				default:
+					print("Invalid case in line 76")
+					return
+			}
+			let node: Tree3<String> = Tree3<String>(value: "NUM")
+			node.insert(tree: Tree3<String>(value: "\(operation)"))
+			value.push(value: node)
 		}
-		value.push(Tree3<String>("NUM").insert(operation))
-	}
-	else
-	{
-		var operation = true
-		switch (command_tree.key)
+		else
 		{
-			case "MUL":
-				control.push(Tree3<String>("#MUL"))
-				break
-			case "DIV":
-				control.push(Tree3<String>("#DIV"))
-				break
-			case "SUM":
-				control.push(Tree3<String>("#SUM"))
-				break
-			case "SUB":
-				control.push(Tree3<String>("#SUB"))
-				break
-			case "NUM":
-				value.push(command_tree)
-				operation = false
-				break
-			default:
-				exit(1)
-		}
-		if (operation)
-		{
-			control.push(command_tree.right)
-			control.push(command_tree.left)
+			var operation = true
+			switch (command_tree.key)
+			{
+				case "MUL":
+					control.push(value: Tree3<String>(value: "#MUL"))
+					break
+				case "DIV":
+					control.push(value: Tree3<String>(value: "#DIV"))
+					break
+				case "SUM":
+					control.push(value: Tree3<String>(value: "#SUM"))
+					break
+				case "SUB":
+					control.push(value: Tree3<String>(value: "#SUB"))
+					break
+				case "NUM":
+					value.push(value: command_tree)
+					operation = false
+					break
+				default:
+					print("Invalid case in line 102")
+					return
+			}
+			if (operation == true)
+			{
+				control.push(value: command_tree.right)
+				control.push(value: command_tree.left)
+			}
 		}
 	}
 }

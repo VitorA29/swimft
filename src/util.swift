@@ -25,8 +25,13 @@ public class Pile<T>
 	{
 		top = nil
 	}
+	
+	public func isEmpty () -> Bool
+	{
+		return top == nil
+	}
 
-	public var pop: T?
+	public func pop () -> T?
 	{
 		if let helper = top
 		{
@@ -39,9 +44,14 @@ public class Pile<T>
 		}
 	}
 
-	public func push (value: T)
+	public func push (value: T?)
 	{
-		let new = Node(value: value)
+		if (value == nil)
+		{
+			return
+		}
+		
+		let new = Node<T>(value: value!)
 		new.next = self.top
 		top?.previus = new
 		top = new
@@ -79,8 +89,12 @@ public class Tree3<T>
 		self.degree = 0
 	}
 
-	public func insert(tree: Tree3<T> )
+	public func insert(tree: Tree3<T>?)
 	{
+		if (tree == nil)
+		{
+			return
+		}
 		if (self.degree == 0)
 		{
 			self.middle = tree
@@ -102,7 +116,7 @@ public class Tree3<T>
 		}
 	}
 
-	public func print_tree ()
+	public func print_tree (terminator: String)
 	{
 		print("<'\(self.key)'", terminator:"")
 
@@ -113,7 +127,7 @@ public class Tree3<T>
 		}
 		else
 		{
-			self.left?.print_tree()
+			self.left?.print_tree(terminator:"")
 		}
 		
 		// middle path
@@ -123,7 +137,7 @@ public class Tree3<T>
 		}
 		else
 		{
-			self.middle?.print_tree()
+			self.middle?.print_tree(terminator:"")
 		}
 
 		// right path
@@ -133,8 +147,8 @@ public class Tree3<T>
 		}
 		else
 		{
-			self.right?.print_tree()
+			self.right?.print_tree(terminator:"")
 		}
-		print(">", terminator:"")
+		print(">", terminator: terminator)
 	}
 }
