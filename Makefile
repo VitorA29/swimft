@@ -2,22 +2,20 @@ SRC_FROM_BIN = ../../../../src
 OUTPUT_FOLDER = ./output
 OUT_FROM_BIN = ../../../../output
 ENV = ./enviroment
+EXAMPLES = ./examples
 SWIFT_RELEASE = swift-5.0-RELEASE-ubuntu18.04
 SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
 
-.SILENT: install_swift download_swift prepare_output compile_src clean_output run_tests
+.SILENT: install_swift download_swift prepare_output compile_src clean_output run_tests clean_enviroment
 
 all: download_swift compile_src run_tests
 
-build: clean_output compile_src
-
 run_tests: compile_src
-	cd $(OUTPUT_FOLDER) && \
-	./main;
+	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/test.imp;
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \
-	./swiftc -o $(OUT_FROM_BIN)/main $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/util.swift $(SRC_FROM_BIN)/pi-framework.swift $(SRC_FROM_BIN)/structures_test.swift;
+	./swiftc -o $(OUT_FROM_BIN)/main $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/lib/*.swift;
 
 prepare_output:
 	if [ ! -d $(OUTPUT_FOLDER) ]; \
@@ -26,7 +24,7 @@ prepare_output:
 install_swift:
 	if [ ! -d $(ENV) ]; \
 	then \
-		sudo apt-get install clang libicu-dev; fi
+		sudo apt-get install clang libicu-dev libcurl libcurl4-openssl-dev; fi
 
 download_swift: install_swift
 	if [ ! -d $(ENV) ]; \
@@ -39,3 +37,11 @@ download_swift: install_swift
 
 clean_output:
 	rm -r $(OUTPUT_FOLDER);
+	
+clean_enviroment:
+	rm -r $(ENV);
+	
+build: clean_output compile_src
+	
+reset: clean_enviroment download_swift build run_tests
+	

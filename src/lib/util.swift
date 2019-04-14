@@ -8,9 +8,19 @@ public class Pile<T>: CustomStringConvertible
 		top = [T]()
 	}
 	
+	public func start_by_list (list: [T])
+	{
+		top += list
+	}
+	
 	public func isEmpty () -> Bool
 	{
 		return top.count == 0
+	}
+	
+	public func peek () -> T
+	{
+		return top[0]
 	}
 
 	public func pop () -> T
