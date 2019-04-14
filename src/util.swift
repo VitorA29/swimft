@@ -1,47 +1,23 @@
-// defining the node structure
-public class Node<T>
-{
-	var value: T
-	var next: Node<T>?
-	weak var previus: Node<T>?
-
-	init (value: T)
-	{
-		self.value = value
-	}
-	
-	public func print_node ()
-	{
-		print(value, terminator:"")
-	}
-}
-
 // defining the pile structure
-public class Pile<T>
+public class Pile<T>: CustomStringConvertible
 {
-	private var top: Node<T>?
+	private var top: [T]
 
 	init ()
 	{
-		top = nil
+		top = [T]()
 	}
 	
 	public func isEmpty () -> Bool
 	{
-		return top == nil
+		return top.count == 0
 	}
 
-	public func pop () -> T?
+	public func pop () -> T
 	{
-		if let helper = top
-		{
-			top = helper.next
-			return helper.value
-		}
-		else
-		{
-			return top?.value
-		}
+		let result: T = top[0]
+		top.remove(at: 0)
+		return result
 	}
 
 	public func push (value: T?)
@@ -50,29 +26,28 @@ public class Pile<T>
 		{
 			return
 		}
-		
-		let new = Node<T>(value: value!)
-		new.next = self.top
-		top?.previus = new
-		top = new
+		top.insert(value!, at: 0)
 	}
 
-	public func print_pile ()
+	public func create_description_func () -> String
 	{
-		var cursor: Node<T>? = top
-		print("[ ", terminator:"")
-		while (cursor != nil)
+		var description: String = "[ "
+		for element in top
 		{
-			cursor?.print_node()
-			print(" ", terminator:"")
-			cursor = cursor?.next
+			description += "\(element) "
 		}
-		print("]")
+		description += "]"
+		return description
+	}
+	
+	public var description: String
+	{
+		return create_description_func()
 	}
 }
 
 // defining the ternary tree structure
-public class Tree3<T>
+public class Tree3<T>: CustomStringConvertible
 {
 	public var key: T
 	public var left: Tree3<T>?
@@ -116,39 +91,48 @@ public class Tree3<T>
 		}
 	}
 
-	public func print_tree (terminator: String)
+	public func create_description_func () -> String
 	{
-		print("<'\(self.key)'", terminator:"")
+		var description: String = "<'\(self.key)'"
 
 		// left path
 		if (self.left == nil)
 		{
-			print("<nil>", terminator:"")
+			description += "<nil>"
 		}
 		else
 		{
-			self.left?.print_tree(terminator:"")
+			let left_unwrap: Tree3<T> = self.left!
+			description += "\(left_unwrap)"
 		}
 		
 		// middle path
 		if (self.middle == nil)
 		{
-			print("<nil>", terminator:"")
+			description += "<nil>"
 		}
 		else
 		{
-			self.middle?.print_tree(terminator:"")
+			let middle_unwrap: Tree3<T> = self.middle!
+			description += "\(middle_unwrap)"
 		}
 
 		// right path
 		if (self.right == nil)
 		{
-			print("<nil>", terminator:"")
+			description += "<nil>"
 		}
 		else
 		{
-			self.right?.print_tree(terminator:"")
+			let right_unwrap: Tree3<T> = self.right!
+			description += "\(right_unwrap)"
 		}
-		print(">", terminator: terminator)
+		description += ">"
+		return description
+	}
+	
+	public var description: String
+	{
+		return create_description_func()
 	}
 }

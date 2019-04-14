@@ -23,14 +23,7 @@ public func create_test_tree_simple_calculator () -> Tree3<String>
 public func piTest ()
 {
 	let piFramework: PiFramework = PiFramework()
-	let control_pile: Pile<Tree3<String>> = Pile<Tree3<String>>()
-	control_pile.push(value: create_test_tree_simple_calculator())
-	let value_pile: Pile<Tree3<String>> = Pile<Tree3<String>>()
-	repeat
-	{
-		piFramework.delta(control: control_pile, value: value_pile, storage: Pile<String>(), enviroment: Pile<String>())
-	}while(control_pile.isEmpty() == false)
-	value_pile.pop()?.print_tree(terminator: "\n")
+	piFramework.pi_automaton(ast_pi: create_test_tree_simple_calculator())
 }
 
 piTest()
