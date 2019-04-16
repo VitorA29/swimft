@@ -1,4 +1,8 @@
-public protocol ExprNode: CustomStringConvertible
+public protocol AST_Node: CustomStringConvertible
+{
+}
+
+public protocol ExprNode: AST_Node
 {
 }
 

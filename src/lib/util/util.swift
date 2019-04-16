@@ -3,19 +3,21 @@ public class Pile<T>: CustomStringConvertible
 {
 	private var top: [T]
 
-	init ()
+	init (list: [T]? = nil)
 	{
-		top = [T]()
-	}
-	
-	public func start_by_list (list: [T])
-	{
-		top += list
+		if (list == nil)
+		{
+			top = [T]()
+		}
+		else
+		{
+			top = list!
+		}
 	}
 	
 	public func isEmpty () -> Bool
 	{
-		return top.count == 0
+		return top.isEmpty
 	}
 	
 	public func peek () -> T
@@ -105,38 +107,42 @@ public class Tree3<T>: CustomStringConvertible
 	{
 		var description: String = "<'\(self.key)'"
 
-		// left path
-		if (self.left == nil)
+		if (self.left != nil || self.middle != nil || self.right != nil)
 		{
-			description += "<nil>"
-		}
-		else
-		{
-			let left_unwrap: Tree3<T> = self.left!
-			description += "\(left_unwrap)"
+			// left path
+			if (self.left == nil)
+			{
+				description += ""//"<nil>"
+			}
+			else
+			{
+				let left_unwrap: Tree3<T> = self.left!
+				description += "\(left_unwrap)"
+			}
+			
+			// middle path
+			if (self.middle == nil)
+			{
+				description += ""//"<nil>"
+			}
+			else
+			{
+				let middle_unwrap: Tree3<T> = self.middle!
+				description += "\(middle_unwrap)"
+			}
+
+			// right path
+			if (self.right == nil)
+			{
+				description += ""//"<nil>"
+			}
+			else
+			{
+				let right_unwrap: Tree3<T> = self.right!
+				description += "\(right_unwrap)"
+			}
 		}
 		
-		// middle path
-		if (self.middle == nil)
-		{
-			description += "<nil>"
-		}
-		else
-		{
-			let middle_unwrap: Tree3<T> = self.middle!
-			description += "\(middle_unwrap)"
-		}
-
-		// right path
-		if (self.right == nil)
-		{
-			description += "<nil>"
-		}
-		else
-		{
-			let right_unwrap: Tree3<T> = self.right!
-			description += "\(right_unwrap)"
-		}
 		description += ">"
 		return description
 	}

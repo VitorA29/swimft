@@ -1,16 +1,28 @@
+import Foundation
+
+public enum TranformerError: Error
+{
+	case UndefinedOperator(String)
+	case UndefinedASTNode
+}
+
+public enum AutomatonError: Error
+{
+	case UndefinedOperation(String)
+	case UndefinedCommand(String)
+	case UnexpectedNilValue
+	case InvalidValueExpected
+}
+
 public class PiFramework
 {
-	public func transformer (ast_imp: Tree3<String>?) -> Tree3<String>?
+	public func transformer (ast_imp: AST_Node) throws -> Tree3<String>
 	{
-		if (ast_imp == nil)
-		{
-			return nil
-		}
-		
 		var ast_pi: Tree3<String>
-		if (ast_imp?.middle?.key == "<op>")
+		if ast_imp is BinaryOpNode
 		{
-			switch (ast_imp?.middle?.middle?.key)
+			let node: BinaryOpNode = ast_imp as! BinaryOpNode
+			switch (node.op)
 			{
 				case "*":
 					ast_pi = Tree3<String>(value: "MUL")
@@ -25,32 +37,25 @@ public class PiFramework
 					ast_pi = Tree3<String>(value: "SUB")
 					break
 				default:
-					print("Invalid case in line 28")
-					return nil
+					throw TranformerError.UndefinedOperator(node.op)
 			}
-			ast_pi.insert(tree: transformer(ast_imp: ast_imp?.left))
-			ast_pi.insert(tree: transformer(ast_imp: ast_imp?.right))
+			ast_pi.insert(tree: try transformer(ast_imp: node.lhs))
+			ast_pi.insert(tree: try transformer(ast_imp: node.rhs))
+		}
+		else if ast_imp is NumberNode
+		{
+			let node: NumberNode = ast_imp as! NumberNode
+			ast_pi = Tree3<String>(value: "NUM")
+			ast_pi.insert(tree: Tree3<String>(value: "\(node.value)"))
 		}
 		else
 		{
-			switch (ast_imp?.middle?.key)
-			{
-				case "<digit>":
-					ast_pi = Tree3<String>(value: "NUM")
-					break
-				case "<bool>":
-					ast_pi = Tree3<String>(value: "BOL")
-					break
-				default:
-					print("Invalid case in line 45")
-					return nil
-			}
-			ast_pi.insert(tree: transformer(ast_imp: ast_imp?.middle?.middle))
+			throw TranformerError.UndefinedASTNode
 		}
 		return ast_pi
 	}
 	
-	public func pi_automaton(ast_pi: Tree3<String>)
+	public func pi_automaton (ast_pi: Tree3<String>) throws
 	{
 		let control_pile: Pile<Tree3<String>> = Pile<Tree3<String>>()
 		control_pile.push(value: ast_pi)
@@ -59,20 +64,27 @@ public class PiFramework
 		let enviroment_pile: Pile<String> = Pile<String>()
 		repeat
 		{
-			self.delta(control: control_pile, value: value_pile, storage: storage_pile, enviroment: enviroment_pile)
+			do
+			{
+				try self.delta(control: control_pile, value: value_pile, storage: storage_pile, enviroment: enviroment_pile)
+			}
+			catch
+			{
+				throw error
+			}
 		}while(control_pile.isEmpty() == false)
 		let value_tree: Tree3<String> = value_pile.pop()
 		print("\(value_tree)")
 	}
 
-	private func delta (control: Pile<Tree3<String>>, value: Pile<Tree3<String>>, storage: Pile<String>, enviroment: Pile<String>)
+	private func delta (control: Pile<Tree3<String>>, value: Pile<Tree3<String>>, storage: Pile<String>, enviroment: Pile<String>) throws
 	{
 		let command_tree: Tree3<String> = control.pop()
 		if (command_tree.key.hasPrefix("#"))
 		{
-			var operation: Int
-			let number_tree1: Int = Int(value.pop().middle!.key)!
-			let number_tree2: Int = Int(value.pop().middle!.key)!
+			var operation: Float
+			let number_tree1: Float = Float(value.pop().middle!.key)!
+			let number_tree2: Float = Float(value.pop().middle!.key)!
 			switch (command_tree.key)
 			{
 				case "#MUL":
@@ -88,8 +100,7 @@ public class PiFramework
 					operation = number_tree1-number_tree2
 					break
 				default:
-					print("Invalid case in line 76")
-					return
+					throw AutomatonError.UndefinedCommand(command_tree.key)
 			}
 			let node: Tree3<String> = Tree3<String>(value: "NUM")
 			node.insert(tree: Tree3<String>(value: "\(operation)"))
@@ -117,13 +128,12 @@ public class PiFramework
 					operation = false
 					break
 				default:
-					print("Invalid case in line 102")
-					return
+					throw AutomatonError.UndefinedOperation(command_tree.key)
 			}
 			if (operation == true)
 			{
-				control.push(value: command_tree.right)
 				control.push(value: command_tree.left)
+				control.push(value: command_tree.right)
 			}
 		}
 	}

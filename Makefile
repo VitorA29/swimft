@@ -11,11 +11,11 @@ SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
 all: download_swift compile_src run_tests
 
 run_tests: compile_src
-	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/test.imp;
+	./$(OUTPUT_FOLDER)/main;
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \
-	./swiftc -o $(OUT_FROM_BIN)/main $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/lib/*.swift;
+	./swiftc -o $(OUT_FROM_BIN)/main $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/lib/*/*.swift;
 
 prepare_output:
 	if [ ! -d $(OUTPUT_FOLDER) ]; \

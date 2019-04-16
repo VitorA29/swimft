@@ -19,6 +19,7 @@ typealias TokenGenerator = (String) -> Token?
 let tokenList: [(String, TokenGenerator)] =
 [
 	("[ \t\n]", { _ in nil }),
+	("//.*\n", { _ in nil }), // ignore comments
 	// ("(True|False)", { (r: String) in .BOOLEAN(r) }),
 	("[a-zA-Z][a-zA-Z0-9]*", { $0 == "def" ? .DEFINE : .IDENTIFIER($0) }),
 	("([1-9][0-9]*|0)(.([0-9]*[1-9]|0))?", { (r: String) in .NUMBER((r as NSString).floatValue) }),

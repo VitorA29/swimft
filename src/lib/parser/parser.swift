@@ -24,8 +24,7 @@ public class Parser
 	
 	init (tokens: [Token])
 	{
-		self.tokens = Pile<Token>()
-		self.tokens.start_by_list(list: tokens)
+		self.tokens = Pile<Token>(list: tokens)
 	}
 	
 	private func parseNumber () throws -> ExprNode
