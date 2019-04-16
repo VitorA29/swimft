@@ -31,6 +31,11 @@ public class Pile<T>: CustomStringConvertible
 		top.remove(at: 0)
 		return result
 	}
+	
+	public func skip ()
+	{
+		top.remove(at: 0)
+	}
 
 	public func push (value: T?)
 	{
