@@ -4,13 +4,15 @@ import Foundation
 public enum Token
 {
 	case DEFINE
+	case EXTERN
 	case IDENTIFIER(String)
 	// case BOOLEAN(String)
 	case NUMBER(Float)
 	case BRACKET_LEFT
 	case BRACKET_RIGHT
 	case COMMA
-	// case ARITIMETIC_OPERATOR(String)
+	case SEMICOLON
+	// case OPERATOR(String)
 	case OTHER(String)
 }
 
@@ -19,14 +21,16 @@ typealias TokenGenerator = (String) -> Token?
 let tokenList: [(String, TokenGenerator)] =
 [
 	("[ \t\n]", { _ in nil }),
-	("//.*\n", { _ in nil }), // ignore comments
+	("#.*\n", { _ in nil }), // ignore comments
 	// ("(True|False)", { (r: String) in .BOOLEAN(r) }),
-	("[a-zA-Z][a-zA-Z0-9]*", { $0 == "def" ? .DEFINE : .IDENTIFIER($0) }),
+	("[a-zA-Z][a-zA-Z0-9]*", 
+	{ $0 == "def" ? .DEFINE : $0 == "extern" ? .EXTERN : .IDENTIFIER($0) }),
 	("([1-9][0-9]*|0)(.([0-9]*[1-9]|0))?", { (r: String) in .NUMBER((r as NSString).floatValue) }),
 	("\\(", { _ in .BRACKET_LEFT }),
 	("\\)", { _ in .BRACKET_RIGHT }),
 	(",", { _ in .COMMA }),
-	// ("(\\+|\\*|\\/|-)", { (r: String) in .ARITIMETIC_OPERATOR(r) }),
+	(";", { _ in .SEMICOLON }),
+	// ("(\\+|\\*|\\/|-)", { (r: String) in .OPERATOR(r) }),
 ]
 
 public class Lexer

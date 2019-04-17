@@ -1,14 +1,32 @@
+private func fibonacciFunction() -> String
+{
+	return """
+	# Compute the x'th fibonacci number.
+	def fib (x)
+		if x < 3 then
+			1
+		else
+			fib(x-1)+fib(x-2)
+			
+	# This expression will compute the 40th number
+	fib(40)
+	"""
+}
+
+private func atan2Function() -> String
+{
+	return """
+	extern sin(arg);
+	extern cos(arg);
+	extern atan2(arg1, arg2);
+	
+	atan2(sin(0.4), cos(42))
+	"""
+}
+
 public func kaleidoscopeTest ()
 {
-	let source = """
-		def foo (x, y)
-			x + y * 2 + (4 + 5) / 3
-		
-		// blablabla
-		foo(3, 4)
-		"""
-		
-	let lexer = Lexer(input: source)
+	let lexer = Lexer(input: atan2Function())
 	let tokens = lexer.tokenize()
 	print(tokens)
 	let parser = Parser(tokens: tokens)

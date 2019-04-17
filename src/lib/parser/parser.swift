@@ -208,6 +208,12 @@ public class Parser
 		return FunctionNode(prototype: prototype, body: body)
 	}
 	
+	private func parseExtern () throws -> PrototypeNode
+	{
+		tokens.skip()
+		return try parsePrototype()
+	}
+	
 	private func parseTopLevelExpr () throws -> FunctionNode
 	{
 		let prototype = PrototypeNode(name: "", argumentNames: [])
@@ -222,9 +228,17 @@ public class Parser
 		{
 			switch (tokens.peek())
 			{
+				case Token.SEMICOLON:
+					tokens.skip()
+					break
 				case Token.DEFINE:
 					let node = try parseDefinition()
 					nodes.append(node)
+					break
+				case Token.EXTERN:
+					let node = try parseExtern()
+					nodes.append(node)
+					break
 				default:
 					let expr = try parseExpression()
 					nodes.append(expr)
