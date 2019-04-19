@@ -24,6 +24,15 @@ public struct VariableNode: ExprNode
 	}
 }
 
+public struct NegationNode: ExprNode
+{
+	let expression: ExprNode
+	public var description: String
+	{
+		return "NegationNode(\(expression))"
+	}
+}
+
 public struct BinaryOpNode: ExprNode
 {
 	let op: String
@@ -52,6 +61,26 @@ public struct FunctionNode: AST_Node
 	public var description: String
 	{
 		return "FunctionNode(prototype: \(prototype), body: \(body))"
+	}
+}
+
+public struct AssignNode: ExprNode
+{
+	let variable: VariableNode
+	let expression: ExprNode
+	public var description: String
+	{
+		return "AssignNode(variable: \(variable), expression: \(expression))"
+	}
+}
+
+public struct WhileNode: ExprNode
+{
+	let condition: ExprNode
+	let command: [AST_Node]
+	public var description: String
+	{
+		return "WhileNode(condition: \(condition), command: \(command) - length: \(command.count))"
 	}
 }
 

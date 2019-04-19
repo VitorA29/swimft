@@ -3,35 +3,62 @@ import Foundation
 // defining all tokens types
 public enum Token
 {
-	case DEFINE
-	case EXTERN
 	case IDENTIFIER(String)
-	// case BOOLEAN(String)
 	case NUMBER(Float)
 	case BRACKET_LEFT
 	case BRACKET_RIGHT
+	case OPERATOR(String)
+	case ASSIGN
+	case BOOLEAN(Bool)
+	case WHILE
+	case DO
+	case NEGATION
 	case COMMA
-	case SEMICOLON
-	// case OPERATOR(String)
 	case OTHER(String)
 }
+
 
 // defining all tokens matchs
 typealias TokenGenerator = (String) -> Token?
 let tokenList: [(String, TokenGenerator)] =
 [
 	("[ \t\n]", { _ in nil }),
-	("#.*\n", { _ in nil }), // ignore comments
-	// ("(True|False)", { (r: String) in .BOOLEAN(r) }),
-	("[a-zA-Z][a-zA-Z0-9]*", 
-	{ $0 == "def" ? .DEFINE : $0 == "extern" ? .EXTERN : .IDENTIFIER($0) }),
-	("([1-9][0-9]*|0)(.([0-9]*[1-9]|0))?", { (r: String) in .NUMBER((r as NSString).floatValue) }),
+	("nop.*(\n|$)", { _ in nil }), // ignore comments
+	("(?![0-9])[a-zA-Z_][a-zA-Z_0-9]*", { (m: String) in matchName(string: m) }),
 	("\\(", { _ in .BRACKET_LEFT }),
 	("\\)", { _ in .BRACKET_RIGHT }),
-	(",", { _ in .COMMA }),
-	(";", { _ in .SEMICOLON }),
-	// ("(\\+|\\*|\\/|-)", { (r: String) in .OPERATOR(r) }),
+	("(\\+|\\*|\\/|-|<=?|>=?|==)", { (m: String) in .OPERATOR(m) }),
+	(":=", { _ in .ASSIGN }),
+	("([1-9][0-9]*|0)?(.[0-9]*[1-9]|.0)?", { (m: String) in .NUMBER((m as NSString).floatValue) }),
 ]
+
+private func matchName(string: String) -> Token?
+{
+	if string == "True" || string == "False"
+	{
+		return .BOOLEAN((string.lowercased() as NSString).boolValue)
+	}
+	else if string == "while"
+	{
+		return .WHILE
+	}
+	else if string == "do"
+	{
+		return .DO
+	}
+	else if string == "not"
+	{
+		return .NEGATION
+	}
+	else if string == "and" || string == "or"
+	{
+		return .OPERATOR(string)
+	}
+	else
+	{
+		return .IDENTIFIER(string)
+	}
+}
 
 public class Lexer
 {

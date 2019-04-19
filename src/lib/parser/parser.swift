@@ -6,13 +6,21 @@ public enum ParserError: Error
 	case UndefinedOperator(String)
 	
 	case ExpectedCharacter(Character)
-	case ExpectedExpression
+	case ExpectedExpressionToken(Token)
 	case ExpectedArgumentList
 	case ExpectedFunctionName
+	case ExpectedToken(Token)
+	
+	case NotImplemented(String)
 }
 
 private let operatorPrecedence: [String: Int] =
 [
+	"<": 10,
+	"<=": 10,
+	">": 10,
+	">=": 10,
+	"==": 10,
 	"+": 20,
 	"-": 20,
 	"*": 40,
@@ -47,7 +55,17 @@ public class Parser
 		
 		guard case Token.BRACKET_LEFT = tokens.peek() else
 		{
-			return VariableNode(name: name)
+			guard case Token.ASSIGN = tokens.peek() else
+			{
+				return VariableNode(name: name)
+			}
+			
+			// skip assign
+			tokens.skip()
+			
+			let expression = try parseExpression()
+			
+			return AssignNode(variable: VariableNode(name: name), expression: expression)
 		}
 		
 		// skip '('
@@ -104,6 +122,18 @@ public class Parser
 		return expression
 	}
 	
+	private func parseNegation () throws -> ExprNode
+	{
+		guard case Token.NEGATION = tokens.pop() else
+		{
+			throw ParserError.UnexpectedToken
+		}
+		
+		let expression = try parseExpression()
+		
+		return NegationNode(expression: expression)
+	}
+	
 	private func parsePrimary () throws -> ExprNode
 	{
 		switch(tokens.peek())
@@ -114,8 +144,10 @@ public class Parser
 				return try parseNumber()
 			case Token.BRACKET_LEFT:
 				return try parseBrackets()
+			case Token.NEGATION:
+				return try parseNegation()
 			default:
-				throw ParserError.ExpectedExpression
+				throw ParserError.ExpectedExpressionToken(tokens.peek())
 		}
 	}
 	
@@ -126,7 +158,7 @@ public class Parser
 			return -1
 		}
 		
-		guard case let Token.OTHER(op) = tokens.peek() else
+		guard case let Token.OPERATOR(op) = tokens.peek() else
 		{
 			return -1
 		}
@@ -150,7 +182,7 @@ public class Parser
 				return lhs
 			}
 			
-			guard case let Token.OTHER(op) = tokens.pop() else
+			guard case let Token.OPERATOR(op) = tokens.pop() else
 			{
 				throw ParserError.UnexpectedToken
 			}
@@ -166,7 +198,7 @@ public class Parser
 		}
 	}
 	
-	private func parsePrototype () throws -> PrototypeNode
+	private func parseCall () throws -> PrototypeNode
 	{
 		guard case let Token.IDENTIFIER(name) = tokens.pop() else
 		{
@@ -200,25 +232,23 @@ public class Parser
 		return PrototypeNode(name: name, argumentNames: argumentNames)
 	}
 	
-	private func parseDefinition () throws -> FunctionNode
+	private func parseLoop () throws -> WhileNode
 	{
-		tokens.skip()
-		let prototype = try parsePrototype()
-		let body = try parseExpression()
-		return FunctionNode(prototype: prototype, body: body)
-	}
-	
-	private func parseExtern () throws -> PrototypeNode
-	{
-		tokens.skip()
-		return try parsePrototype()
-	}
-	
-	private func parseTopLevelExpr () throws -> FunctionNode
-	{
-		let prototype = PrototypeNode(name: "", argumentNames: [])
-		let body = try parseExpression()
-		return FunctionNode(prototype: prototype, body: body)
+		guard case Token.WHILE = tokens.pop() else
+		{
+			throw ParserError.UnexpectedToken
+		}
+		
+		let condition = try parseExpression()
+		
+		guard case Token.DO = tokens.pop() else
+		{
+			throw ParserError.ExpectedToken(Token.DO)
+		}
+		
+		let command = try parse()
+		
+		return WhileNode(condition: condition, command: command)
 	}
 	
 	public func parse () throws -> [AST_Node]
@@ -228,20 +258,18 @@ public class Parser
 		{
 			switch (tokens.peek())
 			{
-				case Token.SEMICOLON:
-					tokens.skip()
-					break
-				case Token.DEFINE:
-					let node = try parseDefinition()
+				case Token.IDENTIFIER:
+					let node = try parseIdentifier()
 					nodes.append(node)
 					break
-				case Token.EXTERN:
-					let node = try parseExtern()
+				case Token.WHILE:
+					let node = try parseLoop()
 					nodes.append(node)
 					break
 				default:
 					let expr = try parseExpression()
 					nodes.append(expr)
+					break
 			}
 		}
 		

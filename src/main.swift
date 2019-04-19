@@ -1,32 +1,19 @@
-private func fibonacciFunction() -> String
+private func fatorialFunction() -> String
 {
 	return """
-	# Compute the x'th fibonacci number.
-	def fib (x)
-		if x < 3 then
-			1
-		else
-			fib(x-1)+fib(x-2)
-			
-	# This expression will compute the 40th number
-	fib(40)
+	nop The classic interative factorial example
+	z := 1
+	y := 10
+	while not (y == 0)
+	do
+		z := z * y
+		y := y - 1
 	"""
 }
 
-private func atan2Function() -> String
+public func impTest ()
 {
-	return """
-	extern sin(arg);
-	extern cos(arg);
-	extern atan2(arg1, arg2);
-	
-	atan2(sin(0.4), cos(42))
-	"""
-}
-
-public func kaleidoscopeTest ()
-{
-	let lexer = Lexer(input: atan2Function())
+	let lexer = Lexer(input: fatorialFunction())
 	let tokens = lexer.tokenize()
 	print(tokens)
 	let parser = Parser(tokens: tokens)
@@ -76,4 +63,4 @@ public func calculatorTest ()
 	}
 }
 
-kaleidoscopeTest()
+impTest()
