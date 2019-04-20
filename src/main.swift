@@ -1,19 +1,8 @@
-private func fatorialFunction() -> String
-{
-	return """
-	nop The classic interative factorial example
-	z := 1
-	y := 10
-	while not (y == 0)
-	do
-		z := z * y
-		y := y - 1
-	"""
-}
+import Foundation
 
 public func impTest ()
 {
-	let lexer = Lexer(input: fatorialFunction())
+	let lexer = Lexer(input: filePath()!)
 	let tokens = lexer.tokenize()
 	print(tokens)
 	let parser = Parser(tokens: tokens)
@@ -34,6 +23,24 @@ public func impTest ()
 	{
 		print(error)
 	}
+}
+
+public func filePath () -> String?
+{
+	let currDir = FileManager.default.currentDirectoryPath
+	
+	let fileURL = URL(string: "file://\(currDir)/examples/test.imp")!
+	do
+	{
+		print("\(fileURL)")
+		let textRead = try String(contentsOf: fileURL, encoding: .utf8)
+		return textRead
+	}
+	catch
+	{
+		print(error)
+	}
+	return nil
 }
 
 public func calculatorTest ()

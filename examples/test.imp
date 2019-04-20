@@ -1,4 +1,7 @@
-def foo (x, y)
-	x + y * 2 + (4 + 5) / 3
-	
-foo(3, 4)
+nop The classic interative factorial example
+	z := 1
+	y := 10
+	while not (y == 0)
+	do
+		z := z * y
+		y := y - 1
