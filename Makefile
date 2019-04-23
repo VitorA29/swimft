@@ -6,11 +6,11 @@ EXAMPLES = ./examples
 SWIFT_RELEASE = swift-5.0-RELEASE-ubuntu18.04
 SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
 
-.SILENT: install_swift download_swift prepare_output compile_src clean_output run_tests clean_enviroment
+.SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment
 
-all: download_swift compile_src run_tests
+all: download_swift compile_src execute_output
 
-run_tests: compile_src
+execute_output: compile_src
 	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/no_loop.imp;
 
 compile_src: prepare_output
