@@ -15,6 +15,15 @@ public struct NumberNode: ExprNode
 	}
 }
 
+public struct BooleanNode: ExprNode
+{
+	let value: Bool
+	public var description: String
+	{
+		return "BoolNode(\(value))"
+	}
+}
+
 public struct VariableNode: ExprNode
 {
 	let name: String

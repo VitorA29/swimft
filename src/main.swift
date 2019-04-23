@@ -1,35 +1,10 @@
 import Foundation
 
-public func impTest ()
-{
-	let lexer = Lexer(input: filePath()!)
-	let tokens = lexer.tokenize()
-	print(tokens)
-	let parser = Parser(tokens: tokens)
-	do
-	{
-		let ast_imp: [AST_Node] = try parser.parse()
-		print("\(ast_imp) - length(\(ast_imp.count))")
-		
-		// let piFramework: PiFramework = PiFramework()
-		
-		// let ast_pi = try piFramework.transformer(ast_imp: ast_imp)
-		
-		// print("\(ast_pi)")
-		
-		// try piFramework.pi_automaton(ast_pi: ast_pi)
-	}
-	catch
-	{
-		print(error)
-	}
-}
-
 public func filePath () -> String?
 {
 	let currDir = FileManager.default.currentDirectoryPath
 	
-	let fileURL = URL(string: "file://\(currDir)/examples/test.imp")!
+	let fileURL = URL(string: "file://\(currDir)/\(CommandLine.arguments[1])")!
 	do
 	{
 		print("\(fileURL)")
@@ -43,26 +18,29 @@ public func filePath () -> String?
 	return nil
 }
 
-public func calculatorTest ()
+public func main ()
 {
-	let simple_source = "2 - (4 + 5) / 3"
-	
-	let lexer = Lexer(input: simple_source)
+	let lexer = Lexer(input: filePath()!)
 	let tokens = lexer.tokenize()
 	print(tokens)
 	let parser = Parser(tokens: tokens)
 	do
 	{
-		let ast_imp: AST_Node = try parser.parseExpression()
-		print("\(ast_imp)")
+		let ast_imp: [AST_Node] = try parser.parse()
+		print("\(ast_imp) - length(\(ast_imp.count))")
 		
 		let piFramework: PiFramework = PiFramework()
 		
-		let ast_pi = try piFramework.transformer(ast_imp: ast_imp)
+		var ast_pi_forest: [AST_Pi] = [AST_Pi]()
+		for node in ast_imp
+		{
+			let ast_pi = try piFramework.transformer(ast_imp: node)
+			ast_pi_forest.append(ast_pi)
+		}
 		
-		print("\(ast_pi)")
+		print("\(ast_pi_forest)")
 		
-		try piFramework.pi_automaton(ast_pi: ast_pi)
+		// try piFramework.pi_automaton(ast_pi: ast_pi)
 	}
 	catch
 	{
@@ -70,4 +48,4 @@ public func calculatorTest ()
 	}
 }
 
-impTest()
+main()

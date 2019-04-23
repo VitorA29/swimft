@@ -11,7 +11,7 @@ SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
 all: download_swift compile_src run_tests
 
 run_tests: compile_src
-	./$(OUTPUT_FOLDER)/main;
+	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/no_loop.imp;
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \
