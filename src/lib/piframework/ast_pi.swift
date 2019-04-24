@@ -36,6 +36,16 @@ public struct AtomNode: ExpressionNode
 	
 	public var description: String
 	{
-		return "AtomNode(Function: \(function), Value: \(value))"
+		return "AtomNode(function: \(function), value: \(value))"
+	}
+}
+
+public struct PiFuncNode: AST_Pi
+{
+	let function: String
+	
+	public var description: String
+	{
+		return "PiFuncNode(function: \(function))"
 	}
 }

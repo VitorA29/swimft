@@ -43,5 +43,5 @@ clean_enviroment:
 	
 build: clean_output compile_src
 	
-reset: clean_enviroment download_swift build run_tests
+reset: clean_enviroment download_swift build execute_output
 	

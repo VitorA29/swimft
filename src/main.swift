@@ -7,7 +7,6 @@ public func filePath () -> String?
 	let fileURL = URL(string: "file://\(currDir)/\(CommandLine.arguments[1])")!
 	do
 	{
-		print("\(fileURL)")
 		let textRead = try String(contentsOf: fileURL, encoding: .utf8)
 		return textRead
 	}
@@ -38,7 +37,7 @@ public func main ()
 			ast_pi_forest.append(ast_pi)
 		}
 		
-		print("\(ast_pi_forest)")
+		print("\(ast_pi_forest) - length(\(ast_pi_forest.count))")
 		
 		// try piFramework.pi_automaton(ast_pi: ast_pi)
 	}
