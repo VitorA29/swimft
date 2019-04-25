@@ -92,13 +92,3 @@ public struct WhileNode: ExprNode
 		return "WhileNode(condition: \(condition), command: \(command) - length: \(command.count))"
 	}
 }
-
-public struct CallNode: ExprNode
-{
-	let call: String
-	let arguments: [ExprNode]
-	public var description: String
-	{
-		return "CallNode(call: \(call), arguments: \(arguments))"
-	}
-}

@@ -17,6 +17,19 @@ public enum AutomatonError: Error
 
 public class PiFramework
 {
+	private func combineExpressionNodes (ast_pi_forest: [ExpressionNode]) -> ExpressionNode
+	{
+		let head: ExpressionNode = ast_pi_forest[0]
+		var tail: [ExpressionNode] = ast_pi_forest
+		tail.remove(at: 0)
+		if tail.isEmpty
+		{
+			return head
+		}
+		let rhs: ExpressionNode = combineExpressionNodes(ast_pi_forest: tail)
+		return BinaryOperatorNode(operation: "CmdSeq", lhs: head, rhs: rhs)
+	}
+
 	public func transformer (ast_imp: AST_Node) throws -> AST_Pi
 	{
 		var ast_pi: AST_Pi
@@ -60,7 +73,6 @@ public class PiFramework
 			}
 			let lhs: ExpressionNode = try transformer(ast_imp: node.lhs) as! ExpressionNode
 			let rhs: ExpressionNode = try transformer(ast_imp: node.rhs) as! ExpressionNode
-			
 			ast_pi = BinaryOperatorNode(operation: operation, lhs: lhs, rhs: rhs)
 		}
 		else if ast_imp is AssignNode
@@ -69,6 +81,25 @@ public class PiFramework
 			let lhs: ExpressionNode = try transformer(ast_imp: node.variable) as! ExpressionNode
 			let rhs: ExpressionNode = try transformer(ast_imp: node.expression) as! ExpressionNode
 			ast_pi = BinaryOperatorNode(operation: "ASSIGN", lhs: lhs, rhs: rhs)
+		}
+		else if ast_imp is WhileNode
+		{
+			let node: WhileNode = ast_imp as! WhileNode
+			let lhs: ExpressionNode = try transformer(ast_imp: node.condition) as! ExpressionNode
+			let cmds: Pile<AST_Node> = Pile<AST_Node>(list: node.command)
+			var ast_pi_forest: [ExpressionNode] = [ExpressionNode]()
+			repeat
+			{
+				ast_pi_forest.append(try transformer(ast_imp: cmds.pop()) as! ExpressionNode)
+			}while (!cmds.isEmpty())
+			let rhs: ExpressionNode = combineExpressionNodes(ast_pi_forest: ast_pi_forest)
+			ast_pi = BinaryOperatorNode(operation: "LOOP", lhs: lhs, rhs: rhs)
+		}
+		else if ast_imp is NegationNode
+		{
+			let node: NegationNode = ast_imp as! NegationNode
+			let expression: ExpressionNode = try transformer(ast_imp: node.expression) as! ExpressionNode
+			ast_pi = UnaryOperatorNode(operation: "NEG", expression: expression)
 		}
 		else if ast_imp is NumberNode
 		{
@@ -92,10 +123,9 @@ public class PiFramework
 		return ast_pi
 	}
 	
-	public func pi_automaton (ast_pi: AST_Pi) throws
+	public func pi_automaton (ast_pi_forest: [AST_Pi]) throws
 	{
-		let control_pile: Pile<AST_Pi> = Pile<AST_Pi>()
-		control_pile.push(value: ast_pi)
+		let control_pile: Pile<AST_Pi> = Pile<AST_Pi>(list: ast_pi_forest)
 		let value_pile: Pile<AST_Pi> = Pile<AST_Pi>()
 		let storage_pile: [String: Int] = [String: Int]()
 		let enviroment_pile: [String: Int] = [String: Int]()
@@ -109,9 +139,9 @@ public class PiFramework
 			{
 				throw error
 			}
-		}while(control_pile.isEmpty() == false)
-		let value_tree: AST_Pi = value_pile.pop()
-		print("\(value_tree)")
+			print("c: \(control_pile), v: \(value_pile), s: \(storage_pile)")
+		}while(!control_pile.isEmpty())
+		// print("v: \(value_pile), s: \(storage_pile)")
 	}
 
 	private func delta (control: Pile<AST_Pi>, value: Pile<AST_Pi>, storage: [String: Int], enviroment: [String: Int]) throws
@@ -163,6 +193,9 @@ public class PiFramework
 				case "SUB":
 					control.push(value: PiFuncNode(function: "#SUB"))
 					break
+				case "ASSIGN":
+					control.push(value: PiFuncNode(function: "#ASG"))
+					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
@@ -175,18 +208,15 @@ public class PiFramework
 			switch (operatorNode.function)
 			{
 				case "NUM":
-					control.push(value: PiFuncNode(function: "#NUM"))
 					break
 				case "BOOL":
-					value.push(value: PiFuncNode(function: "#BOL"))
 					break
 				case "ID":
-					value.push(value: PiFuncNode(function: "#ID"))
 					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.function)
 			}
-		value.push(value: command_tree)
+			value.push(value: command_tree)
 		}
 		else
 		{

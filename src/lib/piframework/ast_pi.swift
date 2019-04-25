@@ -6,17 +6,6 @@ public protocol ExpressionNode: AST_Pi
 {
 }
 
-public struct WhileLoopNode: AST_Pi
-{
-	let condition: ExpressionNode
-	let command: Pile<AST_Pi>
-	
-	public var description: String
-	{
-		return "WhileLoopNode(condition: \(condition), command: \(command))"
-	}
-}
-
 public struct BinaryOperatorNode: ExpressionNode
 {
 	let operation: String
@@ -26,6 +15,17 @@ public struct BinaryOperatorNode: ExpressionNode
 	public var description: String
 	{
 		return "BinaryOperatorNode(operation: \(operation), lhs: \(lhs), rhs: \(rhs))"
+	}
+}
+
+public struct UnaryOperatorNode: ExpressionNode
+{
+	let operation: String
+	let expression: ExpressionNode
+	
+	public var description: String
+	{
+		return "UnaryOperatorNode(operation: \(operation), expression: \(expression))"
 	}
 }
 

@@ -53,50 +53,17 @@ public class Parser
 			throw ParserError.UnexpectedToken
 		}
 		
-		guard case Token.BRACKET_LEFT = tokens.peek() else
+		guard case Token.ASSIGN = tokens.peek() else
 		{
-			guard case Token.ASSIGN = tokens.peek() else
-			{
-				return VariableNode(name: name)
-			}
-			
-			// skip assign
-			tokens.skip()
-			
-			let expression = try parseExpression()
-			
-			return AssignNode(variable: VariableNode(name: name), expression: expression)
+			return VariableNode(name: name)
 		}
 		
-		// skip '('
+		// skip assign
 		tokens.skip()
 		
-		var arguments = [ExprNode]()
-		if case Token.BRACKET_RIGHT = tokens.peek()
-		{
-		}
-		else
-		{
-			while true
-			{
-				let argument = try parseExpression()
-				arguments.append(argument)
-				
-				if case Token.BRACKET_RIGHT = tokens.peek()
-				{
-					break
-				}
-				
-				guard case Token.COMMA = tokens.pop() else
-				{
-					throw ParserError.ExpectedArgumentList
-				}
-			}
-		}
+		let expression = try parseExpression()
 		
-		// skip ')'
-		tokens.skip()
-		return CallNode(call: name, arguments: arguments)
+		return AssignNode(variable: VariableNode(name: name), expression: expression)
 	}
 	
 	public func parseExpression () throws -> ExprNode
@@ -196,40 +163,6 @@ public class Parser
 			}
 			lhs = BinaryOpNode(op: op, lhs: lhs, rhs: rhs)
 		}
-	}
-	
-	private func parseCall () throws -> PrototypeNode
-	{
-		guard case let Token.IDENTIFIER(name) = tokens.pop() else
-		{
-			throw ParserError.ExpectedFunctionName
-		}
-		
-		guard case Token.BRACKET_LEFT = tokens.pop() else
-		{
-			throw ParserError.ExpectedCharacter("(")
-		}
-		
-		var argumentNames = [String]()
-		while case let Token.IDENTIFIER(name) = tokens.peek()
-		{
-			tokens.skip()
-			argumentNames.append(name)
-			
-			if case Token.BRACKET_RIGHT = tokens.peek()
-			{
-				break
-			}
-			
-			guard case Token.COMMA = tokens.pop() else
-			{
-				throw ParserError.ExpectedArgumentList
-			}
-		}
-		
-		// skip ')'
-		tokens.skip()
-		return PrototypeNode(name: name, argumentNames: argumentNames)
 	}
 	
 	private func parseLoop () throws -> WhileNode

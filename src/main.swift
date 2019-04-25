@@ -39,7 +39,7 @@ public func main ()
 		
 		print("\(ast_pi_forest) - length(\(ast_pi_forest.count))")
 		
-		// try piFramework.pi_automaton(ast_pi: ast_pi)
+		// try piFramework.pi_automaton(ast_pi_forest: ast_pi_forest)
 	}
 	catch
 	{
