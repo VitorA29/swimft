@@ -24,7 +24,7 @@ prepare_output:
 install_swift:
 	if [ ! -d $(ENV) ]; \
 	then \
-		sudo apt-get install clang libicu-dev libcurl libcurl4-openssl-dev; fi
+		sudo apt-get install clang libcurl4 libcurl4-openssl-dev; fi
 
 download_swift: install_swift
 	if [ ! -d $(ENV) ]; \
