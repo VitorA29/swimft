@@ -14,6 +14,7 @@ public enum Token
 	case DO
 	case NEGATION
 	case COMMA
+	case END
 	case OTHER(String)
 }
 
@@ -45,6 +46,10 @@ private func matchName(string: String) -> Token?
 	else if string == "do"
 	{
 		return .DO
+	}
+	else if string == "end"
+	{
+		return .END
 	}
 	else if string == "not"
 	{

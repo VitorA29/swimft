@@ -179,9 +179,39 @@ public class Parser
 			throw ParserError.ExpectedToken(Token.DO)
 		}
 		
-		let command = try parse()
+		var commandForest: [AST_Node] = [AST_Node]()
+		while(true)
+		{
+			let command = try parseGrammar()
+			commandForest.append(command)
+			if (tokens.isEmpty())
+			{
+				throw ParserError.ExpectedToken(Token.END)
+			}
+			else if case Token.END = tokens.peek()
+			{
+				tokens.skip()
+				break
+			}
+		}
 		
-		return WhileNode(condition: condition, command: command)
+		return WhileNode(condition: condition, command: commandForest)
+	}
+	
+	private func parseGrammar () throws -> AST_Node
+	{
+		switch (tokens.peek())
+		{
+			case Token.IDENTIFIER:
+				let node = try parseIdentifier()
+				return node
+			case Token.WHILE:
+				let node = try parseLoop()
+				return node
+			default:
+				let expr = try parseExpression()
+				return expr
+		}
 	}
 	
 	public func parse () throws -> [AST_Node]
@@ -189,21 +219,8 @@ public class Parser
 		var nodes = [AST_Node]()
 		while !tokens.isEmpty()
 		{
-			switch (tokens.peek())
-			{
-				case Token.IDENTIFIER:
-					let node = try parseIdentifier()
-					nodes.append(node)
-					break
-				case Token.WHILE:
-					let node = try parseLoop()
-					nodes.append(node)
-					break
-				default:
-					let expr = try parseExpression()
-					nodes.append(expr)
-					break
-			}
+			let node = try parseGrammar()
+			nodes.append(node)
 		}
 		
 		return nodes

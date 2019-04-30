@@ -139,9 +139,9 @@ public class PiFramework
 			{
 				throw error
 			}
-			print("c: \(control_pile), v: \(value_pile), s: \(storage_pile)")
+			// print("c: \(control_pile), v: \(value_pile), s: \(storage_pile)")
 		}while(!control_pile.isEmpty())
-		// print("v: \(value_pile), s: \(storage_pile)")
+		print("v: \(value_pile), s: \(storage_pile)")
 	}
 
 	private func delta (control: Pile<AST_Pi>, value: Pile<AST_Pi>, storage: [String: Int], enviroment: [String: Int]) throws
@@ -196,11 +196,23 @@ public class PiFramework
 				case "ASSIGN":
 					control.push(value: PiFuncNode(function: "#ASG"))
 					break
+				case "LOOP":
+					control.push(value: PiFuncNode(function: "#LOOP"))
+					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
-			control.push(value: operatorNode.lhs)
-			control.push(value: operatorNode.rhs)
+			switch (operatorNode.operation)
+			{
+				case "LOOP":
+					control.push(value: operatorNode.lhs)
+					value.push(value: command_tree)
+					value.push(value: operatorNode.rhs)
+					break
+				default:
+					control.push(value: operatorNode.lhs)
+					control.push(value: operatorNode.rhs)
+			}
 		}
 		else if command_tree is AtomNode
 		{
