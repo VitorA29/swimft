@@ -208,6 +208,8 @@ public class Parser
 			case Token.WHILE:
 				let node = try parseLoop()
 				return node
+			case Token.NOP:
+				return NoOpNode()
 			default:
 				let expr = try parseExpression()
 				return expr

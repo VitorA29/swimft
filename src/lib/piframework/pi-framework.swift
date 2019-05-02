@@ -157,9 +157,9 @@ public class PiFramework
 			{
 				throw error
 			}
-			print("{ c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
+			// print("{ c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
 		}while(!control_pile.isEmpty())
-		// print("{ v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
+		print("{ v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
 	}
 
 	private func delta (control: Pile<AST_Pi>, value: Pile<AST_Pi>, storage: inout [Int: AtomNode], enviroment: inout [String: Localizable]) throws

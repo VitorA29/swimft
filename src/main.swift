@@ -36,9 +36,6 @@ public func main ()
 			let ast_pi = try piFramework.transformer(ast_imp: node)
 			ast_pi_forest.append(ast_pi)
 		}
-		
-		print("\(ast_pi_forest) - length(\(ast_pi_forest.count))")
-		
 		try piFramework.pi_automaton(ast_pi_forest: ast_pi_forest)
 	}
 	catch

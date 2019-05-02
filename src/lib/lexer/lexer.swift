@@ -10,6 +10,7 @@ public enum Token
 	case OPERATOR(String)
 	case ASSIGN
 	case BOOLEAN(Bool)
+	case NOP
 	case WHILE
 	case DO
 	case NEGATION
@@ -24,7 +25,7 @@ typealias TokenGenerator = (String) -> Token?
 let tokenList: [(String, TokenGenerator)] =
 [
 	("[ \t\n]", { _ in nil }),
-	("nop.*(\n|$)", { _ in nil }), // ignore comments
+	("#.*(\n|$)", { _ in nil }), // ignore comments
 	("(?![0-9])[a-zA-Z_][a-zA-Z_0-9]*", { (m: String) in matchName(string: m) }),
 	("\\(", { _ in .BRACKET_LEFT }),
 	("\\)", { _ in .BRACKET_RIGHT }),
@@ -38,6 +39,10 @@ private func matchName(string: String) -> Token?
 	if string == "True" || string == "False"
 	{
 		return .BOOLEAN((string.lowercased() as NSString).boolValue)
+	}
+	else if string == "nop"
+	{
+		return .NOP
 	}
 	else if string == "while"
 	{

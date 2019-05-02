@@ -42,6 +42,14 @@ public struct NegationNode: ExprNode
 	}
 }
 
+public struct NoOpNode: ExprNode
+{
+	public var description: String
+	{
+		return "NoOpNode()"
+	}
+}
+
 public struct BinaryOpNode: ExprNode
 {
 	let op: String
