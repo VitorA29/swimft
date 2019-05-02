@@ -13,10 +13,28 @@ public enum AutomatonError: Error
 	case UndefinedASTNode(AST_Pi)
 	case UnexpectedNilValue
 	case InvalidValueExpected
+	case ExpectedIdentifier
+}
+
+private struct Localizable: CustomStringConvertible
+{
+	let address: Int
+	
+	public var description: String
+	{
+		return "Localizable(address: \(address))"
+	}
 }
 
 public class PiFramework
 {
+	var memorySpace: Int
+	
+	init ()
+	{
+		self.memorySpace = 0
+	}
+	
 	private func combineExpressionNodes (ast_pi_forest: [ExpressionNode]) -> ExpressionNode
 	{
 		let head: ExpressionNode = ast_pi_forest[0]
@@ -127,53 +145,259 @@ public class PiFramework
 	{
 		let control_pile: Pile<AST_Pi> = Pile<AST_Pi>(list: ast_pi_forest)
 		let value_pile: Pile<AST_Pi> = Pile<AST_Pi>()
-		let storage_pile: [String: Int] = [String: Int]()
-		let enviroment_pile: [String: Int] = [String: Int]()
+		var storage_pile: [Int: AtomNode] = [Int: AtomNode]()
+		var enviroment_pile: [String: Localizable] = [String: Localizable]()
 		repeat
 		{
 			do
 			{
-				try self.delta(control: control_pile, value: value_pile, storage: storage_pile, enviroment: enviroment_pile)
+				try self.delta(control: control_pile, value: value_pile, storage: &storage_pile, enviroment: &enviroment_pile)
 			}
 			catch
 			{
 				throw error
 			}
-			// print("c: \(control_pile), v: \(value_pile), s: \(storage_pile)")
+			print("{ c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
 		}while(!control_pile.isEmpty())
-		print("v: \(value_pile), s: \(storage_pile)")
+		// print("{ v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
 	}
 
-	private func delta (control: Pile<AST_Pi>, value: Pile<AST_Pi>, storage: [String: Int], enviroment: [String: Int]) throws
+	private func delta (control: Pile<AST_Pi>, value: Pile<AST_Pi>, storage: inout [Int: AtomNode], enviroment: inout [String: Localizable]) throws
 	{
 		let command_tree: AST_Pi = control.pop()
 		if command_tree is PiFuncNode
 		{
 			let functNode: PiFuncNode = command_tree as! PiFuncNode
-			var operation: Float
-			var nodeHelper: AtomNode = value.pop() as! AtomNode
-			let number_tree1: Float = Float(nodeHelper.value)!
-			
-			nodeHelper = value.pop() as! AtomNode
-			let number_tree2: Float = Float(nodeHelper.value)!
-			switch (functNode.function)
+			var operationResultFunction: String
+			var operationResult: String
+			switch(functNode.function)
 			{
+				// Aritimetical Operators
 				case "#MUL":
-					operation = number_tree1*number_tree2
+					operationResultFunction = "NUM"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Float = Float(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Float = Float(nodeHelper.value)!
+					operationResult = "\(value1*value2)"
 					break
 				case "#DIV":
-					operation = number_tree1/number_tree2
+					operationResultFunction = "NUM"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Float = Float(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Float = Float(nodeHelper.value)!
+					operationResult = "\(value1/value2)"
 					break
 				case "#SUM":
-					operation = number_tree1+number_tree2
+					operationResultFunction = "NUM"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Float = Float(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Float = Float(nodeHelper.value)!
+					operationResult = "\(value1+value2)"
 					break
 				case "#SUB":
-					operation = number_tree1-number_tree2
+					operationResultFunction = "NUM"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Float = Float(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Float = Float(nodeHelper.value)!
+					operationResult = "\(value1-value2)"
 					break
+				// Logical Operators
+				case "#LOW":
+					operationResultFunction = "BOOL"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Float = Float(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Float = Float(nodeHelper.value)!
+					operationResult = "\(value1<value2)"
+					break
+				case "#LEQ":
+					operationResultFunction = "BOOL"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Float = Float(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Float = Float(nodeHelper.value)!
+					operationResult = "\(value1<=value2)"
+					break
+				case "#GTR":
+					operationResultFunction = "BOOL"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Float = Float(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Float = Float(nodeHelper.value)!
+					operationResult = "\(value1>value2)"
+					break
+				case "#GEQ":
+					operationResultFunction = "BOOL"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Float = Float(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Float = Float(nodeHelper.value)!
+					operationResult = "\(value1>=value2)"
+					break
+				case "#EQL":
+					operationResultFunction = "BOOL"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Float = Float(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Float = Float(nodeHelper.value)!
+					operationResult = "\(value1==value2)"
+					break
+				case "#NEG":
+					operationResultFunction = "BOOL"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let booleanHelper: Bool = Bool(nodeHelper.value)!
+					operationResult = "\(!booleanHelper)"
+					break
+				case "#ASG":
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function != "ID")
+					{
+						throw AutomatonError.ExpectedIdentifier
+					}
+					let idName: String = nodeHelper.value
+					let localizable: Localizable
+					if enviroment[idName] != nil
+					{
+						localizable = enviroment[idName]!
+					}
+					else
+					{
+						localizable = Localizable(address: memorySpace)
+						memorySpace += 1
+						enviroment[idName] = localizable
+					}
+					nodeHelper = value.pop() as! AtomNode
+					storage[localizable.address] = nodeHelper
+					return
+				case "#LOOP":
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let conditionValue: Bool = Bool(nodeHelper.value)!
+					let cmds: ExpressionNode = value.pop() as! ExpressionNode
+					let loop_node: AST_Pi = value.pop()
+					
+					if (conditionValue)
+					{
+						control.push(value: loop_node)
+						control.push(value: cmds)
+					}
+					return
 				default:
 					throw AutomatonError.UndefinedCommand(functNode.function)
 			}
-			let node: AST_Pi = AtomNode(function: "NUM", value: "\(operation)")
+			let node: AST_Pi = AtomNode(function: operationResultFunction, value: operationResult)
 			value.push(value: node)
 		}
 		else if command_tree is BinaryOperatorNode
@@ -181,6 +405,7 @@ public class PiFramework
 			let operatorNode: BinaryOperatorNode = command_tree as! BinaryOperatorNode
 			switch (operatorNode.operation)
 			{
+				// Aritimetical Operators
 				case "MUL":
 					control.push(value: PiFuncNode(function: "#MUL"))
 					break
@@ -193,11 +418,29 @@ public class PiFramework
 				case "SUB":
 					control.push(value: PiFuncNode(function: "#SUB"))
 					break
+				// Logical Operators
+				case "LOW":
+					control.push(value: PiFuncNode(function: "#LOW"))
+					break
+				case "LEQ":
+					control.push(value: PiFuncNode(function: "#LEQ"))
+					break
+				case "GTR":
+					control.push(value: PiFuncNode(function: "#GTR"))
+					break
+				case "GEQ":
+					control.push(value: PiFuncNode(function: "#GEQ"))
+					break
+				case "EQL":
+					control.push(value: PiFuncNode(function: "#EQL"))
+					break
 				case "ASSIGN":
 					control.push(value: PiFuncNode(function: "#ASG"))
 					break
 				case "LOOP":
 					control.push(value: PiFuncNode(function: "#LOOP"))
+					break
+				case "CmdSeq":
 					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
@@ -209,10 +452,27 @@ public class PiFramework
 					value.push(value: command_tree)
 					value.push(value: operatorNode.rhs)
 					break
+				case "CmdSeq":
+					control.push(value: operatorNode.rhs)
+					control.push(value: operatorNode.lhs)
+					break
 				default:
 					control.push(value: operatorNode.lhs)
 					control.push(value: operatorNode.rhs)
 			}
+		}
+		else if command_tree is UnaryOperatorNode
+		{
+			let operatorNode: UnaryOperatorNode = command_tree as! UnaryOperatorNode
+			switch (operatorNode.operation)
+			{
+				case "NEG":
+					control.push(value: PiFuncNode(function: "#NEG"))
+					break
+				default:
+					throw AutomatonError.UndefinedOperation(operatorNode.operation)
+			}
+			control.push(value: operatorNode.expression)
 		}
 		else if command_tree is AtomNode
 		{

@@ -6,4 +6,3 @@ nop The classic interative factorial example
 		z := z * y
 		y := y - 1
 	end
-	x := 10
