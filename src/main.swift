@@ -21,12 +21,12 @@ public func main ()
 {
 	let lexer = Lexer(input: filePath()!)
 	let tokens = lexer.tokenize()
-	print(tokens)
+	print("{ tokens: \(tokens) }")
 	let parser = Parser(tokens: tokens)
 	do
 	{
 		let ast_imp: [AST_Node] = try parser.parse()
-		print("\(ast_imp) - length(\(ast_imp.count))")
+		print("{ ast_imp: \(ast_imp) - length(\(ast_imp.count)) }")
 		
 		let piFramework: PiFramework = PiFramework()
 		

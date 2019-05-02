@@ -3,7 +3,10 @@ OUTPUT_FOLDER = ./output
 OUT_FROM_BIN = ../../../../output
 ENV = ./enviroment
 EXAMPLES = ./examples
-SWIFT_RELEASE = swift-5.0-RELEASE-ubuntu18.04
+SWIFT_RELEASE_VERSION_NUMBER = 5.0
+UBUNTU_VERSION_NUMBER = 18
+UBUNTU_SUBVERSION_NUMBER = 04
+SWIFT_RELEASE = swift-$(SWIFT_RELEASE_VERSION_NUMBER)-RELEASE-ubuntu$(UBUNTU_VERSION_NUMBER).$(UBUNTU_SUBVERSION_NUMBER)
 SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
 
 .SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment
@@ -31,7 +34,7 @@ download_swift: install_swift
 	then \
 		mkdir $(ENV); \
 		cd $(ENV) && \
-		wget https://swift.org/builds/swift-5.0-release/ubuntu1804/swift-5.0-RELEASE/$(SWIFT_RELEASE).tar.gz && \
+		wget https://swift.org/builds/swift-$(SWIFT_RELEASE_VERSION_NUMBER)-release/ubuntu$(UBUNTU_VERSION_NUMBER)$(UBUNTU_SUBVERSION_NUMBER)/swift-$(SWIFT_RELEASE_VERSION_NUMBER)-RELEASE/$(SWIFT_RELEASE).tar.gz && \
 		tar -xvzf $(SWIFT_RELEASE).tar.gz && \
 		rm $(SWIFT_RELEASE).tar.gz; fi
 
