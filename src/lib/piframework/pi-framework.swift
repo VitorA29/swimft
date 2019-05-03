@@ -460,13 +460,12 @@ public class PiFramework
 						nodeHelper = storage[localizable.address]!
 					}
 					let conditionValue: Bool = Bool(nodeHelper.value)!
-					let cmds: ExpressionNode = value.pop() as! ExpressionNode
-					let loop_node: AST_Pi = value.pop()
+					let loop_node: BinaryOperatorNode = value.pop() as! BinaryOperatorNode
 					
 					if (conditionValue)
 					{
 						control.push(value: loop_node)
-						control.push(value: cmds)
+						control.push(value: loop_node.rhs)
 					}
 					return
 				case "#COND":
@@ -578,7 +577,6 @@ public class PiFramework
 				case "LOOP":
 					control.push(value: operatorNode.lhs)
 					value.push(value: command_tree)
-					value.push(value: operatorNode.rhs)
 					break
 				case "CmdSeq":
 					control.push(value: operatorNode.rhs)
