@@ -1,0 +1,8 @@
+# A simple test for conditional operation
+x:=10
+if x==10
+then
+	z:=x-20
+else
+	y:=x*3
+end

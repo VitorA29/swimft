@@ -16,6 +16,9 @@ public enum Token
 	case NEGATION
 	case COMMA
 	case END
+	case IF
+	case THEN
+	case ELSE
 	case OTHER(String)
 }
 
@@ -63,6 +66,18 @@ private func matchName(string: String) -> Token?
 	else if string == "and" || string == "or"
 	{
 		return .OPERATOR(string)
+	}
+	else if string == "if"
+	{
+		return .IF
+	}
+	else if string == "then"
+	{
+		return .THEN
+	}
+	else if string == "else"
+	{
+		return .ELSE
 	}
 	else
 	{
