@@ -198,6 +198,54 @@ public class Parser
 		return WhileNode(condition: condition, command: commandForest)
 	}
 	
+	private func parseConditional () throws -> ConditionalNode
+	{
+		guard case Token.IF = tokens.pop() else
+		{
+			throw ParserError.UnexpectedToken
+		}
+		
+		let condition = try parseExpression()
+		
+		guard case Token.THEN = tokens.pop() else
+		{
+			throw ParserError.ExpectedToken(Token.THEN)
+		}
+		
+		var commandForest: [AST_Node] = [AST_Node]()
+		var commandForestTrue: [AST_Node] = [AST_Node]()
+		var hasElse: Bool = false
+		while(true)
+		{
+			let command = try parseGrammar()
+			commandForest.append(command)
+			if (tokens.isEmpty())
+			{
+				throw ParserError.ExpectedToken(Token.END)
+			}
+			else if case Token.ELSE = tokens.peek()
+			{
+				tokens.skip()
+				hasElse = true
+				commandForestTrue = commandForest
+				commandForest = [AST_Node]()
+			}
+			else if case Token.END = tokens.peek()
+			{
+				tokens.skip()
+				break
+			}
+		}
+		if (hasElse)
+		{
+			return ConditionalNode(condition: condition, commandTrue: commandForestTrue, commandFalse: commandForest)
+		}
+		else
+		{
+			return ConditionalNode(condition: condition, commandTrue: commandForest, commandFalse: [AST_Node]())
+		}
+	}
+	
 	private func parseGrammar () throws -> AST_Node
 	{
 		switch (tokens.peek())
@@ -207,6 +255,9 @@ public class Parser
 				return node
 			case Token.WHILE:
 				let node = try parseLoop()
+				return node
+			case Token.IF:
+				let node = try parseConditional()
 				return node
 			case Token.NOP:
 				return NoOpNode()

@@ -100,3 +100,14 @@ public struct WhileNode: ExprNode
 		return "WhileNode(condition: \(condition), command: \(command) - length: \(command.count))"
 	}
 }
+
+public struct ConditionalNode: ExprNode
+{
+	let condition: ExprNode
+	let commandTrue: [AST_Node]
+	let commandFalse: [AST_Node]
+	public var description: String
+	{
+		return "ConditionalNode(condition: \(condition), [ commandTrue: \(commandTrue) - length: \(commandTrue.count) ], [ commandFalse: \(commandFalse) - length: \(commandFalse.count) ])"
+	}
+}
