@@ -10,7 +10,7 @@ public enum AutomatonError: Error
 {
 	case UndefinedOperation(String)
 	case UndefinedCommand(String)
-	case UndefinedASTNode(AST_Pi)
+	case UndefinedASTPi(AST_Pi)
 	case UnexpectedNilValue
 	case InvalidValueExpected
 	case ExpectedIdentifier
@@ -112,6 +112,32 @@ public class PiFramework
 			}while (!cmds.isEmpty())
 			let rhs: ExpressionNode = combineExpressionNodes(ast_pi_forest: ast_pi_forest)
 			ast_pi = BinaryOperatorNode(operation: "LOOP", lhs: lhs, rhs: rhs)
+		}
+		else if ast_imp is ConditionalNode
+		{
+			let node: ConditionalNode = ast_imp as! ConditionalNode
+			let lhs: ExpressionNode = try transformer(ast_imp: node.condition) as! ExpressionNode
+			
+			let cmdsTrue: Pile<AST_Node> = Pile<AST_Node>(list: node.commandTrue)
+			var ast_pi_forest: [ExpressionNode] = [ExpressionNode]()
+			repeat
+			{
+				ast_pi_forest.append(try transformer(ast_imp: cmdsTrue.pop()) as! ExpressionNode)
+			}while (!cmdsTrue.isEmpty())
+			let chs: ExpressionNode = combineExpressionNodes(ast_pi_forest: ast_pi_forest)
+			
+			let cmdsFalse: Pile<AST_Node> = Pile<AST_Node>(list: node.commandFalse)
+			ast_pi_forest = [ExpressionNode]()
+			while (!cmdsFalse.isEmpty())
+			{
+				ast_pi_forest.append(try transformer(ast_imp: cmdsFalse.pop()) as! ExpressionNode)
+			}
+			var rhs: ExpressionNode? = nil
+			if (!ast_pi_forest.isEmpty)
+			{
+				rhs = combineExpressionNodes(ast_pi_forest: ast_pi_forest)
+			}
+			ast_pi = TernaryOperatorNode(operation: "COND", lhs: lhs, chs: chs, rhs: rhs)
 		}
 		else if ast_imp is NegationNode
 		{
@@ -492,7 +518,7 @@ public class PiFramework
 		}
 		else
 		{
-			throw AutomatonError.UndefinedASTNode(command_tree)
+			throw AutomatonError.UndefinedASTPi(command_tree)
 		}
 	}
 }

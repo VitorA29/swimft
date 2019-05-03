@@ -6,6 +6,26 @@ public protocol ExpressionNode: AST_Pi
 {
 }
 
+public struct TernaryOperatorNode: ExpressionNode
+{
+	let operation: String
+	let lhs: ExpressionNode
+	let chs: ExpressionNode
+	let rhs: ExpressionNode?
+	
+	public var description: String
+	{
+		if (rhs == nil)
+		{
+			return "TernaryOperatorNode(operation: \(operation), lhs: \(lhs), chs: \(chs))"
+		}
+		else
+		{
+			return "TernaryOperatorNode(operation: \(operation), lhs: \(lhs), chs: \(chs), rhs: \(rhs!))"
+		}
+	}
+}
+
 public struct BinaryOperatorNode: ExpressionNode
 {
 	let operation: String
