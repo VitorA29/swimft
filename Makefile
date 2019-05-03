@@ -11,10 +11,15 @@ SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
 
 .SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment
 
-all: download_swift compile_src execute_output
+all: download_swift compile_src execute_imp_zero
 
 execute_output: compile_src
+	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/simple_test.imp;
+	
+execute_imp_zero: compile_src
+	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/simple_test.imp;
 	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/loop_test.imp;
+	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/conditional_test.imp;
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \

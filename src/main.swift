@@ -19,7 +19,9 @@ public func filePath () -> String?
 
 public func main ()
 {
-	let lexer = Lexer(input: filePath()!)
+	let code: String = filePath()!
+	print("{ code: \(code) }")
+	let lexer = Lexer(input: code)
 	let tokens = lexer.tokenize()
 	print("{ tokens: \(tokens) }")
 	let parser = Parser(tokens: tokens)

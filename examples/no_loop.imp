@@ -1,7 +1,0 @@
-nop The classic interative factorial example
-	z := 1
-	y := 10
-	nop while not (y == 0)
-	nop do
-		z := z * y
-		y := y - 1

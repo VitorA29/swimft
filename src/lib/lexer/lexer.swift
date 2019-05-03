@@ -31,7 +31,7 @@ let tokenList: [(String, TokenGenerator)] =
 	("\\)", { _ in .BRACKET_RIGHT }),
 	("(\\+|\\*|\\/|-|<=?|>=?|==)", { (m: String) in .OPERATOR(m) }),
 	(":=", { _ in .ASSIGN }),
-	("([1-9][0-9]*|0)?(.[0-9]*[1-9]|.0)?", { (m: String) in .NUMBER((m as NSString).floatValue) }),
+	("([1-9][0-9]*|0)?(\\.[0-9]*[1-9]|\\.0)?", { (m: String) in .NUMBER((m as NSString).floatValue) }),
 ]
 
 private func matchName(string: String) -> Token?
@@ -87,7 +87,6 @@ public class Lexer
 		while (content.count > 0)
 		{
 			var matched = false
-			
 			for (pattern, generator) in tokenList
 			{
 				if let m = content.match(regex: pattern)

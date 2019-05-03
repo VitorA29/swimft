@@ -1,0 +1,4 @@
+# test for logical and aritmethical operations
+x:=3+(4-5)*2
+y:=3<4
+z:=x==1
