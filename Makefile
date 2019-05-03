@@ -14,7 +14,7 @@ SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
 all: download_swift compile_src execute_imp_zero
 
 execute_output: compile_src
-	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/simple_test.imp;
+	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/conditional_test.imp;
 	
 execute_imp_zero: compile_src
 	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/simple_test.imp;

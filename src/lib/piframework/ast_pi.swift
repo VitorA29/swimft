@@ -49,6 +49,14 @@ public struct UnaryOperatorNode: ExpressionNode
 	}
 }
 
+public struct SkipOperatorNode: ExpressionNode
+{
+	public var description: String
+	{
+		return "SkipOperatorNode()"
+	}
+}
+
 public struct AtomNode: ExpressionNode
 {
 	let function: String

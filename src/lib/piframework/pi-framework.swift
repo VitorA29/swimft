@@ -166,6 +166,10 @@ public class PiFramework
 			let node: BooleanNode = ast_imp as! BooleanNode
 			ast_pi = AtomNode(function: "BOOL", value: "\(node.value)")
 		}
+		else if ast_imp is NoOpNode
+		{
+			ast_pi = SkipOperatorNode()
+		}
 		else
 		{
 			throw TranformerError.UndefinedASTNode(ast_imp)
@@ -487,6 +491,8 @@ public class PiFramework
 						control.push(value: cmds)
 					}
 					return
+				case "#NOP":
+					return
 				default:
 					throw AutomatonError.UndefinedCommand(functNode.function)
 			}
@@ -505,7 +511,14 @@ public class PiFramework
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
 			control.push(value: operatorNode.lhs)
-			value.push(value: operatorNode.rhs)
+			if (operatorNode.rhs != nil)
+			{
+				value.push(value: operatorNode.rhs!)
+			}
+			else
+			{
+				value.push(value: PiFuncNode(function: "#NOP"))
+			}
 			value.push(value: operatorNode.chs)
 		}
 		else if command_tree is BinaryOperatorNode
@@ -604,6 +617,10 @@ public class PiFramework
 					throw AutomatonError.UndefinedOperation(operatorNode.function)
 			}
 			value.push(value: command_tree)
+		}
+		else if command_tree is SkipOperatorNode
+		{
+			control.push(value: PiFuncNode(function: "#NOP"))
 		}
 		else
 		{
