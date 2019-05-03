@@ -16,15 +16,17 @@ public enum ParserError: Error
 
 private let operatorPrecedence: [String: Int] =
 [
-	"<": 10,
-	"<=": 10,
-	">": 10,
-	">=": 10,
-	"==": 10,
-	"+": 20,
-	"-": 20,
-	"*": 40,
-	"/": 40
+	"and": 10,
+	"or": 10,
+	"<": 40,
+	"<=": 40,
+	">": 40,
+	">=": 40,
+	"==": 40,
+	"+": 60,
+	"-": 60,
+	"*": 80,
+	"/": 80
 ]
 
 public class Parser
@@ -51,6 +53,11 @@ public class Parser
 		guard case let Token.IDENTIFIER(name) = tokens.pop() else
 		{
 			throw ParserError.UnexpectedToken
+		}
+		
+		if (tokens.isEmpty())
+		{
+			return VariableNode(name: name)
 		}
 		
 		guard case Token.ASSIGN = tokens.peek() else

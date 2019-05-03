@@ -86,6 +86,12 @@ public class PiFramework
 				case "==":
 					operation = "EQL"
 					break
+				case "and":
+					operation = "AND"
+					break
+				case "or":
+					operation = "OR"
+					break
 				default:
 					throw TranformerError.UndefinedOperator(node.op)
 			}
@@ -360,7 +366,7 @@ public class PiFramework
 						let localizable: Localizable = enviroment[nodeHelper.value]!
 						nodeHelper = storage[localizable.address]!
 					}
-					let value1: Float = Float(nodeHelper.value)!
+					let value1: String = nodeHelper.value
 					
 					nodeHelper = value.pop() as! AtomNode
 					if (nodeHelper.function == "ID")
@@ -368,8 +374,46 @@ public class PiFramework
 						let localizable: Localizable = enviroment[nodeHelper.value]!
 						nodeHelper = storage[localizable.address]!
 					}
-					let value2: Float = Float(nodeHelper.value)!
+					let value2: String = nodeHelper.value
 					operationResult = "\(value1==value2)"
+					break
+				case "#AND":
+					operationResultFunction = "BOOL"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Bool = Bool(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Bool = Bool(nodeHelper.value)!
+					operationResult = "\(value1&&value2)"
+					break
+				case "#OR":
+					operationResultFunction = "BOOL"
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value1: Bool = Bool(nodeHelper.value)!
+					
+					nodeHelper = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let value2: Bool = Bool(nodeHelper.value)!
+					operationResult = "\(value1||value2)"
 					break
 				case "#NEG":
 					operationResultFunction = "BOOL"
@@ -382,6 +426,7 @@ public class PiFramework
 					let booleanHelper: Bool = Bool(nodeHelper.value)!
 					operationResult = "\(!booleanHelper)"
 					break
+				// Other functions
 				case "#ASG":
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					if (nodeHelper.function != "ID")
@@ -497,6 +542,13 @@ public class PiFramework
 				case "EQL":
 					control.push(value: PiFuncNode(function: "#EQL"))
 					break
+				case "AND":
+					control.push(value: PiFuncNode(function: "#AND"))
+					break
+				case "OR":
+					control.push(value: PiFuncNode(function: "#OR"))
+					break
+				// Other functions
 				case "ASSIGN":
 					control.push(value: PiFuncNode(function: "#ASG"))
 					break
