@@ -420,11 +420,48 @@ public class PiFramework
 						control.push(value: cmds)
 					}
 					return
+				case "#COND":
+					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					if (nodeHelper.function == "ID")
+					{
+						let localizable: Localizable = enviroment[nodeHelper.value]!
+						nodeHelper = storage[localizable.address]!
+					}
+					let conditionValue: Bool = Bool(nodeHelper.value)!
+					let cmds: ExpressionNode
+					if (conditionValue)
+					{
+						cmds = value.pop() as! ExpressionNode
+						value.skip()
+						control.push(value: cmds)
+					}
+					else
+					{
+						value.skip()
+						cmds = value.pop() as! ExpressionNode
+						control.push(value: cmds)
+					}
+					return
 				default:
 					throw AutomatonError.UndefinedCommand(functNode.function)
 			}
 			let node: AST_Pi = AtomNode(function: operationResultFunction, value: operationResult)
 			value.push(value: node)
+		}
+		else if command_tree is TernaryOperatorNode
+		{
+			let operatorNode: TernaryOperatorNode = command_tree as! TernaryOperatorNode
+			switch (operatorNode.operation)
+			{
+				case "COND":
+					control.push(value: PiFuncNode(function: "#COND"))
+					break
+				default:
+					throw AutomatonError.UndefinedOperation(operatorNode.operation)
+			}
+			control.push(value: operatorNode.lhs)
+			value.push(value: operatorNode.rhs)
+			value.push(value: operatorNode.chs)
 		}
 		else if command_tree is BinaryOperatorNode
 		{
