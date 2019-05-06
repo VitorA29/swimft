@@ -45,7 +45,7 @@ public class PiFramework
 			return head
 		}
 		let rhs: ExpressionNode = combineExpressionNodes(ast_pi_forest: tail)
-		return BinaryOperatorNode(operation: "CmdSeq", lhs: head, rhs: rhs)
+		return BinaryOperatorNode(operation: "CSeq", lhs: head, rhs: rhs)
 	}
 
 	public func transformer (ast_imp: AST_Node) throws -> AST_Pi
@@ -59,38 +59,38 @@ public class PiFramework
 			{
 				// Aritimetic Operators
 				case "*":
-					operation = "MUL"
+					operation = "Mul"
 					break
 				case "/":
-					operation = "DIV"
+					operation = "Div"
 					break
 				case "+":
-					operation = "SUM"
+					operation = "Sum"
 					break
 				case "-":
-					operation = "SUB"
+					operation = "Sub"
 					break
 				// Logical Operators
 				case "<":
-					operation = "LOW"
+					operation = "Lt"
 					break
 				case "<=":
-					operation = "LEQ"
+					operation = "Le"
 					break
 				case ">":
-					operation = "GTR"
+					operation = "Gt"
 					break
 				case ">=":
-					operation = "GEQ"
+					operation = "Ge"
 					break
 				case "==":
-					operation = "EQL"
+					operation = "Eq"
 					break
 				case "and":
-					operation = "AND"
+					operation = "And"
 					break
 				case "or":
-					operation = "OR"
+					operation = "Or"
 					break
 				default:
 					throw TranformerError.UndefinedOperator(node.op)
@@ -104,7 +104,7 @@ public class PiFramework
 			let node: AssignNode = ast_imp as! AssignNode
 			let lhs: ExpressionNode = try transformer(ast_imp: node.variable) as! ExpressionNode
 			let rhs: ExpressionNode = try transformer(ast_imp: node.expression) as! ExpressionNode
-			ast_pi = BinaryOperatorNode(operation: "ASSIGN", lhs: lhs, rhs: rhs)
+			ast_pi = BinaryOperatorNode(operation: "Assign", lhs: lhs, rhs: rhs)
 		}
 		else if ast_imp is WhileNode
 		{
@@ -117,7 +117,7 @@ public class PiFramework
 				ast_pi_forest.append(try transformer(ast_imp: cmds.pop()) as! ExpressionNode)
 			}while (!cmds.isEmpty())
 			let rhs: ExpressionNode = combineExpressionNodes(ast_pi_forest: ast_pi_forest)
-			ast_pi = BinaryOperatorNode(operation: "LOOP", lhs: lhs, rhs: rhs)
+			ast_pi = BinaryOperatorNode(operation: "Loop", lhs: lhs, rhs: rhs)
 		}
 		else if ast_imp is ConditionalNode
 		{
@@ -143,32 +143,32 @@ public class PiFramework
 			{
 				rhs = combineExpressionNodes(ast_pi_forest: ast_pi_forest)
 			}
-			ast_pi = TernaryOperatorNode(operation: "COND", lhs: lhs, chs: chs, rhs: rhs)
+			ast_pi = TernaryOperatorNode(operation: "Cond", lhs: lhs, chs: chs, rhs: rhs)
 		}
 		else if ast_imp is NegationNode
 		{
 			let node: NegationNode = ast_imp as! NegationNode
 			let expression: ExpressionNode = try transformer(ast_imp: node.expression) as! ExpressionNode
-			ast_pi = UnaryOperatorNode(operation: "NEG", expression: expression)
+			ast_pi = UnaryOperatorNode(operation: "Not", expression: expression)
 		}
 		else if ast_imp is NumberNode
 		{
 			let node: NumberNode = ast_imp as! NumberNode
-			ast_pi = AtomNode(function: "NUM", value: "\(node.value)")
+			ast_pi = AtomNode(operation: "Num", value: "\(node.value)")
 		}
 		else if ast_imp is VariableNode
 		{
 			let node: VariableNode = ast_imp as! VariableNode
-			ast_pi = AtomNode(function: "ID", value: "\(node.name)")
+			ast_pi = AtomNode(operation: "Id", value: "\(node.name)")
 		}
 		else if ast_imp is BooleanNode
 		{
 			let node: BooleanNode = ast_imp as! BooleanNode
-			ast_pi = AtomNode(function: "BOOL", value: "\(node.value)")
+			ast_pi = AtomNode(operation: "Boo", value: "\(node.value)")
 		}
 		else if ast_imp is NoOpNode
 		{
-			ast_pi = SkipOperatorNode()
+			ast_pi = OnlyOperatorNode(operation: "Nop")
 		}
 		else
 		{
@@ -210,7 +210,7 @@ public class PiFramework
 			{
 				// Aritimetical Operators
 				case "#MUL":
-					operationResultFunction = "NUM"
+					operationResultFunction = "Num"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: Float = Float(nodeHelper.value)!
 					
@@ -219,7 +219,7 @@ public class PiFramework
 					operationResult = "\(value1*value2)"
 					break
 				case "#DIV":
-					operationResultFunction = "NUM"
+					operationResultFunction = "Num"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: Float = Float(nodeHelper.value)!
 					
@@ -228,7 +228,7 @@ public class PiFramework
 					operationResult = "\(value1/value2)"
 					break
 				case "#SUM":
-					operationResultFunction = "NUM"
+					operationResultFunction = "Num"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: Float = Float(nodeHelper.value)!
 					
@@ -237,7 +237,7 @@ public class PiFramework
 					operationResult = "\(value1+value2)"
 					break
 				case "#SUB":
-					operationResultFunction = "NUM"
+					operationResultFunction = "Num"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: Float = Float(nodeHelper.value)!
 					
@@ -246,8 +246,8 @@ public class PiFramework
 					operationResult = "\(value1-value2)"
 					break
 				// Logical Operators
-				case "#LOW":
-					operationResultFunction = "BOOL"
+				case "#LT":
+					operationResultFunction = "Boo"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: Float = Float(nodeHelper.value)!
 					
@@ -255,8 +255,8 @@ public class PiFramework
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1<value2)"
 					break
-				case "#LEQ":
-					operationResultFunction = "BOOL"
+				case "#LE":
+					operationResultFunction = "Boo"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: Float = Float(nodeHelper.value)!
 					
@@ -264,8 +264,8 @@ public class PiFramework
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1<=value2)"
 					break
-				case "#GTR":
-					operationResultFunction = "BOOL"
+				case "#GT":
+					operationResultFunction = "Boo"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: Float = Float(nodeHelper.value)!
 					
@@ -273,8 +273,8 @@ public class PiFramework
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1>value2)"
 					break
-				case "#GEQ":
-					operationResultFunction = "BOOL"
+				case "#GE":
+					operationResultFunction = "Boo"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: Float = Float(nodeHelper.value)!
 					
@@ -282,8 +282,8 @@ public class PiFramework
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1>=value2)"
 					break
-				case "#EQL":
-					operationResultFunction = "BOOL"
+				case "#EQ":
+					operationResultFunction = "Boo"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: String = nodeHelper.value
 					
@@ -292,7 +292,7 @@ public class PiFramework
 					operationResult = "\(value1==value2)"
 					break
 				case "#AND":
-					operationResultFunction = "BOOL"
+					operationResultFunction = "Boo"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: Bool = Bool(nodeHelper.value)!
 					
@@ -301,7 +301,7 @@ public class PiFramework
 					operationResult = "\(value1&&value2)"
 					break
 				case "#OR":
-					operationResultFunction = "BOOL"
+					operationResultFunction = "Boo"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
 					let value1: Bool = Bool(nodeHelper.value)!
 					
@@ -309,17 +309,17 @@ public class PiFramework
 					let value2: Bool = Bool(nodeHelper.value)!
 					operationResult = "\(value1||value2)"
 					break
-				case "#NEG":
-					operationResultFunction = "BOOL"
+				case "#NOT":
+					operationResultFunction = "Boo"
 					let nodeHelper: AtomNode = value.pop() as! AtomNode
 					let booleanHelper: Bool = Bool(nodeHelper.value)!
 					operationResult = "\(!booleanHelper)"
 					break
 				// Other functions
-				case "#ASG":
+				case "#ASSIGN":
 					let nodeAsgValue: AtomNode = value.pop() as! AtomNode
 					let nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function != "ID")
+					if (nodeHelper.operation != "Id")
 					{
 						throw AutomatonError.ExpectedIdentifier
 					}
@@ -370,7 +370,7 @@ public class PiFramework
 				default:
 					throw AutomatonError.UndefinedCommand(functNode.function)
 			}
-			let node: AST_Pi = AtomNode(function: operationResultFunction, value: operationResult)
+			let node: AST_Pi = AtomNode(operation: operationResultFunction, value: operationResult)
 			value.push(value: node)
 		}
 		else if command_tree is TernaryOperatorNode
@@ -378,7 +378,7 @@ public class PiFramework
 			let operatorNode: TernaryOperatorNode = command_tree as! TernaryOperatorNode
 			switch (operatorNode.operation)
 			{
-				case "COND":
+				case "Cond":
 					control.push(value: PiFuncNode(function: "#COND"))
 					break
 				default:
@@ -401,63 +401,63 @@ public class PiFramework
 			switch (operatorNode.operation)
 			{
 				// Aritimetical Operators
-				case "MUL":
+				case "Mul":
 					control.push(value: PiFuncNode(function: "#MUL"))
 					break
-				case "DIV":
+				case "Div":
 					control.push(value: PiFuncNode(function: "#DIV"))
 					break
-				case "SUM":
+				case "Sum":
 					control.push(value: PiFuncNode(function: "#SUM"))
 					break
-				case "SUB":
+				case "Sub":
 					control.push(value: PiFuncNode(function: "#SUB"))
 					break
 				// Logical Operators
-				case "LOW":
-					control.push(value: PiFuncNode(function: "#LOW"))
+				case "Lt":
+					control.push(value: PiFuncNode(function: "#LT"))
 					break
-				case "LEQ":
-					control.push(value: PiFuncNode(function: "#LEQ"))
+				case "Le":
+					control.push(value: PiFuncNode(function: "#LE"))
 					break
-				case "GTR":
-					control.push(value: PiFuncNode(function: "#GTR"))
+				case "Gt":
+					control.push(value: PiFuncNode(function: "#GT"))
 					break
-				case "GEQ":
-					control.push(value: PiFuncNode(function: "#GEQ"))
+				case "Ge":
+					control.push(value: PiFuncNode(function: "#GE"))
 					break
-				case "EQL":
-					control.push(value: PiFuncNode(function: "#EQL"))
+				case "Eq":
+					control.push(value: PiFuncNode(function: "#EQ"))
 					break
-				case "AND":
+				case "And":
 					control.push(value: PiFuncNode(function: "#AND"))
 					break
-				case "OR":
+				case "Or":
 					control.push(value: PiFuncNode(function: "#OR"))
 					break
 				// Other functions
-				case "ASSIGN":
-					control.push(value: PiFuncNode(function: "#ASG"))
+				case "Assign":
+					control.push(value: PiFuncNode(function: "#ASSIGN"))
 					break
-				case "LOOP":
+				case "Loop":
 					control.push(value: PiFuncNode(function: "#LOOP"))
 					break
-				case "CmdSeq":
+				case "CSeq":
 					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
 			switch (operatorNode.operation)
 			{
-				case "LOOP":
+				case "Loop":
 					control.push(value: operatorNode.lhs)
 					value.push(value: command_tree)
 					break
-				case "CmdSeq":
+				case "CSeq":
 					control.push(value: operatorNode.rhs)
 					control.push(value: operatorNode.lhs)
 					break
-				case "ASSIGN":
+				case "Assign":
 					value.push(value: operatorNode.lhs)
 					control.push(value: operatorNode.rhs)
 					break
@@ -471,8 +471,8 @@ public class PiFramework
 			let operatorNode: UnaryOperatorNode = command_tree as! UnaryOperatorNode
 			switch (operatorNode.operation)
 			{
-				case "NEG":
-					control.push(value: PiFuncNode(function: "#NEG"))
+				case "Not":
+					control.push(value: PiFuncNode(function: "#NOT"))
 					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
@@ -482,25 +482,33 @@ public class PiFramework
 		else if command_tree is AtomNode
 		{
 			let operatorNode: AtomNode = command_tree as! AtomNode
-			switch (operatorNode.function)
+			switch (operatorNode.operation)
 			{
-				case "NUM":
+				case "Num":
 					break
-				case "BOOL":
+				case "Boo":
 					break
-				case "ID":
+				case "Id":
 					let localizable: Localizable = enviroment[operatorNode.value]!
 					let nodeHelper: AtomNode = storage[localizable.address]!
 					value.push(value: nodeHelper)
 					return
 				default:
-					throw AutomatonError.UndefinedOperation(operatorNode.function)
+					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
 			value.push(value: command_tree)
 		}
-		else if command_tree is SkipOperatorNode
+		else if command_tree is OnlyOperatorNode
 		{
-			control.push(value: PiFuncNode(function: "#NOP"))
+			let operatorNode: OnlyOperatorNode = command_tree as! OnlyOperatorNode
+			switch (operatorNode.operation)
+			{
+				case "Nop":
+					control.push(value: PiFuncNode(function: "#NOP"))
+					break
+				default:
+					throw AutomatonError.UndefinedOperation(operatorNode.operation)
+			}
 		}
 		else
 		{

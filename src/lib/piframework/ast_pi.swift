@@ -17,11 +17,11 @@ public struct TernaryOperatorNode: ExpressionNode
 	{
 		if (rhs == nil)
 		{
-			return "TernaryOperatorNode(operation: \(operation), lhs: \(lhs), chs: \(chs))"
+			return "\(operation)(\(lhs), \(chs), nil)"
 		}
 		else
 		{
-			return "TernaryOperatorNode(operation: \(operation), lhs: \(lhs), chs: \(chs), rhs: \(rhs!))"
+			return "\(operation)(\(lhs), \(chs), \(rhs!))"
 		}
 	}
 }
@@ -34,7 +34,7 @@ public struct BinaryOperatorNode: ExpressionNode
 	
 	public var description: String
 	{
-		return "BinaryOperatorNode(operation: \(operation), lhs: \(lhs), rhs: \(rhs))"
+		return "\(operation)(\(lhs), \(rhs))"
 	}
 }
 
@@ -45,26 +45,27 @@ public struct UnaryOperatorNode: ExpressionNode
 	
 	public var description: String
 	{
-		return "UnaryOperatorNode(operation: \(operation), expression: \(expression))"
+		return "\(operation)(\(expression))"
 	}
 }
 
-public struct SkipOperatorNode: ExpressionNode
+public struct OnlyOperatorNode: ExpressionNode
 {
+	let operation: String
 	public var description: String
 	{
-		return "SkipOperatorNode()"
+		return "\(operation)()"
 	}
 }
 
 public struct AtomNode: ExpressionNode
 {
-	let function: String
+	let operation: String
 	let value: String
 	
 	public var description: String
 	{
-		return "AtomNode(function: \(function), value: \(value))"
+		return "\(operation)(\(value))"
 	}
 }
 
@@ -74,6 +75,6 @@ public struct PiFuncNode: AST_Pi
 	
 	public var description: String
 	{
-		return "PiFuncNode(function: \(function))"
+		return "\(function)"
 	}
 }
