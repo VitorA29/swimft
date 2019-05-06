@@ -212,76 +212,36 @@ public class PiFramework
 				case "#MUL":
 					operationResultFunction = "NUM"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: Float = Float(nodeHelper.value)!
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1*value2)"
 					break
 				case "#DIV":
 					operationResultFunction = "NUM"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: Float = Float(nodeHelper.value)!
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1/value2)"
 					break
 				case "#SUM":
 					operationResultFunction = "NUM"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: Float = Float(nodeHelper.value)!
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1+value2)"
 					break
 				case "#SUB":
 					operationResultFunction = "NUM"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: Float = Float(nodeHelper.value)!
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1-value2)"
 					break
@@ -289,150 +249,76 @@ public class PiFramework
 				case "#LOW":
 					operationResultFunction = "BOOL"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: Float = Float(nodeHelper.value)!
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1<value2)"
 					break
 				case "#LEQ":
 					operationResultFunction = "BOOL"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: Float = Float(nodeHelper.value)!
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1<=value2)"
 					break
 				case "#GTR":
 					operationResultFunction = "BOOL"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: Float = Float(nodeHelper.value)!
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1>value2)"
 					break
 				case "#GEQ":
 					operationResultFunction = "BOOL"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: Float = Float(nodeHelper.value)!
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: Float = Float(nodeHelper.value)!
 					operationResult = "\(value1>=value2)"
 					break
 				case "#EQL":
 					operationResultFunction = "BOOL"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: String = nodeHelper.value
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: String = nodeHelper.value
 					operationResult = "\(value1==value2)"
 					break
 				case "#AND":
 					operationResultFunction = "BOOL"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: Bool = Bool(nodeHelper.value)!
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: Bool = Bool(nodeHelper.value)!
 					operationResult = "\(value1&&value2)"
 					break
 				case "#OR":
 					operationResultFunction = "BOOL"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value1: Bool = Bool(nodeHelper.value)!
 					
 					nodeHelper = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
 					let value2: Bool = Bool(nodeHelper.value)!
 					operationResult = "\(value1||value2)"
 					break
 				case "#NEG":
 					operationResultFunction = "BOOL"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
+					let nodeHelper: AtomNode = value.pop() as! AtomNode
 					let booleanHelper: Bool = Bool(nodeHelper.value)!
 					operationResult = "\(!booleanHelper)"
 					break
 				// Other functions
 				case "#ASG":
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					let nodeAsgValue: AtomNode = value.pop() as! AtomNode
+					let nodeHelper: AtomNode = value.pop() as! AtomNode
 					if (nodeHelper.function != "ID")
 					{
 						throw AutomatonError.ExpectedIdentifier
@@ -449,16 +335,10 @@ public class PiFramework
 						memorySpace += 1
 						enviroment[idName] = localizable
 					}
-					nodeHelper = value.pop() as! AtomNode
-					storage[localizable.address] = nodeHelper
+					storage[localizable.address] = nodeAsgValue
 					return
 				case "#LOOP":
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
+					let nodeHelper: AtomNode = value.pop() as! AtomNode
 					let conditionValue: Bool = Bool(nodeHelper.value)!
 					let loop_node: BinaryOperatorNode = value.pop() as! BinaryOperatorNode
 					
@@ -469,12 +349,7 @@ public class PiFramework
 					}
 					return
 				case "#COND":
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.function == "ID")
-					{
-						let localizable: Localizable = enviroment[nodeHelper.value]!
-						nodeHelper = storage[localizable.address]!
-					}
+					let nodeHelper: AtomNode = value.pop() as! AtomNode
 					let conditionValue: Bool = Bool(nodeHelper.value)!
 					let cmds: ExpressionNode
 					if (conditionValue)
@@ -582,6 +457,10 @@ public class PiFramework
 					control.push(value: operatorNode.rhs)
 					control.push(value: operatorNode.lhs)
 					break
+				case "ASSIGN":
+					value.push(value: operatorNode.lhs)
+					control.push(value: operatorNode.rhs)
+					break
 				default:
 					control.push(value: operatorNode.lhs)
 					control.push(value: operatorNode.rhs)
@@ -610,7 +489,10 @@ public class PiFramework
 				case "BOOL":
 					break
 				case "ID":
-					break
+					let localizable: Localizable = enviroment[operatorNode.value]!
+					let nodeHelper: AtomNode = storage[localizable.address]!
+					value.push(value: nodeHelper)
+					return
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.function)
 			}
