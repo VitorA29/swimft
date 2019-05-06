@@ -8,18 +8,18 @@
 
 ## ImΠ grammar
 ```
-<S> ::=  <cmd>+
+<S> ::=  <cmd> | <comment>
 
-<cmd> ::= 'nop' | <assign> | <loop> | <conditional> | <comment>
+<cmd> ::= 'nop' | <assign> | <loop> | <conditional>
+
+<comment> ::= /#.*\s/
 
 <assign> ::= <identifier> ':=' <expression>
 
-<loop> ::= 'while' <bool_expression> 'do' <cmd>+ 'end'
+<loop> ::= 'while' <bool_expression> 'do' <cmd><S>* 'end'
 
-<conditional> ::= 'if' <bool_expression> 'then' <cmd>+ 'else' <cmd>+ 'end'
-		| 'if' <bool_expression> 'then' <cmd>+ 'end'
-
-<comment> ::= /#.*\s/
+<conditional> ::= 'if' <bool_expression> 'then' <cmd><S>* 'else' <cmd><S>* 'end'
+		| 'if' <bool_expression> 'then' <cmd><S>* 'end'
 
 <identifier> ::= /(?!\d)\w+/ 
 
