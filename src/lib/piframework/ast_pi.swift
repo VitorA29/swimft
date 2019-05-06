@@ -1,17 +1,17 @@
-public protocol AST_Pi: CustomStringConvertible
+public protocol AST_Pi_Extended: CustomStringConvertible
 {
 }
 
-public protocol ExpressionNode: AST_Pi
+public protocol AST_Pi: AST_Pi_Extended
 {
 }
 
-public struct TernaryOperatorNode: ExpressionNode
+public struct TernaryOperatorNode: AST_Pi
 {
 	let operation: String
-	let lhs: ExpressionNode
-	let chs: ExpressionNode
-	let rhs: ExpressionNode?
+	let lhs: AST_Pi
+	let chs: AST_Pi
+	let rhs: AST_Pi?
 	
 	public var description: String
 	{
@@ -26,11 +26,11 @@ public struct TernaryOperatorNode: ExpressionNode
 	}
 }
 
-public struct BinaryOperatorNode: ExpressionNode
+public struct BinaryOperatorNode: AST_Pi
 {
 	let operation: String
-	let lhs: ExpressionNode
-	let rhs: ExpressionNode
+	let lhs: AST_Pi
+	let rhs: AST_Pi
 	
 	public var description: String
 	{
@@ -38,10 +38,10 @@ public struct BinaryOperatorNode: ExpressionNode
 	}
 }
 
-public struct UnaryOperatorNode: ExpressionNode
+public struct UnaryOperatorNode: AST_Pi
 {
 	let operation: String
-	let expression: ExpressionNode
+	let expression: AST_Pi
 	
 	public var description: String
 	{
@@ -49,7 +49,7 @@ public struct UnaryOperatorNode: ExpressionNode
 	}
 }
 
-public struct OnlyOperatorNode: ExpressionNode
+public struct OnlyOperatorNode: AST_Pi
 {
 	let operation: String
 	public var description: String
@@ -58,7 +58,7 @@ public struct OnlyOperatorNode: ExpressionNode
 	}
 }
 
-public struct AtomNode: ExpressionNode
+public struct AtomNode: AST_Pi
 {
 	let operation: String
 	let value: String
@@ -69,7 +69,7 @@ public struct AtomNode: ExpressionNode
 	}
 }
 
-public struct PiFuncNode: AST_Pi
+public struct PiFuncNode: AST_Pi_Extended
 {
 	let function: String
 	
