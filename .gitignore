@@ -70,3 +70,6 @@ fastlane/test_output
 # Custom Ignores
 enviroment/*
 output/*
+doc/*
+!doc/*.tex
+!doc/*.pdf
