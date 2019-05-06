@@ -32,15 +32,10 @@ public func main ()
 		
 		let piFramework: PiFramework = PiFramework()
 		
-		var ast_pi_forest: [AST_Pi] = [AST_Pi]()
-		for node in ast_imp
-		{
-			let ast_pi = try piFramework.transformer(ast_imp: node)
-			ast_pi_forest.append(ast_pi)
-		}
-		print("{ ast_pi: \(ast_pi_forest) - \(ast_pi_forest.count) }")
+		let ast_pi: AST_Pi = try piFramework.translate(ast_imp: ast_imp)
+		print("{ ast_pi: \(ast_pi) }")
 		
-		try piFramework.pi_automaton(ast_pi_forest: ast_pi_forest)
+		try piFramework.pi_automaton(ast_pi: ast_pi)
 	}
 	catch
 	{

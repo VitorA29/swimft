@@ -48,9 +48,20 @@ public class PiFramework
 		return BinaryOperatorNode(operation: "CSeq", lhs: head, rhs: rhs)
 	}
 
-	public func transformer (ast_imp: AST_Node) throws -> AST_Pi
+	public func translate (ast_imp: [AST_Node]) throws -> ExpressionNode
 	{
-		var ast_pi: AST_Pi
+		var ast_pi_forest: [ExpressionNode] = [ExpressionNode]()
+		for node in ast_imp
+		{
+			let ast_pi = try translateNode(ast_imp: node)
+			ast_pi_forest.append(ast_pi)
+		}
+		return combineExpressionNodes(ast_pi_forest: ast_pi_forest)
+	}
+
+	private func translateNode (ast_imp: AST_Node) throws -> ExpressionNode
+	{
+		var ast_pi: ExpressionNode
 		if ast_imp is BinaryOpNode
 		{
 			let node: BinaryOpNode = ast_imp as! BinaryOpNode
@@ -95,60 +106,40 @@ public class PiFramework
 				default:
 					throw TranformerError.UndefinedOperator(node.op)
 			}
-			let lhs: ExpressionNode = try transformer(ast_imp: node.lhs) as! ExpressionNode
-			let rhs: ExpressionNode = try transformer(ast_imp: node.rhs) as! ExpressionNode
+			let lhs: ExpressionNode = try translateNode(ast_imp: node.lhs)
+			let rhs: ExpressionNode = try translateNode(ast_imp: node.rhs)
 			ast_pi = BinaryOperatorNode(operation: operation, lhs: lhs, rhs: rhs)
 		}
 		else if ast_imp is AssignNode
 		{
 			let node: AssignNode = ast_imp as! AssignNode
-			let lhs: ExpressionNode = try transformer(ast_imp: node.variable) as! ExpressionNode
-			let rhs: ExpressionNode = try transformer(ast_imp: node.expression) as! ExpressionNode
+			let lhs: ExpressionNode = try translateNode(ast_imp: node.variable)
+			let rhs: ExpressionNode = try translateNode(ast_imp: node.expression)
 			ast_pi = BinaryOperatorNode(operation: "Assign", lhs: lhs, rhs: rhs)
 		}
 		else if ast_imp is WhileNode
 		{
 			let node: WhileNode = ast_imp as! WhileNode
-			let lhs: ExpressionNode = try transformer(ast_imp: node.condition) as! ExpressionNode
-			let cmds: Pile<AST_Node> = Pile<AST_Node>(list: node.command)
-			var ast_pi_forest: [ExpressionNode] = [ExpressionNode]()
-			repeat
-			{
-				ast_pi_forest.append(try transformer(ast_imp: cmds.pop()) as! ExpressionNode)
-			}while (!cmds.isEmpty())
-			let rhs: ExpressionNode = combineExpressionNodes(ast_pi_forest: ast_pi_forest)
+			let lhs: ExpressionNode = try translateNode(ast_imp: node.condition)
+			let rhs: ExpressionNode = try translate(ast_imp: node.command)
 			ast_pi = BinaryOperatorNode(operation: "Loop", lhs: lhs, rhs: rhs)
 		}
 		else if ast_imp is ConditionalNode
 		{
 			let node: ConditionalNode = ast_imp as! ConditionalNode
-			let lhs: ExpressionNode = try transformer(ast_imp: node.condition) as! ExpressionNode
-			
-			let cmdsTrue: Pile<AST_Node> = Pile<AST_Node>(list: node.commandTrue)
-			var ast_pi_forest: [ExpressionNode] = [ExpressionNode]()
-			repeat
-			{
-				ast_pi_forest.append(try transformer(ast_imp: cmdsTrue.pop()) as! ExpressionNode)
-			}while (!cmdsTrue.isEmpty())
-			let chs: ExpressionNode = combineExpressionNodes(ast_pi_forest: ast_pi_forest)
-			
-			let cmdsFalse: Pile<AST_Node> = Pile<AST_Node>(list: node.commandFalse)
-			ast_pi_forest = [ExpressionNode]()
-			while (!cmdsFalse.isEmpty())
-			{
-				ast_pi_forest.append(try transformer(ast_imp: cmdsFalse.pop()) as! ExpressionNode)
-			}
+			let lhs: ExpressionNode = try translateNode(ast_imp: node.condition)
+			let chs: ExpressionNode = try translate(ast_imp: node.commandTrue)
 			var rhs: ExpressionNode? = nil
-			if (!ast_pi_forest.isEmpty)
+			if (!node.commandFalse.isEmpty)
 			{
-				rhs = combineExpressionNodes(ast_pi_forest: ast_pi_forest)
+				rhs = try translate(ast_imp: node.commandFalse)
 			}
 			ast_pi = TernaryOperatorNode(operation: "Cond", lhs: lhs, chs: chs, rhs: rhs)
 		}
 		else if ast_imp is NegationNode
 		{
 			let node: NegationNode = ast_imp as! NegationNode
-			let expression: ExpressionNode = try transformer(ast_imp: node.expression) as! ExpressionNode
+			let expression: ExpressionNode = try translateNode(ast_imp: node.expression)
 			ast_pi = UnaryOperatorNode(operation: "Not", expression: expression)
 		}
 		else if ast_imp is NumberNode
@@ -177,9 +168,10 @@ public class PiFramework
 		return ast_pi
 	}
 	
-	public func pi_automaton (ast_pi_forest: [AST_Pi]) throws
+	public func pi_automaton (ast_pi: AST_Pi) throws
 	{
-		let control_pile: Pile<AST_Pi> = Pile<AST_Pi>(list: ast_pi_forest)
+		let control_pile: Pile<AST_Pi> = Pile<AST_Pi>()
+		control_pile.push(value: ast_pi)
 		let value_pile: Pile<AST_Pi> = Pile<AST_Pi>()
 		var storage_pile: [Int: AtomNode] = [Int: AtomNode]()
 		var enviroment_pile: [String: Localizable] = [String: Localizable]()
