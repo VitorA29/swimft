@@ -28,7 +28,7 @@ public func main ()
 	do
 	{
 		let ast_imp: [AST_Node] = try parser.parse()
-		print("{ ast_imp: \(ast_imp) - length(\(ast_imp.count)) }")
+		print("{ ast_imp: \(ast_imp) - \(ast_imp.count) }")
 		
 		let piFramework: PiFramework = PiFramework()
 		
@@ -38,7 +38,7 @@ public func main ()
 			let ast_pi = try piFramework.transformer(ast_imp: node)
 			ast_pi_forest.append(ast_pi)
 		}
-		print("{ ast_pi_forest: \(ast_pi_forest) - length(\(ast_pi_forest.count)) }")
+		print("{ ast_pi: \(ast_pi_forest) - \(ast_pi_forest.count) }")
 		
 		try piFramework.pi_automaton(ast_pi_forest: ast_pi_forest)
 	}
