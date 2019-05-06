@@ -38,7 +38,7 @@ public struct NegationNode: ExprNode
 	let expression: ExprNode
 	public var description: String
 	{
-		return "(!\(expression))"
+		return "!(\(expression))"
 	}
 }
 
@@ -57,7 +57,7 @@ public struct BinaryOpNode: ExprNode
 	let rhs: ExprNode
 	public var description: String
 	{
-		return "('\(op)', \(lhs), \(rhs))"
+		return "'\(op)'(\(lhs), \(rhs))"
 	}
 }
 
@@ -67,7 +67,7 @@ public struct AssignNode: ExprNode
 	let expression: ExprNode
 	public var description: String
 	{
-		return "(Assign, \(variable), \(expression))"
+		return "Assign(\(variable), \(expression))"
 	}
 }
 
@@ -77,7 +77,7 @@ public struct WhileNode: ExprNode
 	let command: [AST_Node]
 	public var description: String
 	{
-		return "(While, \(condition), [\(command) - \(command.count)])"
+		return "While(\(condition), [\(command) - \(command.count)])"
 	}
 }
 
@@ -88,6 +88,6 @@ public struct ConditionalNode: ExprNode
 	let commandFalse: [AST_Node]
 	public var description: String
 	{
-		return "(Conditional, \(condition), [\(commandTrue) - \(commandTrue.count) ], [ \(commandFalse) - \(commandFalse.count) ])"
+		return "Conditional(\(condition), [\(commandTrue) - \(commandTrue.count) ], [ \(commandFalse) - \(commandFalse.count) ])"
 	}
 }
