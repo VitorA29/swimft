@@ -7,9 +7,11 @@ public enum ParserError: Error
 	
 	case ExpectedCharacter(Character)
 	case ExpectedExpressionToken(Token)
-	case ExpectedArgumentList
-	case ExpectedFunctionName
 	case ExpectedToken(Token)
+	
+	case ExpectedAnyExpr
+	case ExpectedArithExpr
+	case ExpectedBoolExpr
 	
 	case NotImplemented(String)
 }
@@ -27,6 +29,25 @@ private let operatorPrecedence: [String: Int] =
 	"-": 60,
 	"*": 80,
 	"/": 80
+]
+
+private let arith_operator_collection: [String] =
+[
+	"+",
+	"-",
+	"*",
+	"/"
+]
+
+private let bool_operator_collection: [String] =
+[
+	"and",
+	"or",
+	"<",
+	"<=",
+	">",
+	">=",
+	"=="
 ]
 
 public class Parser
@@ -48,7 +69,17 @@ public class Parser
 		return NumberNode(value: value)
 	}
 	
-	private func parseIdentifier () throws -> ExprNode
+	private func parseBoolean () throws -> ExprNode
+	{
+		guard case let Token.BOOLEAN(value) = tokens.pop() else
+		{
+			throw ParserError.UnexpectedToken
+		}
+		
+		return TruthNode(value: value)
+	}
+	
+	private func parseIdentifier () throws -> AST_Node
 	{
 		guard case let Token.IDENTIFIER(name) = tokens.pop() else
 		{
@@ -57,12 +88,12 @@ public class Parser
 		
 		if (tokens.isEmpty())
 		{
-			return VariableNode(name: name)
+			return IdentifierNode(name: name)
 		}
 		
 		guard case Token.ASSIGN = tokens.peek() else
 		{
-			return VariableNode(name: name)
+			return IdentifierNode(name: name)
 		}
 		
 		// skip assign
@@ -70,7 +101,7 @@ public class Parser
 		
 		let expression = try parseExpression()
 		
-		return AssignNode(variable: VariableNode(name: name), expression: expression)
+		return AssignNode(variable: IdentifierNode(name: name), expression: expression)
 	}
 	
 	public func parseExpression () throws -> ExprNode
@@ -103,8 +134,12 @@ public class Parser
 			throw ParserError.UnexpectedToken
 		}
 		
-		let expression = try parseExpression()
-		
+		let expressionWrapper: ExprNode = try parseExpression()
+		if !(expressionWrapper is BoolNode)
+		{
+			throw ParserError.ExpectedBoolExpr
+		}
+		let expression: BoolNode = expressionWrapper as! BoolNode
 		return NegationNode(expression: expression)
 	}
 	
@@ -113,9 +148,11 @@ public class Parser
 		switch(tokens.peek())
 		{
 			case Token.IDENTIFIER:
-				return try parseIdentifier()
+				return try parseIdentifier() as! ExprNode
 			case Token.NUMBER:
 				return try parseNumber()
+			case Token.BOOLEAN:
+				return try parseBoolean()
 			case Token.BRACKET_LEFT:
 				return try parseBrackets()
 			case Token.NEGATION:
@@ -168,7 +205,44 @@ public class Parser
 			{
 				rhs = try parseBinaryOp(node: rhs, exprPrecedence: tokenPrecedence+1)
 			}
-			lhs = BinaryOpNode(op: op, lhs: lhs, rhs: rhs)
+			if arith_operator_collection.contains(op)
+			{
+				if !(lhs is ArithNode) || !(rhs is ArithNode)
+				{
+					print("\(op), \(lhs), \(rhs)")
+					throw ParserError.ExpectedArithExpr
+				}
+				lhs = ArithOpNode(op: op, lhs: lhs as! ArithNode, rhs: rhs as! ArithNode)
+			}
+			else if bool_operator_collection.contains(op)
+			{
+				if lhs is IdentifierNode && rhs is IdentifierNode
+				{
+					// just skip this
+				}
+				else if lhs is ArithNode && rhs is ArithNode
+				{
+					if op == "and" || op == "or"
+					{
+						print("'\(op)' l:\(lhs), r:\(rhs)")
+						throw ParserError.ExpectedArithExpr
+					}
+				}
+				else if lhs is BoolNode && rhs is BoolNode
+				{
+					if op != "and" && op != "or" && op != "=="
+					{
+						print("'\(op)' l:\(lhs), r:\(rhs)")
+						throw ParserError.ExpectedBoolExpr
+					}
+				}
+				else
+				{
+					print("'\(op)' l:\(lhs), r:\(rhs)")
+					throw ParserError.ExpectedAnyExpr
+				}
+				lhs = BoolOpNode(op: op, lhs: lhs, rhs: rhs)
+			}
 		}
 	}
 	
@@ -179,7 +253,12 @@ public class Parser
 			throw ParserError.UnexpectedToken
 		}
 		
-		let condition = try parseExpression()
+		let conditionWrapper: ExprNode = try parseExpression()
+		if !(conditionWrapper is BoolNode)
+		{
+			throw ParserError.ExpectedBoolExpr
+		}
+		let condition: BoolNode = conditionWrapper as! BoolNode
 		
 		guard case Token.DO = tokens.pop() else
 		{
@@ -212,7 +291,12 @@ public class Parser
 			throw ParserError.UnexpectedToken
 		}
 		
-		let condition = try parseExpression()
+		let conditionWrapper: ExprNode = try parseExpression()
+		if !(conditionWrapper is BoolNode)
+		{
+			throw ParserError.ExpectedBoolExpr
+		}
+		let condition: BoolNode = conditionWrapper as! BoolNode
 		
 		guard case Token.THEN = tokens.pop() else
 		{

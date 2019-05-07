@@ -6,7 +6,15 @@ public protocol ExprNode: AST_Node
 {
 }
 
-public struct NumberNode: ExprNode
+public protocol BoolNode: ExprNode
+{
+}
+
+public protocol ArithNode: ExprNode
+{
+}
+
+public struct NumberNode: ArithNode
 {
 	let value: Float
 	public var description: String
@@ -15,42 +23,45 @@ public struct NumberNode: ExprNode
 	}
 }
 
-public struct BooleanNode: ExprNode
+public struct TruthNode: BoolNode
 {
 	let value: Bool
 	public var description: String
 	{
-		return "BoolNode(\(value))"
+		return "TruthNode(\(value))"
 	}
 }
 
-public struct VariableNode: ExprNode
+public struct IdentifierNode: BoolNode, ArithNode
 {
 	let name: String
 	public var description: String
 	{
-		return "VariableNode(\(name))"
+		return "IdentifierNode(\(name))"
 	}
 }
 
-public struct NegationNode: ExprNode
+public struct NegationNode: BoolNode
 {
-	let expression: ExprNode
+	let expression: BoolNode
 	public var description: String
 	{
 		return "!(\(expression))"
 	}
 }
 
-public struct NoOpNode: ExprNode
+public struct ArithOpNode: ArithNode
 {
+	let op: String
+	let lhs: ArithNode
+	let rhs: ArithNode
 	public var description: String
 	{
-		return "NoOpNode()"
+		return "'\(op)'(\(lhs), \(rhs))"
 	}
 }
 
-public struct BinaryOpNode: ExprNode
+public struct BoolOpNode: BoolNode
 {
 	let op: String
 	let lhs: ExprNode
@@ -61,9 +72,17 @@ public struct BinaryOpNode: ExprNode
 	}
 }
 
-public struct AssignNode: ExprNode
+public struct NoOpNode: AST_Node
 {
-	let variable: VariableNode
+	public var description: String
+	{
+		return "NoOpNode()"
+	}
+}
+
+public struct AssignNode: AST_Node
+{
+	let variable: IdentifierNode
 	let expression: ExprNode
 	public var description: String
 	{
@@ -71,9 +90,9 @@ public struct AssignNode: ExprNode
 	}
 }
 
-public struct WhileNode: ExprNode
+public struct WhileNode: AST_Node
 {
-	let condition: ExprNode
+	let condition: BoolNode
 	let command: [AST_Node]
 	public var description: String
 	{
@@ -81,9 +100,9 @@ public struct WhileNode: ExprNode
 	}
 }
 
-public struct ConditionalNode: ExprNode
+public struct ConditionalNode: AST_Node
 {
-	let condition: ExprNode
+	let condition: BoolNode
 	let commandTrue: [AST_Node]
 	let commandFalse: [AST_Node]
 	public var description: String

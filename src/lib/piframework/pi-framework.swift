@@ -62,13 +62,12 @@ public class PiFramework
 	private func translateNode (ast_imp: AST_Node) throws -> AST_Pi
 	{
 		var ast_pi: AST_Pi
-		if ast_imp is BinaryOpNode
+		if ast_imp is ArithOpNode
 		{
-			let node: BinaryOpNode = ast_imp as! BinaryOpNode
+			let node: ArithOpNode = ast_imp as! ArithOpNode
 			var operation: String
 			switch (node.op)
 			{
-				// Aritimetic Operators
 				case "*":
 					operation = "Mul"
 					break
@@ -81,7 +80,19 @@ public class PiFramework
 				case "-":
 					operation = "Sub"
 					break
-				// Logical Operators
+				default:
+					throw TranformerError.UndefinedOperator(node.op)
+			}
+			let lhs: AST_Pi = try translateNode(ast_imp: node.lhs)
+			let rhs: AST_Pi = try translateNode(ast_imp: node.rhs)
+			ast_pi = BinaryOperatorNode(operation: operation, lhs: lhs, rhs: rhs)
+		}
+		else if ast_imp is BoolOpNode
+		{
+			let node: BoolOpNode = ast_imp as! BoolOpNode
+			var operation: String
+			switch (node.op)
+			{
 				case "<":
 					operation = "Lt"
 					break
@@ -147,14 +158,14 @@ public class PiFramework
 			let node: NumberNode = ast_imp as! NumberNode
 			ast_pi = AtomNode(operation: "Num", value: "\(node.value)")
 		}
-		else if ast_imp is VariableNode
+		else if ast_imp is IdentifierNode
 		{
-			let node: VariableNode = ast_imp as! VariableNode
+			let node: IdentifierNode = ast_imp as! IdentifierNode
 			ast_pi = AtomNode(operation: "Id", value: "\(node.name)")
 		}
-		else if ast_imp is BooleanNode
+		else if ast_imp is TruthNode
 		{
-			let node: BooleanNode = ast_imp as! BooleanNode
+			let node: TruthNode = ast_imp as! TruthNode
 			ast_pi = AtomNode(operation: "Boo", value: "\(node.value)")
 		}
 		else if ast_imp is NoOpNode
