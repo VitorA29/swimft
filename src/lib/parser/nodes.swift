@@ -1,16 +1,16 @@
-public protocol AST_Node: CustomStringConvertible
+public protocol AST_Imp: CustomStringConvertible
 {
 }
 
-public protocol ExprNode: AST_Node
+public protocol ExpressionNode: AST_Imp
 {
 }
 
-public protocol BoolNode: ExprNode
+public protocol BoolNode: ExpressionNode
 {
 }
 
-public protocol ArithNode: ExprNode
+public protocol ArithNode: ExpressionNode
 {
 }
 
@@ -64,15 +64,15 @@ public struct ArithOpNode: ArithNode
 public struct BoolOpNode: BoolNode
 {
 	let op: String
-	let lhs: ExprNode
-	let rhs: ExprNode
+	let lhs: ExpressionNode
+	let rhs: ExpressionNode
 	public var description: String
 	{
 		return "'\(op)'(\(lhs), \(rhs))"
 	}
 }
 
-public struct NoOpNode: AST_Node
+public struct NoOpNode: AST_Imp
 {
 	public var description: String
 	{
@@ -80,31 +80,31 @@ public struct NoOpNode: AST_Node
 	}
 }
 
-public struct AssignNode: AST_Node
+public struct AssignNode: AST_Imp
 {
 	let variable: IdentifierNode
-	let expression: ExprNode
+	let expression: ExpressionNode
 	public var description: String
 	{
 		return "Assign(\(variable), \(expression))"
 	}
 }
 
-public struct WhileNode: AST_Node
+public struct WhileNode: AST_Imp
 {
 	let condition: BoolNode
-	let command: [AST_Node]
+	let command: [AST_Imp]
 	public var description: String
 	{
 		return "While(\(condition), [\(command) - \(command.count)])"
 	}
 }
 
-public struct ConditionalNode: AST_Node
+public struct ConditionalNode: AST_Imp
 {
 	let condition: BoolNode
-	let commandTrue: [AST_Node]
-	let commandFalse: [AST_Node]
+	let commandTrue: [AST_Imp]
+	let commandFalse: [AST_Imp]
 	public var description: String
 	{
 		return "Conditional(\(condition), [\(commandTrue) - \(commandTrue.count) ], [ \(commandFalse) - \(commandFalse.count) ])"

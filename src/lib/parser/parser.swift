@@ -59,7 +59,7 @@ public class Parser
 		self.tokens = Pile<Token>(list: tokens)
 	}
 	
-	private func parseNumber () throws -> ExprNode
+	private func parseNumber () throws -> ExpressionNode
 	{
 		guard case let Token.NUMBER(value) = tokens.pop() else
 		{
@@ -69,7 +69,7 @@ public class Parser
 		return NumberNode(value: value)
 	}
 	
-	private func parseBoolean () throws -> ExprNode
+	private func parseBoolean () throws -> ExpressionNode
 	{
 		guard case let Token.BOOLEAN(value) = tokens.pop() else
 		{
@@ -79,7 +79,7 @@ public class Parser
 		return TruthNode(value: value)
 	}
 	
-	private func parseIdentifier () throws -> AST_Node
+	private func parseIdentifier () throws -> AST_Imp
 	{
 		guard case let Token.IDENTIFIER(name) = tokens.pop() else
 		{
@@ -104,13 +104,13 @@ public class Parser
 		return AssignNode(variable: IdentifierNode(name: name), expression: expression)
 	}
 	
-	public func parseExpression () throws -> ExprNode
+	public func parseExpression () throws -> ExpressionNode
 	{
 		let node = try parsePrimary()
 		return try parseBinaryOp(node: node)
 	}
 	
-	private func parseBrackets () throws -> ExprNode
+	private func parseBrackets () throws -> ExpressionNode
 	{
 		guard case Token.BRACKET_LEFT = tokens.pop() else
 		{
@@ -127,14 +127,14 @@ public class Parser
 		return expression
 	}
 	
-	private func parseNegation () throws -> ExprNode
+	private func parseNegation () throws -> ExpressionNode
 	{
 		guard case Token.NEGATION = tokens.pop() else
 		{
 			throw ParserError.UnexpectedToken
 		}
 		
-		let expressionWrapper: ExprNode = try parseExpression()
+		let expressionWrapper: ExpressionNode = try parseExpression()
 		if !(expressionWrapper is BoolNode)
 		{
 			throw ParserError.ExpectedBoolExpr
@@ -143,12 +143,12 @@ public class Parser
 		return NegationNode(expression: expression)
 	}
 	
-	private func parsePrimary () throws -> ExprNode
+	private func parsePrimary () throws -> ExpressionNode
 	{
 		switch(tokens.peek())
 		{
 			case Token.IDENTIFIER:
-				return try parseIdentifier() as! ExprNode
+				return try parseIdentifier() as! ExpressionNode
 			case Token.NUMBER:
 				return try parseNumber()
 			case Token.BOOLEAN:
@@ -182,7 +182,7 @@ public class Parser
 		return precedence
 	}
 	
-	private func parseBinaryOp (node: ExprNode, exprPrecedence: Int = 0) throws -> ExprNode
+	private func parseBinaryOp (node: ExpressionNode, exprPrecedence: Int = 0) throws -> ExpressionNode
 	{
 		var lhs = node
 		while true
@@ -253,7 +253,7 @@ public class Parser
 			throw ParserError.UnexpectedToken
 		}
 		
-		let conditionWrapper: ExprNode = try parseExpression()
+		let conditionWrapper: ExpressionNode = try parseExpression()
 		if !(conditionWrapper is BoolNode)
 		{
 			throw ParserError.ExpectedBoolExpr
@@ -265,7 +265,7 @@ public class Parser
 			throw ParserError.ExpectedToken(Token.DO)
 		}
 		
-		var commandForest: [AST_Node] = [AST_Node]()
+		var commandForest: [AST_Imp] = [AST_Imp]()
 		while(true)
 		{
 			let command = try parseGrammar()
@@ -291,7 +291,7 @@ public class Parser
 			throw ParserError.UnexpectedToken
 		}
 		
-		let conditionWrapper: ExprNode = try parseExpression()
+		let conditionWrapper: ExpressionNode = try parseExpression()
 		if !(conditionWrapper is BoolNode)
 		{
 			throw ParserError.ExpectedBoolExpr
@@ -303,8 +303,8 @@ public class Parser
 			throw ParserError.ExpectedToken(Token.THEN)
 		}
 		
-		var commandForest: [AST_Node] = [AST_Node]()
-		var commandForestTrue: [AST_Node] = [AST_Node]()
+		var commandForest: [AST_Imp] = [AST_Imp]()
+		var commandForestTrue: [AST_Imp] = [AST_Imp]()
 		var hasElse: Bool = false
 		while(true)
 		{
@@ -319,7 +319,7 @@ public class Parser
 				tokens.skip()
 				hasElse = true
 				commandForestTrue = commandForest
-				commandForest = [AST_Node]()
+				commandForest = [AST_Imp]()
 			}
 			else if case Token.END = tokens.peek()
 			{
@@ -333,11 +333,11 @@ public class Parser
 		}
 		else
 		{
-			return ConditionalNode(condition: condition, commandTrue: commandForest, commandFalse: [AST_Node]())
+			return ConditionalNode(condition: condition, commandTrue: commandForest, commandFalse: [AST_Imp]())
 		}
 	}
 	
-	private func parseGrammar () throws -> AST_Node
+	private func parseGrammar () throws -> AST_Imp
 	{
 		switch (tokens.peek())
 		{
@@ -358,9 +358,9 @@ public class Parser
 		}
 	}
 	
-	public func parse () throws -> [AST_Node]
+	public func parse () throws -> [AST_Imp]
 	{
-		var nodes = [AST_Node]()
+		var nodes = [AST_Imp]()
 		while !tokens.isEmpty()
 		{
 			let node = try parseGrammar()

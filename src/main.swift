@@ -27,7 +27,7 @@ public func main ()
 	let parser = Parser(tokens: tokens)
 	do
 	{
-		let ast_imp: [AST_Node] = try parser.parse()
+		let ast_imp: [AST_Imp] = try parser.parse()
 		print("{ ast_imp: \(ast_imp) - \(ast_imp.count) }")
 		
 		let piFramework: PiFramework = PiFramework()

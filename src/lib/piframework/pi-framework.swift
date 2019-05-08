@@ -3,7 +3,7 @@ import Foundation
 public enum TranformerError: Error
 {
 	case UndefinedOperator(String)
-	case UndefinedASTNode(AST_Node)
+	case UndefinedASTNode(AST_Imp)
 }
 
 public enum AutomatonError: Error
@@ -48,7 +48,7 @@ public class PiFramework
 		return BinaryOperatorNode(operation: "CSeq", lhs: head, rhs: rhs)
 	}
 
-	public func translate (ast_imp: [AST_Node]) throws -> AST_Pi
+	public func translate (ast_imp: [AST_Imp]) throws -> AST_Pi
 	{
 		var ast_pi_forest: [AST_Pi] = [AST_Pi]()
 		for node in ast_imp
@@ -59,7 +59,7 @@ public class PiFramework
 		return combineAST_PiNodes(ast_pi_forest: ast_pi_forest)
 	}
 
-	private func translateNode (ast_imp: AST_Node) throws -> AST_Pi
+	private func translateNode (ast_imp: AST_Imp) throws -> AST_Pi
 	{
 		var ast_pi: AST_Pi
 		if ast_imp is ArithOpNode
