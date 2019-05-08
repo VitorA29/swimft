@@ -37,7 +37,7 @@ let tokenList: [(String, TokenGenerator)] =
 	("([1-9][0-9]*|0)?(\\.[0-9]*[1-9]|\\.0)?", { (m: String) in .NUMBER((m as NSString).floatValue) }),
 ]
 
-private func matchName(string: String) -> Token?
+private func matchName (string: String) -> Token?
 {
 	if string == "True" || string == "False"
 	{
