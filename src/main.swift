@@ -1,5 +1,13 @@
 import Foundation
 
+/// #START_DOC
+/// - Function for helping handleling with the opening and reading of the argument file.
+///
+/// - Parameter(s)
+///
+/// - Return
+/// 	- The content of the file if found, nil otherwise.
+/// #END_DOC
 public func filePath () -> String?
 {
 	let currDir = FileManager.default.currentDirectoryPath
@@ -17,6 +25,13 @@ public func filePath () -> String?
 	return nil
 }
 
+/// #START_DOC
+/// - The main function of this compiler logic, this will handle with everything by creating the compilation pipeline, printing every step.
+///
+/// - Parameter(s)
+///
+/// - Return
+/// #END_DOC
 public func main ()
 {
 	let code: String = filePath()!
