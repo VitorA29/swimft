@@ -1,6 +1,8 @@
 import Foundation
 
-// defining all tokens types
+/// #START_DOC
+/// - A enumeration for define all tokens of the ImΠ language.
+/// #END_DOC
 public enum Token
 {
 	case IDENTIFIER(String)
@@ -23,8 +25,13 @@ public enum Token
 }
 
 
-// defining all tokens matchs
+/// #START_DOC
+/// - Helper type used in the lexer analysis, it define a func that receives a String and returns a Optional Token.
+/// #END_DOC
 typealias TokenGenerator = (String) -> Token?
+/// #START_DOC
+/// - Constant that describ ImΠ grammar.
+/// #END_DOC
 let tokenList: [(String, TokenGenerator)] =
 [
 	("[ \t\n]", { _ in nil }),
@@ -37,6 +44,9 @@ let tokenList: [(String, TokenGenerator)] =
 	("([1-9][0-9]*|0)?(\\.[0-9]*[1-9]|\\.0)?", { (m: String) in .NUMBER((m as NSString).floatValue) }),
 ]
 
+/// #START_DOC
+/// - Helper function for dealing with the word processing.
+/// #END_DOC
 private func matchName (string: String) -> Token?
 {
 	if string == "True" || string == "False"
@@ -85,15 +95,28 @@ private func matchName (string: String) -> Token?
 	}
 }
 
+/// #START_DOC
+/// - Class that define all the logic behind the lexer analysis.
+/// #END_DOC
 public class Lexer
 {
 	let input: String
 	
+	/// #START_DOC
+	/// - This class initializer.
+	/// - Parameter(s)
+	/// 	- The ImΠ program to be processed.
+	/// #END_DOC
 	init (input: String)
 	{
 		self.input = input
 	}
 	
+	/// #START_DOC
+	/// - The main function of the lexer, here is where the program is converted into a list of tokens.
+	/// - Return
+	/// 	- The list of tokens that represents the argument ImΠ program.
+	/// #END_DOC
 	public func tokenize () -> [Token]
 	{
 		var tokens = [Token]()

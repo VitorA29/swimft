@@ -1,5 +1,8 @@
 import Foundation
 
+/// #START_DOC
+/// - Define the enumeration for the error that can be throw during parsing.
+/// #END_DOC
 public enum ParserError: Error
 {
 	case UnexpectedToken
@@ -16,6 +19,9 @@ public enum ParserError: Error
 	case NotImplemented(String)
 }
 
+/// #START_DOC
+/// - The dictionary that define the precedence of all accepted operators of ImΠ.
+/// #END_DOC
 private let operatorPrecedence: [String: Int] =
 [
 	"and": 10,
@@ -31,6 +37,9 @@ private let operatorPrecedence: [String: Int] =
 	"/": 80
 ]
 
+/// #START_DOC
+/// - The collection that defines all arithmetic operators of ImΠ.
+/// #END_DOC
 private let arith_operator_collection: [String] =
 [
 	"+",
@@ -39,6 +48,9 @@ private let arith_operator_collection: [String] =
 	"/"
 ]
 
+/// #START_DOC
+/// - The collection that defines all boolean operators of ImΠ.
+/// #END_DOC
 private let bool_operator_collection: [String] =
 [
 	"and",
@@ -50,15 +62,24 @@ private let bool_operator_collection: [String] =
 	"=="
 ]
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public class Parser
 {
 	private let tokens: Pile<Token>
 	
+	/// #START_DOC
+	/// - .
+	/// #END_DOC
 	init (tokens: [Token])
 	{
 		self.tokens = Pile<Token>(list: tokens)
 	}
 	
+	/// #START_DOC
+	/// - .
+	/// #END_DOC
 	private func parseNumber () throws -> ExpressionNode
 	{
 		guard case let Token.NUMBER(value) = tokens.pop() else
@@ -69,6 +90,9 @@ public class Parser
 		return NumberNode(value: value)
 	}
 	
+	/// #START_DOC
+	/// - .
+	/// #END_DOC
 	private func parseBoolean () throws -> ExpressionNode
 	{
 		guard case let Token.BOOLEAN(value) = tokens.pop() else
@@ -79,6 +103,9 @@ public class Parser
 		return TruthNode(value: value)
 	}
 	
+	/// #START_DOC
+	/// - .
+	/// #END_DOC
 	private func parseIdentifier () throws -> AST_Imp
 	{
 		guard case let Token.IDENTIFIER(name) = tokens.pop() else
@@ -104,12 +131,18 @@ public class Parser
 		return AssignNode(variable: IdentifierNode(name: name), expression: expression)
 	}
 	
+	/// #START_DOC
+	/// - .
+	/// #END_DOC
 	public func parseExpression () throws -> ExpressionNode
 	{
 		let node = try parsePrimary()
 		return try parseBinaryOp(node: node)
 	}
 	
+	/// #START_DOC
+	/// - .
+	/// #END_DOC
 	private func parseBrackets () throws -> ExpressionNode
 	{
 		guard case Token.BRACKET_LEFT = tokens.pop() else
@@ -127,6 +160,9 @@ public class Parser
 		return expression
 	}
 	
+	/// #START_DOC
+	/// - .
+	/// #END_DOC
 	private func parseNegation () throws -> ExpressionNode
 	{
 		guard case Token.NEGATION = tokens.pop() else
@@ -143,6 +179,9 @@ public class Parser
 		return NegationNode(expression: expression)
 	}
 	
+	/// #START_DOC
+	/// - Helper function.
+	/// #END_DOC
 	private func parsePrimary () throws -> ExpressionNode
 	{
 		switch(tokens.peek())
@@ -162,6 +201,9 @@ public class Parser
 		}
 	}
 	
+	/// #START_DOC
+	/// - Helper fuction for processing the current token, if is a operator will process and get its precedence.
+	/// #END_DOC
 	private func getCurrentTokenPrecedence () throws -> Int
 	{
 		guard !tokens.isEmpty() else
@@ -182,6 +224,9 @@ public class Parser
 		return precedence
 	}
 	
+	/// #START_DOC
+	/// - This function wraps the logic for processing all forms operators.
+	/// #END_DOC
 	private func parseBinaryOp (node: ExpressionNode, exprPrecedence: Int = 0) throws -> ExpressionNode
 	{
 		var lhs = node
@@ -246,6 +291,9 @@ public class Parser
 		}
 	}
 	
+	/// #START_DOC
+	/// - this will process the <while> node.
+	/// #END_DOC
 	private func parseLoop () throws -> WhileNode
 	{
 		guard case Token.WHILE = tokens.pop() else
@@ -284,6 +332,9 @@ public class Parser
 		return WhileNode(condition: condition, command: commandForest)
 	}
 	
+	/// #START_DOC
+	/// - This will process the <conditional> node.
+	/// #END_DOC
 	private func parseConditional () throws -> ConditionalNode
 	{
 		guard case Token.IF = tokens.pop() else
@@ -337,6 +388,9 @@ public class Parser
 		}
 	}
 	
+	/// #START_DOC
+	/// - This process the logic of the <cmd> node.
+	/// #END_DOC
 	private func parseGrammar () throws -> AST_Imp
 	{
 		switch (tokens.peek())
@@ -358,6 +412,9 @@ public class Parser
 		}
 	}
 	
+	/// #START_DOC
+	/// - The main logic of ImΠ grammar, this process <S> node.
+	/// #END_DOC
 	public func parse () throws -> [AST_Imp]
 	{
 		var nodes = [AST_Imp]()

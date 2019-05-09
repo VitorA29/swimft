@@ -1,19 +1,34 @@
+/// #START_DOC
+/// - .
+/// #END_DOC
 public protocol AST_Imp: CustomStringConvertible
 {
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public protocol ExpressionNode: AST_Imp
 {
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public protocol BoolNode: ExpressionNode
 {
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public protocol ArithNode: ExpressionNode
 {
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public struct NumberNode: ArithNode
 {
 	let value: Float
@@ -23,6 +38,9 @@ public struct NumberNode: ArithNode
 	}
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public struct TruthNode: BoolNode
 {
 	let value: Bool
@@ -32,6 +50,9 @@ public struct TruthNode: BoolNode
 	}
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public struct IdentifierNode: BoolNode, ArithNode
 {
 	let name: String
@@ -41,6 +62,9 @@ public struct IdentifierNode: BoolNode, ArithNode
 	}
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public struct NegationNode: BoolNode
 {
 	let expression: BoolNode
@@ -50,6 +74,9 @@ public struct NegationNode: BoolNode
 	}
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public struct ArithOpNode: ArithNode
 {
 	let op: String
@@ -61,6 +88,9 @@ public struct ArithOpNode: ArithNode
 	}
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public struct BoolOpNode: BoolNode
 {
 	let op: String
@@ -72,6 +102,9 @@ public struct BoolOpNode: BoolNode
 	}
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public struct NoOpNode: AST_Imp
 {
 	public var description: String
@@ -80,6 +113,9 @@ public struct NoOpNode: AST_Imp
 	}
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public struct AssignNode: AST_Imp
 {
 	let variable: IdentifierNode
@@ -90,6 +126,9 @@ public struct AssignNode: AST_Imp
 	}
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public struct WhileNode: AST_Imp
 {
 	let condition: BoolNode
@@ -100,6 +139,9 @@ public struct WhileNode: AST_Imp
 	}
 }
 
+/// #START_DOC
+/// - .
+/// #END_DOC
 public struct ConditionalNode: AST_Imp
 {
 	let condition: BoolNode
