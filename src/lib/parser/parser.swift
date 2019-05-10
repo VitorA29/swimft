@@ -63,14 +63,16 @@ private let bool_operator_collection: [String] =
 ]
 
 /// #START_DOC
-/// - .
+/// - Class that define all the logic behind the syntax analysis.
 /// #END_DOC
 public class Parser
 {
 	private let tokens: Pile<Token>
 	
 	/// #START_DOC
-	/// - .
+	/// - This class initializer.
+	/// - Parameter(s)
+	/// 	- A list of Tokens relative to a ImΠ program.
 	/// #END_DOC
 	init (tokens: [Token])
 	{
@@ -78,7 +80,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - .
+	/// - Helper function for dealing with the Number token processing.
+	/// - Return
+	/// 	- The relative Number node to the given token.
 	/// #END_DOC
 	private func parseNumber () throws -> ExpressionNode
 	{
@@ -91,7 +95,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - .
+	/// - Helper function for dealing with the Number token processing.
+	/// - Return
+	/// 	- The relative Number node to the given token.
 	/// #END_DOC
 	private func parseBoolean () throws -> ExpressionNode
 	{
@@ -104,7 +110,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - .
+	/// - Helper function for dealing with the Number token processing.
+	/// - Return
+	/// 	- The relative Number node to the given token.
 	/// #END_DOC
 	private func parseIdentifier () throws -> AST_Imp
 	{
@@ -132,7 +140,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - .
+	/// - Helper function for dealing with the Number token processing.
+	/// - Return
+	/// 	- The relative Number node to the given token.
 	/// #END_DOC
 	public func parseExpression () throws -> ExpressionNode
 	{
@@ -141,7 +151,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - .
+	/// - Helper function for dealing with the Number token processing.
+	/// - Return
+	/// 	- The relative Number node to the given token.
 	/// #END_DOC
 	private func parseBrackets () throws -> ExpressionNode
 	{
@@ -161,7 +173,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - .
+	/// - Helper function for dealing with the Number token processing.
+	/// - Return
+	/// 	- The relative Number node to the given token.
 	/// #END_DOC
 	private func parseNegation () throws -> ExpressionNode
 	{
@@ -180,7 +194,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - Helper function.
+	/// - Helper function for dealing with the Number token processing.
+	/// - Return
+	/// 	- The relative Number node to the given token.
 	/// #END_DOC
 	private func parsePrimary () throws -> ExpressionNode
 	{
@@ -203,6 +219,8 @@ public class Parser
 	
 	/// #START_DOC
 	/// - Helper fuction for processing the current token, if is a operator will process and get its precedence.
+	/// - Return
+	/// 	- The relative value for the given operator.
 	/// #END_DOC
 	private func getCurrentTokenPrecedence () throws -> Int
 	{
@@ -292,7 +310,7 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - this will process the <while> node.
+	/// - This will process the <while> node.
 	/// #END_DOC
 	private func parseLoop () throws -> WhileNode
 	{

@@ -46,6 +46,10 @@ let tokenList: [(String, TokenGenerator)] =
 
 /// #START_DOC
 /// - Helper function for dealing with the word processing.
+/// - Parameter(s)
+/// 	- string: The matched value to be converted into a Token.
+/// - Return
+/// 	- The token relative to the matched value.
 /// #END_DOC
 private func matchName (string: String) -> Token?
 {
