@@ -29,6 +29,7 @@ public enum Token
 /// - Helper type used in the lexer analysis, it define a func that receives a String and returns a Optional Token.
 /// #END_DOC
 typealias TokenGenerator = (String) -> Token?
+
 /// #START_DOC
 /// - Constant that describ ImΠ grammar.
 /// #END_DOC

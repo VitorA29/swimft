@@ -4,3 +4,4 @@ y:=3<4
 z:=x==1
 w:=3>4 or z
 k:=y and z
+h:=3<4 == False

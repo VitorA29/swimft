@@ -14,6 +14,8 @@ public enum AutomatonError: Error
 	case UnexpectedNilValue
 	case InvalidValueExpected
 	case ExpectedIdentifier
+	case ExpectedNumValue
+	case ExpectedBooValue
 }
 
 private struct Localizable: CustomStringConvertible
@@ -188,17 +190,57 @@ public class PiFramework
 		var enviroment_pile: [String: Localizable] = [String: Localizable]()
 		repeat
 		{
+			let lastState: String = "{ c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }"
 			do
 			{
 				try self.delta(control: control_pile, value: value_pile, storage: &storage_pile, enviroment: &enviroment_pile)
 			}
 			catch
 			{
+				print("\(lastState)")
 				throw error
 			}
 			// print("{ c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
 		}while(!control_pile.isEmpty())
 		print("{ v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
+	}
+	
+	private func popNumValues(value: Pile<AST_Pi_Extended>) throws -> [Float]
+	{
+		var nodeHelper: AtomNode = value.pop() as! AtomNode
+		if nodeHelper.operation != "Num"
+		{
+			throw AutomatonError.ExpectedNumValue
+		}
+		let value1: Float = Float(nodeHelper.value)!
+		
+		nodeHelper = value.pop() as! AtomNode
+		if nodeHelper.operation != "Num"
+		{
+			throw AutomatonError.ExpectedNumValue
+		}
+		let value2: Float = Float(nodeHelper.value)!
+		
+		return [value1, value2]
+	}
+	
+	private func popBooValues(value: Pile<AST_Pi_Extended>) throws -> [Bool]
+	{
+		var nodeHelper: AtomNode = value.pop() as! AtomNode
+		if nodeHelper.operation != "Boo"
+		{
+			throw AutomatonError.ExpectedBooValue
+		}
+		let value1: Bool = Bool(nodeHelper.value)!
+		
+		nodeHelper = value.pop() as! AtomNode
+		if nodeHelper.operation != "Boo"
+		{
+			throw AutomatonError.ExpectedBooValue
+		}
+		let value2: Bool = Bool(nodeHelper.value)!
+		
+		return [value1, value2]
 	}
 
 	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<AST_Pi_Extended>, storage: inout [Int: AtomNode], enviroment: inout [String: Localizable]) throws
@@ -214,103 +256,76 @@ public class PiFramework
 				// Aritimetical Operators
 				case "#MUL":
 					operationResultFunction = "Num"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let value1: Float = Float(nodeHelper.value)!
-					
-					nodeHelper = value.pop() as! AtomNode
-					let value2: Float = Float(nodeHelper.value)!
-					operationResult = "\(value1*value2)"
+					let values: [Float] = try popNumValues(value: value)
+					operationResult = "\(values[0]*values[1])"
 					break
 				case "#DIV":
 					operationResultFunction = "Num"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let value1: Float = Float(nodeHelper.value)!
-					
-					nodeHelper = value.pop() as! AtomNode
-					let value2: Float = Float(nodeHelper.value)!
-					operationResult = "\(value1/value2)"
+					let values: [Float] = try popNumValues(value: value)
+					operationResult = "\(values[0]/values[1])"
 					break
 				case "#SUM":
 					operationResultFunction = "Num"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let value1: Float = Float(nodeHelper.value)!
-					
-					nodeHelper = value.pop() as! AtomNode
-					let value2: Float = Float(nodeHelper.value)!
-					operationResult = "\(value1+value2)"
+					let values: [Float] = try popNumValues(value: value)
+					operationResult = "\(values[0]+values[1])"
 					break
 				case "#SUB":
 					operationResultFunction = "Num"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let value1: Float = Float(nodeHelper.value)!
-					
-					nodeHelper = value.pop() as! AtomNode
-					let value2: Float = Float(nodeHelper.value)!
-					operationResult = "\(value1-value2)"
+					let values: [Float] = try popNumValues(value: value)
+					operationResult = "\(values[0]-values[1])"
 					break
 				// Logical Operators
 				case "#LT":
 					operationResultFunction = "Boo"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let value1: Float = Float(nodeHelper.value)!
-					
-					nodeHelper = value.pop() as! AtomNode
-					let value2: Float = Float(nodeHelper.value)!
-					operationResult = "\(value1<value2)"
+					let values: [Float] = try popNumValues(value: value)
+					operationResult = "\(values[0]<values[1])"
 					break
 				case "#LE":
 					operationResultFunction = "Boo"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let value1: Float = Float(nodeHelper.value)!
-					
-					nodeHelper = value.pop() as! AtomNode
-					let value2: Float = Float(nodeHelper.value)!
-					operationResult = "\(value1<=value2)"
+					let values: [Float] = try popNumValues(value: value)
+					operationResult = "\(values[0]<=values[1])"
 					break
 				case "#GT":
 					operationResultFunction = "Boo"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let value1: Float = Float(nodeHelper.value)!
-					
-					nodeHelper = value.pop() as! AtomNode
-					let value2: Float = Float(nodeHelper.value)!
-					operationResult = "\(value1>value2)"
+					let values: [Float] = try popNumValues(value: value)
+					operationResult = "\(values[0]>values[1])"
 					break
 				case "#GE":
 					operationResultFunction = "Boo"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let value1: Float = Float(nodeHelper.value)!
-					
-					nodeHelper = value.pop() as! AtomNode
-					let value2: Float = Float(nodeHelper.value)!
-					operationResult = "\(value1>=value2)"
+					let values: [Float] = try popNumValues(value: value)
+					operationResult = "\(values[0]>=values[1])"
 					break
 				case "#EQ":
 					operationResultFunction = "Boo"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
+					let type1: String = nodeHelper.operation
 					let value1: String = nodeHelper.value
 					
 					nodeHelper = value.pop() as! AtomNode
+					let type2: String = nodeHelper.operation
 					let value2: String = nodeHelper.value
+					if type1 != type2
+					{
+						if type1 == "Num"
+						{
+							throw AutomatonError.ExpectedNumValue
+						}
+						else if type1 == "Boo"
+						{
+							throw AutomatonError.ExpectedBooValue
+						}
+					}
 					operationResult = "\(value1==value2)"
 					break
 				case "#AND":
 					operationResultFunction = "Boo"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let value1: Bool = Bool(nodeHelper.value)!
-					
-					nodeHelper = value.pop() as! AtomNode
-					let value2: Bool = Bool(nodeHelper.value)!
-					operationResult = "\(value1&&value2)"
+					let values: [Bool] = try popBooValues(value: value)
+					operationResult = "\(values[0]&&values[1])"
 					break
 				case "#OR":
 					operationResultFunction = "Boo"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let value1: Bool = Bool(nodeHelper.value)!
-					
-					nodeHelper = value.pop() as! AtomNode
-					let value2: Bool = Bool(nodeHelper.value)!
-					operationResult = "\(value1||value2)"
+					let values: [Bool] = try popBooValues(value: value)
+					operationResult = "\(values[0]||values[1])"
 					break
 				case "#NOT":
 					operationResultFunction = "Boo"
