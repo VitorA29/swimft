@@ -4,26 +4,26 @@
 	<img src="https://img.shields.io/badge/ubuntu-v18.04-orange.svg" alt="system">
 </p>
 
-# Swimft - A Imp compiler writen in Swift
+# Swimft - A ImΠ compiler writen in Swift
 
 ## ImΠ grammar
 ```
 <S> ::=  <cmd> | <comment>
 
-<cmd> ::= 'nop' | <assign> | <loop> | <conditional>
+<cmd> ::= 'nop' | <assign> | <while> | <conditional> | <expression>
 
 <comment> ::= /#.*\s/
 
 <assign> ::= <identifier> ':=' <expression>
 
-<loop> ::= 'while' <bool_expression> 'do' <cmd><S>* 'end'
+<while> ::= 'while' <bool_expression> 'do' <cmd><S>* 'end'
 
 <conditional> ::= 'if' <bool_expression> 'then' <cmd><S>* 'else' <cmd><S>* 'end'
 		| 'if' <bool_expression> 'then' <cmd><S>* 'end'
 
-<identifier> ::= /(?!\d)\w+/ 
+<expression> ::= <bool_expression> | <arith_expression> | '(' <expression> ')'
 
-<expression> ::= <bool_expression> | <arith_expression>
+<identifier> ::= /(?!\d)\w+/ 
 
 <bool_expression> ::= <truth> | <identifier> | <negation> | <equality> | <conjunction> | <disjunction>
                 | <lowerthan> | <lowereq> | <greaterthan> | <greatereq> | '(' <bool_expression> ')'
