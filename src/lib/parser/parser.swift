@@ -95,9 +95,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - Helper function for dealing with the Number token processing.
+	/// - Helper function for dealing with the Boolean token processing.
 	/// - Return
-	/// 	- The relative Number node to the given token.
+	/// 	- The relative Boolean node to the given token.
 	/// #END_DOC
 	private func parseBoolean () throws -> ExpressionNode
 	{
@@ -110,9 +110,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - Helper function for dealing with the Number token processing.
+	/// - Helper function for dealing with the Identifier token processing.
 	/// - Return
-	/// 	- The relative Number node to the given token.
+	/// 	- The relative Identifier node or the Assign node to the given token.
 	/// #END_DOC
 	private func parseIdentifier () throws -> AST_Imp
 	{
@@ -140,9 +140,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - Helper function for dealing with the Number token processing.
+	/// - Helper function for dealing with the Expression token processing.
 	/// - Return
-	/// 	- The relative Number node to the given token.
+	/// 	- The relative Expression node to the given token.
 	/// #END_DOC
 	public func parseExpression () throws -> ExpressionNode
 	{
@@ -151,9 +151,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - Helper function for dealing with the Number token processing.
+	/// - Helper function for dealing with the Bracket token processing.
 	/// - Return
-	/// 	- The relative Number node to the given token.
+	/// 	- The relative Expression node inside the brackets.
 	/// #END_DOC
 	private func parseBrackets () throws -> ExpressionNode
 	{
@@ -173,9 +173,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - Helper function for dealing with the Number token processing.
+	/// - Helper function for dealing with the Negation token processing.
 	/// - Return
-	/// 	- The relative Number node to the given token.
+	/// 	- The relative Negation node to the given token.
 	/// #END_DOC
 	private func parseNegation () throws -> ExpressionNode
 	{
@@ -194,9 +194,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - Helper function for dealing with the Number token processing.
+	/// - Helper function for processing the <S> node.
 	/// - Return
-	/// 	- The relative Number node to the given token.
+	/// 	- The relative Expression node to the given entrace.
 	/// #END_DOC
 	private func parsePrimary () throws -> ExpressionNode
 	{
@@ -244,6 +244,11 @@ public class Parser
 	
 	/// #START_DOC
 	/// - This function wraps the logic for processing all forms operators.
+	/// - Parameter(s)
+	/// 	- node: The Expression node to try to combine to the next operator.
+	/// 	- exprPrecedence: The precedence value of the last operator.
+	/// - Return
+	/// 	- The relative Expression node to the operators.
 	/// #END_DOC
 	private func parseBinaryOp (node: ExpressionNode, exprPrecedence: Int = 0) throws -> ExpressionNode
 	{
@@ -310,7 +315,9 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - This will process the <while> node.
+	/// - Helper function for processing the <while> node.
+	/// - Return
+	/// 	- The associated while node.
 	/// #END_DOC
 	private func parseLoop () throws -> WhileNode
 	{
@@ -352,6 +359,8 @@ public class Parser
 	
 	/// #START_DOC
 	/// - This will process the <conditional> node.
+	/// - Return
+	/// 	- The associated conditional node
 	/// #END_DOC
 	private func parseConditional () throws -> ConditionalNode
 	{
@@ -408,6 +417,8 @@ public class Parser
 	
 	/// #START_DOC
 	/// - This process the logic of the <cmd> node.
+	/// - Return
+	/// 	- The associated AST ImΠ node to the actual <cmd> Token.
 	/// #END_DOC
 	private func parseGrammar () throws -> AST_Imp
 	{
@@ -432,6 +443,8 @@ public class Parser
 	
 	/// #START_DOC
 	/// - The main logic of ImΠ grammar, this process <S> node.
+	/// - Return
+	/// 	- The relative forest to the argument ImΠ program.
 	/// #END_DOC
 	public func parse () throws -> [AST_Imp]
 	{
@@ -441,7 +454,6 @@ public class Parser
 			let node = try parseGrammar()
 			nodes.append(node)
 		}
-		
 		return nodes
 	}
 }

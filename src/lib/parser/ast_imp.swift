@@ -1,33 +1,33 @@
 /// #START_DOC
-/// - .
+/// - This wraps all the ast nodes for the ImΠ language(<S>).
 /// #END_DOC
 public protocol AST_Imp: CustomStringConvertible
 {
 }
 
 /// #START_DOC
-/// - .
+/// - This wraps all the forms of expressions(<expression>).
 /// #END_DOC
 public protocol ExpressionNode: AST_Imp
 {
 }
 
 /// #START_DOC
-/// - .
+/// - This wraps all the forms of boolean expressions(<bool_expression>).
 /// #END_DOC
 public protocol BoolNode: ExpressionNode
 {
 }
 
 /// #START_DOC
-/// - .
+/// - This wraps all the forms of arithmetic expressions(<arith_expression>).
 /// #END_DOC
 public protocol ArithNode: ExpressionNode
 {
 }
 
 /// #START_DOC
-/// - .
+/// - This wrap the number value(<number>).
 /// #END_DOC
 public struct NumberNode: ArithNode
 {
@@ -39,7 +39,7 @@ public struct NumberNode: ArithNode
 }
 
 /// #START_DOC
-/// - .
+/// - This wrap the truth value(<truth>).
 /// #END_DOC
 public struct TruthNode: BoolNode
 {
@@ -51,7 +51,7 @@ public struct TruthNode: BoolNode
 }
 
 /// #START_DOC
-/// - .
+/// - This wrap the identifier value(<identifier>).
 /// #END_DOC
 public struct IdentifierNode: BoolNode, ArithNode
 {
@@ -63,7 +63,7 @@ public struct IdentifierNode: BoolNode, ArithNode
 }
 
 /// #START_DOC
-/// - .
+/// - This wrap the negation operation(<negation>).
 /// #END_DOC
 public struct NegationNode: BoolNode
 {
@@ -75,7 +75,7 @@ public struct NegationNode: BoolNode
 }
 
 /// #START_DOC
-/// - .
+/// - This wrap all arithmatic operations(<addition>, <subtraction>, <multiplication>, <division>).
 /// #END_DOC
 public struct ArithOpNode: ArithNode
 {
@@ -89,7 +89,7 @@ public struct ArithOpNode: ArithNode
 }
 
 /// #START_DOC
-/// - .
+/// - This wrap all boolean operations(<equality>, <conjunction>, <disjunction>, <lowerthan>, <lowereq>, <greaterthan>, <greatereq>).
 /// #END_DOC
 public struct BoolOpNode: BoolNode
 {
@@ -103,7 +103,7 @@ public struct BoolOpNode: BoolNode
 }
 
 /// #START_DOC
-/// - .
+/// - This wrap the no operation('nop').
 /// #END_DOC
 public struct NoOpNode: AST_Imp
 {
@@ -114,7 +114,7 @@ public struct NoOpNode: AST_Imp
 }
 
 /// #START_DOC
-/// - .
+/// - This wrap the assing operation(<assign>).
 /// #END_DOC
 public struct AssignNode: AST_Imp
 {
@@ -122,12 +122,12 @@ public struct AssignNode: AST_Imp
 	let expression: ExpressionNode
 	public var description: String
 	{
-		return "Assign(\(variable), \(expression))"
+		return "AssignNode(\(variable), \(expression))"
 	}
 }
 
 /// #START_DOC
-/// - .
+/// - This wrap the while operation(<while>).
 /// #END_DOC
 public struct WhileNode: AST_Imp
 {
@@ -135,12 +135,12 @@ public struct WhileNode: AST_Imp
 	let command: [AST_Imp]
 	public var description: String
 	{
-		return "While(\(condition), [\(command) - \(command.count)])"
+		return "WhileNode(\(condition), [\(command) - \(command.count)])"
 	}
 }
 
 /// #START_DOC
-/// - .
+/// - This wrap the conditional operation(<conditional>).
 /// #END_DOC
 public struct ConditionalNode: AST_Imp
 {
@@ -149,6 +149,6 @@ public struct ConditionalNode: AST_Imp
 	let commandFalse: [AST_Imp]
 	public var description: String
 	{
-		return "Conditional(\(condition), [\(commandTrue) - \(commandTrue.count) ], [ \(commandFalse) - \(commandFalse.count) ])"
+		return "ConditionalNode(\(condition), [\(commandTrue) - \(commandTrue.count) ], [ \(commandFalse) - \(commandFalse.count) ])"
 	}
 }
