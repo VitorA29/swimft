@@ -5,3 +5,6 @@ z:=x==1
 w:=3>4 or z
 k:=y and z
 h:=3<4 == False
+2+x*5
+x+4
+j:=2+x*5

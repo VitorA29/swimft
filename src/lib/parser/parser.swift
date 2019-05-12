@@ -128,7 +128,12 @@ public class Parser
 		
 		guard case Token.ASSIGN = tokens.peek() else
 		{
-			return IdentifierNode(name: name)
+			let node: ExpressionNode = IdentifierNode(name: name)
+			guard case Token.OPERATOR = tokens.peek() else
+			{
+				return node
+			}
+			return try parseBinaryOp(node: node)
 		}
 		
 		// skip assign
