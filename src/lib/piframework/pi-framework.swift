@@ -1,11 +1,17 @@
 import Foundation
 
-public enum TranformerError: Error
+/// #START_DOC
+/// - Define the enumeration for the error that can be throw during translations.
+/// #END_DOC
+public enum TranslatorError: Error
 {
 	case UndefinedOperator(String)
 	case UndefinedASTNode(AST_Imp)
 }
 
+/// #START_DOC
+/// - Define the enumeration for the error that can be throw during automaton.
+/// #END_DOC
 public enum AutomatonError: Error
 {
 	case UndefinedOperation(String)
@@ -18,25 +24,36 @@ public enum AutomatonError: Error
 	case ExpectedBooValue
 }
 
+/// #START_DOC
+/// - This define the localizable struct to be used in the memory storage linking.
+/// #END_DOC
 private struct Localizable: CustomStringConvertible
 {
 	let address: Int
-	
 	public var description: String
 	{
 		return "Localizable(address: \(address))"
 	}
 }
 
+/// #START_DOC
+/// - Define the concept for the Pi-Framework, where the magic will happen.
+/// #END_DOC
 public class PiFramework
 {
 	var memorySpace: Int
 	
+	/// #START_DOC
+	/// - This class initializer.
+	/// #END_DOC
 	init ()
 	{
 		self.memorySpace = 0
 	}
-	
+
+	/// #START_DOC
+	/// - Helper function for combining a pi forest node into a single pi node using CSeq.
+	/// #END_DOC
 	private func combineAST_PiNodes (ast_pi_forest: [AST_Pi]) -> AST_Pi
 	{
 		let head: AST_Pi = ast_pi_forest[0]
@@ -50,6 +67,9 @@ public class PiFramework
 		return BinaryOperatorNode(operation: "CSeq", lhs: head, rhs: rhs)
 	}
 
+	/// #START_DOC
+	/// - Function for convert a AST_Imp forest into it's correlative AST_Pi.
+	/// #END_DOC
 	public func translate (ast_imp: [AST_Imp]) throws -> AST_Pi
 	{
 		var ast_pi_forest: [AST_Pi] = [AST_Pi]()
@@ -61,6 +81,9 @@ public class PiFramework
 		return combineAST_PiNodes(ast_pi_forest: ast_pi_forest)
 	}
 
+	/// #START_DOC
+	/// - Helper function for converting a AST_Imp into a AST_Pi.
+	/// #END_DOC
 	private func translateNode (ast_imp: AST_Imp) throws -> AST_Pi
 	{
 		var ast_pi: AST_Pi
@@ -83,7 +106,7 @@ public class PiFramework
 					operation = "Sub"
 					break
 				default:
-					throw TranformerError.UndefinedOperator(node.op)
+					throw TranslatorError.UndefinedOperator(node.op)
 			}
 			let lhs: AST_Pi = try translateNode(ast_imp: node.lhs)
 			let rhs: AST_Pi = try translateNode(ast_imp: node.rhs)
@@ -117,7 +140,7 @@ public class PiFramework
 					operation = "Or"
 					break
 				default:
-					throw TranformerError.UndefinedOperator(node.op)
+					throw TranslatorError.UndefinedOperator(node.op)
 			}
 			let lhs: AST_Pi = try translateNode(ast_imp: node.lhs)
 			let rhs: AST_Pi = try translateNode(ast_imp: node.rhs)
@@ -176,11 +199,14 @@ public class PiFramework
 		}
 		else
 		{
-			throw TranformerError.UndefinedASTNode(ast_imp)
+			throw TranslatorError.UndefinedASTNode(ast_imp)
 		}
 		return ast_pi
 	}
-	
+
+	/// #START_DOC
+	/// - Function for define the concept of the Pi-Framework automaton, for executing a AST_Pi.
+	/// #END_DOC
 	public func pi_automaton (ast_pi: AST_Pi) throws
 	{
 		let control_pile: Pile<AST_Pi_Extended> = Pile<AST_Pi_Extended>()
@@ -205,6 +231,9 @@ public class PiFramework
 		print("{ v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
 	}
 	
+	/// #START_DOC
+	/// - Helper function for getting the <number> values from the value pile.
+	/// #END_DOC
 	private func popNumValues(value: Pile<AST_Pi_Extended>) throws -> [Float]
 	{
 		var nodeHelper: AtomNode = value.pop() as! AtomNode
@@ -224,6 +253,9 @@ public class PiFramework
 		return [value1, value2]
 	}
 	
+	/// #START_DOC
+	/// - Helper function for getting the <bool> values from the value pile.
+	/// #END_DOC
 	private func popBooValues(value: Pile<AST_Pi_Extended>) throws -> [Bool]
 	{
 		var nodeHelper: AtomNode = value.pop() as! AtomNode
@@ -243,6 +275,9 @@ public class PiFramework
 		return [value1, value2]
 	}
 
+	/// #START_DOC
+	/// - Helper function for the automaton, this define the logic for change the state of the automaton based in the argument values.
+	/// #END_DOC
 	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<AST_Pi_Extended>, storage: inout [Int: AtomNode], enviroment: inout [String: Localizable]) throws
 	{
 		let command_tree: AST_Pi_Extended = control.pop()

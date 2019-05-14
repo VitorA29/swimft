@@ -112,7 +112,7 @@ public class Parser
 	/// #START_DOC
 	/// - Helper function for dealing with the Identifier token processing.
 	/// - Return
-	/// 	- The relative Identifier node or the Assign node to the given token.
+	/// 	- The relative Identifier node, the Assign node or the binary operation node to the given tokens.
 	/// #END_DOC
 	private func parseIdentifier () throws -> AST_Imp
 	{
