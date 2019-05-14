@@ -8,22 +8,23 @@ UBUNTU_VERSION_NUMBER = 18
 UBUNTU_SUBVERSION_NUMBER = 04
 SWIFT_RELEASE = swift-$(SWIFT_RELEASE_VERSION_NUMBER)-RELEASE-ubuntu$(UBUNTU_VERSION_NUMBER).$(UBUNTU_SUBVERSION_NUMBER)
 SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
+TEST_FLAGS = -ast_pi -ast_imp -tokens
 
 .SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment
 
-all: download_swift compile_src execute_imp_zero
+all: download_swift build execute_imp_zero
 
 execute_output: compile_src
-	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/conditional_test.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/simple_test.imp $(TEST_FLAGS);
 	
 execute_imp_zero: compile_src
-	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/simple_test.imp;
-	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/loop_test.imp;
-	./$(OUTPUT_FOLDER)/main $(EXAMPLES)/conditional_test.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/simple_test.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/loop_test.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/conditional_test.imp;
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \
-	./swiftc -o $(OUT_FROM_BIN)/main $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/lib/*/*.swift;
+	./swiftc -o $(OUT_FROM_BIN)/swimft $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/lib/*/*.swift;
 
 prepare_output:
 	if [ ! -d $(OUTPUT_FOLDER) ]; \
@@ -51,5 +52,5 @@ clean_enviroment:
 	
 build: clean_output compile_src
 	
-reset: clean_enviroment download_swift build execute_output
-	
+reset: clean_enviroment download_swift build
+

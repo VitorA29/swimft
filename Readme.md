@@ -59,3 +59,30 @@
 
 <division> ::= <arith_expression> "/" <arith_expression>
 ```
+
+## Instalation and Execution
+
+### Using Make
+
+The enviroment configuration is ensure by this logic, after everything set up(eq. at least a 'make' call) the swift source code is downloaded and it's dependences resolved(So in order of running this, a internet conection is required) and the Swimft executable is created in the 'output' folder, it's name is swimft.
+
+- 'make compile_src': This will compile the code;
+- 'make build': This will clean the compiled files and then will call compile\_src
+- 'make execute\_imp\_zero': This will execute the expected Imp codes;
+- 'make': This will prepare all environment, installing all dependences if needed after will call build and finally will call execute\_imp\_zero;
+- 'make reset': This will clean the instalation, deleting everything after will call make.
+
+### Using commom bash
+
+_*This will assume a previous execution of 'make' and/or 'make compile\_src*_
+
+The executable will expect at least the imp file name as parameter.
+
+#### Flags
+```
+-tokens: Will notice the program to print the tokens list;
+-ast_imp: Will notice the program to print the ImΠ AST;
+-ast_pi: Will notice the program to print the Pi AST;
+-state: Will notice the program to print every state of the automaton;
+-debug: Will active all flags.
+```

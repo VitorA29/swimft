@@ -214,19 +214,24 @@ public class PiFramework
 		let value_pile: Pile<AST_Pi_Extended> = Pile<AST_Pi_Extended>()
 		var storage_pile: [Int: AtomNode] = [Int: AtomNode]()
 		var enviroment_pile: [String: Localizable] = [String: Localizable]()
+		var steps_count: Int = 0
 		repeat
 		{
-			let lastState: String = "{ c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }"
+			let last_state: String = "{ n: \(steps_count), c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }"
 			do
 			{
 				try self.delta(control: control_pile, value: value_pile, storage: &storage_pile, enviroment: &enviroment_pile)
 			}
 			catch
 			{
-				print("\(lastState)")
+				print("\(last_state)")
 				throw error
 			}
-			// print("{ c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
+			if envConfiguration.state_print
+			{
+				print("\(last_state)")
+			}
+			steps_count += 1
 		}while(!control_pile.isEmpty())
 		print("{ v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
 	}
