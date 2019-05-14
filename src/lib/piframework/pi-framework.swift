@@ -409,18 +409,15 @@ public class PiFramework
 				case "#COND":
 					let nodeHelper: AtomNode = value.pop() as! AtomNode
 					let conditionValue: Bool = Bool(nodeHelper.value)!
-					let cmds: AST_Pi
+					let cond_node: TernaryOperatorNode = value.pop() as! TernaryOperatorNode
+
 					if (conditionValue)
 					{
-						cmds = value.pop() as! AST_Pi
-						value.skip()
-						control.push(value: cmds)
+						control.push(value: cond_node.chs)
 					}
 					else
 					{
-						value.skip()
-						cmds = value.pop() as! AST_Pi
-						control.push(value: cmds)
+						control.push(value: cond_node.rhs)
 					}
 					return
 				case "#NOP":
@@ -443,15 +440,7 @@ public class PiFramework
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
 			control.push(value: operatorNode.lhs)
-			if (operatorNode.rhs != nil)
-			{
-				value.push(value: operatorNode.rhs!)
-			}
-			else
-			{
-				value.push(value: PiFuncNode(function: "#NOP"))
-			}
-			value.push(value: operatorNode.chs)
+			value.push(value: command_tree)
 		}
 		else if command_tree is BinaryOperatorNode
 		{
