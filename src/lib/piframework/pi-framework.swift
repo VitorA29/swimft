@@ -440,7 +440,7 @@ public class PiFramework
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
 			control.push(value: operatorNode.lhs)
-			value.push(value: command_tree)
+			value.push(value: operatorNode)
 		}
 		else if command_tree is BinaryOperatorNode
 		{
@@ -498,7 +498,7 @@ public class PiFramework
 			{
 				case "Loop":
 					control.push(value: operatorNode.lhs)
-					value.push(value: command_tree)
+					value.push(value: operatorNode)
 					break
 				case "CSeq":
 					control.push(value: operatorNode.rhs)
@@ -543,7 +543,7 @@ public class PiFramework
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
-			value.push(value: command_tree)
+			value.push(value: operatorNode)
 		}
 		else if command_tree is OnlyOperatorNode
 		{
