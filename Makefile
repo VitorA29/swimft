@@ -24,6 +24,7 @@ execute_imp_zero: compile_src
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/invalid_operation_automaton-Boo.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/invalid_operation_automaton-Num.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/invalid_operation_parser.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/fibonacci.imp;
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \
