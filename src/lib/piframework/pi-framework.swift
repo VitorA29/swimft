@@ -211,7 +211,7 @@ public class PiFramework
 	{
 		let control_pile: Pile<AST_Pi_Extended> = Pile<AST_Pi_Extended>()
 		control_pile.push(value: ast_pi)
-		let value_pile: Pile<AST_Pi_Extended> = Pile<AST_Pi_Extended>()
+		let value_pile: Pile<AST_Pi> = Pile<AST_Pi>()
 		var storage_pile: [Int: AtomNode] = [Int: AtomNode]()
 		var enviroment_pile: [String: Localizable] = [String: Localizable]()
 		var steps_count: Int = 0
@@ -239,7 +239,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for getting the <number> values from the value pile.
 	/// #END_DOC
-	private func popNumValues(value: Pile<AST_Pi_Extended>) throws -> [Float]
+	private func popNumValues(value: Pile<AST_Pi>) throws -> [Float]
 	{
 		var nodeHelper: AtomNode = value.pop() as! AtomNode
 		if nodeHelper.operation != "Num"
@@ -261,7 +261,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for getting the <bool> values from the value pile.
 	/// #END_DOC
-	private func popBooValues(value: Pile<AST_Pi_Extended>) throws -> [Bool]
+	private func popBooValues(value: Pile<AST_Pi>) throws -> [Bool]
 	{
 		var nodeHelper: AtomNode = value.pop() as! AtomNode
 		if nodeHelper.operation != "Boo"
@@ -283,7 +283,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for the automaton, this define the logic for change the state of the automaton based in the argument values.
 	/// #END_DOC
-	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<AST_Pi_Extended>, storage: inout [Int: AtomNode], enviroment: inout [String: Localizable]) throws
+	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<AST_Pi>, storage: inout [Int: AtomNode], enviroment: inout [String: Localizable]) throws
 	{
 		let command_tree: AST_Pi_Extended = control.pop()
 		if command_tree is PiFuncNode
@@ -440,7 +440,7 @@ public class PiFramework
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
 			control.push(value: operatorNode.lhs)
-			value.push(value: command_tree)
+			value.push(value: operatorNode)
 		}
 		else if command_tree is BinaryOperatorNode
 		{
@@ -498,7 +498,7 @@ public class PiFramework
 			{
 				case "Loop":
 					control.push(value: operatorNode.lhs)
-					value.push(value: command_tree)
+					value.push(value: operatorNode)
 					break
 				case "CSeq":
 					control.push(value: operatorNode.rhs)
@@ -543,7 +543,7 @@ public class PiFramework
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
-			value.push(value: command_tree)
+			value.push(value: operatorNode)
 		}
 		else if command_tree is OnlyOperatorNode
 		{

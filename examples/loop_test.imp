@@ -1,4 +1,4 @@
-# The classic interative factorial example
+# The classic iterative factorial example
 	z := 1
 	y := 10
 	while not (y == 0)

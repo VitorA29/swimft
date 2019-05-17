@@ -8,19 +8,23 @@ UBUNTU_VERSION_NUMBER = 18
 UBUNTU_SUBVERSION_NUMBER = 04
 SWIFT_RELEASE = swift-$(SWIFT_RELEASE_VERSION_NUMBER)-RELEASE-ubuntu$(UBUNTU_VERSION_NUMBER).$(UBUNTU_SUBVERSION_NUMBER)
 SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
-TEST_FLAGS = -ast_pi -ast_imp -tokens
+TEST_FLAGS =-ast_pi -ast_imp -tokens
 
-.SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment
+.SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment execute_imp_zero
 
 all: download_swift build execute_imp_zero
 
 execute_output: compile_src
-	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/simple_test.imp $(TEST_FLAGS);
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/test.imp $(TEST_FLAGS);
 	
 execute_imp_zero: compile_src
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/simple_test.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/loop_test.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/conditional_test.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/invalid_operation_automaton-Boo.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/invalid_operation_automaton-Num.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/invalid_operation_parser.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/fibonacci.imp;
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \
