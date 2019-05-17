@@ -6,6 +6,8 @@
 
 # Swimft - A ImΠ compiler writen in Swift
 
+Just a simple compiler and interpreter for the ImΠ programming language.
+
 ## ImΠ grammar
 ```
 <S> ::=  <cmd> | <comment>
