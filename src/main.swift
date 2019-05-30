@@ -15,8 +15,11 @@ public class Configuration
 {
 	let file_name: String
 	var tokens_print: Bool = false
+	var stop_tokens: Bool = false
 	var ast_imp_print: Bool = false
+	var stop_ast_imp: Bool = false
 	var ast_pi_print: Bool = false
+	var stop_ast_pi: Bool = false
 	var state_print: Bool = false
 	
 	/// #START_DOC
@@ -57,6 +60,18 @@ public class Configuration
 					break
 				case "-state":
 					state_print = true
+					break
+				case "-stokens":
+					tokens_print = true
+					stop_tokens = true
+					break
+				case "-sast_imp":
+					ast_imp_print = true
+					stop_ast_imp = true
+					break
+				case "-sast_pi":
+					ast_pi_print = true
+					stop_ast_pi = true
 					break
 				default:
 					throw ConfigurationError.InvalidArgument(CommandLine.arguments[i])				
@@ -102,6 +117,10 @@ public func main ()
 		if envConfiguration.tokens_print
 		{
 			print("{ tokens: \(tokens) }")
+			if envConfiguration.stop_tokens
+			{
+				return
+			}
 		}
 		
 		let parser = Parser(tokens: tokens)
@@ -109,6 +128,10 @@ public func main ()
 		if envConfiguration.ast_imp_print
 		{
 			print("{ ast_imp: \(ast_imp) - \(ast_imp.count) }")
+			if envConfiguration.stop_ast_imp
+			{
+				return
+			}
 		}
 		
 		let piFramework: PiFramework = PiFramework()
@@ -117,6 +140,10 @@ public func main ()
 		if envConfiguration.ast_pi_print
 		{
 			print("{ ast_pi: \(ast_pi) }")
+			if envConfiguration.stop_ast_pi
+			{
+				return
+			}
 		}
 		
 		try piFramework.pi_automaton(ast_pi: ast_pi)
