@@ -95,7 +95,7 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - Helper function for dealing with the Boolean token processing.
+	/// - Helper function for dealing with the Boolean token processing(<truth>.
 	/// - Return
 	/// 	- The relative Boolean node to the given token.
 	/// #END_DOC
@@ -110,38 +110,56 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - Helper function for dealing with the Identifier token processing.
+	/// - Helper function for dealing with the Identifier token processing(<identifier>).
 	/// - Return
-	/// 	- The relative Identifier node, the Assign node or the binary operation node to the given tokens.
+	/// 	- The relative Identifier node to the given tokens.
 	/// #END_DOC
-	private func parseIdentifier () throws -> AST_Imp
+	private func parseIdentifier () throws -> IdentifierNode
 	{
 		guard case let Token.IDENTIFIER(name) = tokens.pop() else
 		{
 			throw ParserError.UnexpectedToken
 		}
 		
-		if (tokens.isEmpty())
+		return IdentifierNode(name: name)
+	}
+	
+	
+	private func parseAssign (identifierNode: IdentifierNode) throws -> AssignNode
+	{
+		guard case Token.ASSIGN = tokens.pop() else
 		{
-			return IdentifierNode(name: name)
+			throw ParserError.UnexpectedToken
 		}
-		
-		guard case Token.ASSIGN = tokens.peek() else
-		{
-			let node: ExpressionNode = IdentifierNode(name: name)
-			guard case Token.OPERATOR = tokens.peek() else
-			{
-				return node
-			}
-			return try parseBinaryOp(node: node)
-		}
-		
-		// skip assign
-		tokens.skip()
 		
 		let expression = try parseExpression()
 		
-		return AssignNode(variable: IdentifierNode(name: name), expression: expression)
+		return AssignNode(variable: identifierNode, expression: expression)
+	}
+	
+	/// #START_DOC
+	/// - Helper function for dealing with the nodes beginning with a Identifier Token.
+	/// - Return
+	/// 	- The relative Identifier node, the Assign node or the binary operation node to the given tokens.
+	/// #END_DOC
+	private func parseIdentifierWrapper () throws -> AST_Imp
+	{
+		let identifierNode: IdentifierNode = try parseIdentifier()
+		
+		if (tokens.isEmpty())
+		{
+			return identifierNode
+		}
+		
+		switch (tokens.peek())
+		{
+			case Token.ASSIGN:
+				return try parseAssign(identifierNode: identifierNode)
+			case Token.OPERATOR:
+				return try parseBinaryOp(node: identifierNode)
+			default:
+				return identifierNode
+		}
 	}
 	
 	/// #START_DOC
@@ -208,7 +226,7 @@ public class Parser
 		switch(tokens.peek())
 		{
 			case Token.IDENTIFIER:
-				return try parseIdentifier() as! ExpressionNode
+				return try parseIdentifierWrapper() as! ExpressionNode
 			case Token.NUMBER:
 				return try parseNumber()
 			case Token.BOOLEAN:
@@ -430,19 +448,15 @@ public class Parser
 		switch (tokens.peek())
 		{
 			case Token.IDENTIFIER:
-				let node = try parseIdentifier()
-				return node
+				return try parseIdentifierWrapper()
 			case Token.WHILE:
-				let node = try parseLoop()
-				return node
+				return try parseLoop()
 			case Token.IF:
-				let node = try parseConditional()
-				return node
+				return try parseConditional()
 			case Token.NOP:
 				return NoOpNode()
 			default:
-				let expr = try parseExpression()
-				return expr
+				return try parseExpression()
 		}
 	}
 	
