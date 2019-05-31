@@ -95,13 +95,13 @@ public class Parser
 	}
 	
 	/// #START_DOC
-	/// - Helper function for dealing with the Boolean token processing(<truth>.
+	/// - Helper function for dealing with the TRUTH token processing(<truth>.
 	/// - Return
-	/// 	- The relative Boolean node to the given token.
+	/// 	- The relative Truth node to the given token.
 	/// #END_DOC
-	private func parseBoolean () throws -> ExpressionNode
+	private func parseTruth () throws -> ExpressionNode
 	{
-		guard case let Token.BOOLEAN(value) = tokens.pop() else
+		guard case let Token.TRUTH(value) = tokens.pop() else
 		{
 			throw ParserError.UnexpectedToken
 		}
@@ -229,8 +229,8 @@ public class Parser
 				return try parseIdentifierWrapper() as! ExpressionNode
 			case Token.NUMBER:
 				return try parseNumber()
-			case Token.BOOLEAN:
-				return try parseBoolean()
+			case Token.TRUTH:
+				return try parseTruth()
 			case Token.BRACKET_LEFT:
 				return try parseBrackets()
 			case Token.NEGATION:

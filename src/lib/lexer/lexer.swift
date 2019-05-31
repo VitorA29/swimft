@@ -11,7 +11,7 @@ public enum Token
 	case BRACKET_RIGHT
 	case OPERATOR(String)
 	case ASSIGN
-	case BOOLEAN(Bool)
+	case TRUTH(Bool)
 	case NOP
 	case WHILE
 	case DO
@@ -21,11 +21,11 @@ public enum Token
 	case IF
 	case THEN
 	case ELSE
-	case REF
+	case INITIALIZER
+	case REF(String)
 	case LET
 	case IN
-	case VAR
-	case CONS
+	case DEC(String)
 	case OTHER(String)
 }
 
@@ -47,7 +47,8 @@ let tokenList: [(String, TokenGenerator)] =
 	("\\)", { _ in .BRACKET_RIGHT }),
 	("(\\+|\\*|\\/|-|<=?|>=?|==)", { (m: String) in .OPERATOR(m) }),
 	(":=", { _ in .ASSIGN }),
-	("=", { _ in .REF }),
+	("=", { _ in .INITIALIZER }),
+	(",", { _ in .COMMA }),
 	("([1-9][0-9]*|0)?(\\.[0-9]*[1-9]|\\.0)?", { (m: String) in .NUMBER((m as NSString).floatValue) }),
 ]
 
@@ -62,7 +63,7 @@ private func matchName (string: String) -> Token?
 {
 	if string == "True" || string == "False"
 	{
-		return .BOOLEAN((string.lowercased() as NSString).boolValue)
+		return .TRUTH((string.lowercased() as NSString).boolValue)
 	}
 	else if string == "nop"
 	{
@@ -104,13 +105,9 @@ private func matchName (string: String) -> Token?
 	{	
 		return .LET
 	}
-	else if string == "var"
+	else if string == "var" || string == "cons" || string == "fn"
 	{
-		return .VAR
-	}
-	else if string == "cons"
-	{
-		return .CONS
+		return .DEC(string)
 	}
 	else if string == "in"
 	{
