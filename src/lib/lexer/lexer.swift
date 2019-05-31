@@ -21,6 +21,11 @@ public enum Token
 	case IF
 	case THEN
 	case ELSE
+	case REF
+	case LET
+	case IN
+	case VAR
+	case CONS
 	case OTHER(String)
 }
 
@@ -42,6 +47,7 @@ let tokenList: [(String, TokenGenerator)] =
 	("\\)", { _ in .BRACKET_RIGHT }),
 	("(\\+|\\*|\\/|-|<=?|>=?|==)", { (m: String) in .OPERATOR(m) }),
 	(":=", { _ in .ASSIGN }),
+	("=", { _ in .REF }),
 	("([1-9][0-9]*|0)?(\\.[0-9]*[1-9]|\\.0)?", { (m: String) in .NUMBER((m as NSString).floatValue) }),
 ]
 
@@ -94,7 +100,23 @@ private func matchName (string: String) -> Token?
 	{
 		return .ELSE
 	}
-	else
+	else if string == "let"
+	{	
+		return .LET
+	}
+	else if string == "var"
+	{
+		return .VAR
+	}
+	else if string == "cons"
+	{
+		return .CONS
+	}
+	else if string == "in"
+	{
+		return .IN
+	}
+	else 
 	{
 		return .IDENTIFIER(string)
 	}

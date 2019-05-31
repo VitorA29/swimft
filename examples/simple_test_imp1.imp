@@ -1,0 +1,5 @@
+#simple test for imp-1
+let var x=1
+in
+	x:=x+2
+end
