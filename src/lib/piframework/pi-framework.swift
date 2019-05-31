@@ -53,6 +53,7 @@ public class PiFramework
 
 	/// #START_DOC
 	/// - Helper function for combining a pi forest node into a single pi node using CSeq.
+	/// 	This converts the <cmd>+ into a single AST_Pi node.
 	/// #END_DOC
 	private func combineAST_PiNodes (ast_pi_forest: [AST_Pi]) -> AST_Pi
 	{
@@ -86,7 +87,6 @@ public class PiFramework
 	/// #END_DOC
 	private func translateNode (ast_imp: AST_Imp) throws -> AST_Pi
 	{
-		var ast_pi: AST_Pi
 		if ast_imp is ArithOpNode
 		{
 			let node: ArithOpNode = ast_imp as! ArithOpNode
@@ -110,7 +110,7 @@ public class PiFramework
 			}
 			let lhs: AST_Pi = try translateNode(ast_imp: node.lhs)
 			let rhs: AST_Pi = try translateNode(ast_imp: node.rhs)
-			ast_pi = BinaryOperatorNode(operation: operation, lhs: lhs, rhs: rhs)
+			return BinaryOperatorNode(operation: operation, lhs: lhs, rhs: rhs)
 		}
 		else if ast_imp is BoolOpNode
 		{
@@ -144,21 +144,21 @@ public class PiFramework
 			}
 			let lhs: AST_Pi = try translateNode(ast_imp: node.lhs)
 			let rhs: AST_Pi = try translateNode(ast_imp: node.rhs)
-			ast_pi = BinaryOperatorNode(operation: operation, lhs: lhs, rhs: rhs)
+			return BinaryOperatorNode(operation: operation, lhs: lhs, rhs: rhs)
 		}
 		else if ast_imp is AssignNode
 		{
 			let node: AssignNode = ast_imp as! AssignNode
 			let lhs: AST_Pi = try translateNode(ast_imp: node.variable)
 			let rhs: AST_Pi = try translateNode(ast_imp: node.expression)
-			ast_pi = BinaryOperatorNode(operation: "Assign", lhs: lhs, rhs: rhs)
+			return BinaryOperatorNode(operation: "Assign", lhs: lhs, rhs: rhs)
 		}
 		else if ast_imp is WhileNode
 		{
 			let node: WhileNode = ast_imp as! WhileNode
 			let lhs: AST_Pi = try translateNode(ast_imp: node.condition)
 			let rhs: AST_Pi = try translate(ast_imp: node.command)
-			ast_pi = BinaryOperatorNode(operation: "Loop", lhs: lhs, rhs: rhs)
+			return BinaryOperatorNode(operation: "Loop", lhs: lhs, rhs: rhs)
 		}
 		else if ast_imp is ConditionalNode
 		{
@@ -170,38 +170,37 @@ public class PiFramework
 			{
 				rhs = try translate(ast_imp: node.commandFalse)
 			}
-			ast_pi = TernaryOperatorNode(operation: "Cond", lhs: lhs, chs: chs, rhs: rhs)
+			return TernaryOperatorNode(operation: "Cond", lhs: lhs, chs: chs, rhs: rhs)
 		}
 		else if ast_imp is NegationNode
 		{
 			let node: NegationNode = ast_imp as! NegationNode
 			let expression: AST_Pi = try translateNode(ast_imp: node.expression)
-			ast_pi = UnaryOperatorNode(operation: "Not", expression: expression)
+			return UnaryOperatorNode(operation: "Not", expression: expression)
 		}
 		else if ast_imp is NumberNode
 		{
 			let node: NumberNode = ast_imp as! NumberNode
-			ast_pi = AtomNode(operation: "Num", value: "\(node.value)")
+			return AtomNode(operation: "Num", value: "\(node.value)")
 		}
 		else if ast_imp is IdentifierNode
 		{
 			let node: IdentifierNode = ast_imp as! IdentifierNode
-			ast_pi = AtomNode(operation: "Id", value: "\(node.name)")
+			return AtomNode(operation: "Id", value: "\(node.name)")
 		}
 		else if ast_imp is TruthNode
 		{
 			let node: TruthNode = ast_imp as! TruthNode
-			ast_pi = AtomNode(operation: "Boo", value: "\(node.value)")
+			return AtomNode(operation: "Boo", value: "\(node.value)")
 		}
 		else if ast_imp is NoOpNode
 		{
-			ast_pi = OnlyOperatorNode(operation: "Nop")
+			return OnlyOperatorNode(operation: "Nop")
 		}
 		else
 		{
 			throw TranslatorError.UndefinedASTNode(ast_imp)
 		}
-		return ast_pi
 	}
 
 	/// #START_DOC
@@ -239,45 +238,27 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for getting the <number> values from the value pile.
 	/// #END_DOC
-	private func popNumValues(value: Pile<AST_Pi>) throws -> [Float]
+	private func popNumValue(value: Pile<AST_Pi>) throws -> [Float]
 	{
 		var nodeHelper: AtomNode = value.pop() as! AtomNode
 		if nodeHelper.operation != "Num"
 		{
 			throw AutomatonError.ExpectedNumValue
 		}
-		let value1: Float = Float(nodeHelper.value)!
-		
-		nodeHelper = value.pop() as! AtomNode
-		if nodeHelper.operation != "Num"
-		{
-			throw AutomatonError.ExpectedNumValue
-		}
-		let value2: Float = Float(nodeHelper.value)!
-		
-		return [value1, value2]
+		return Float(nodeHelper.value)!
 	}
 	
 	/// #START_DOC
 	/// - Helper function for getting the <bool> values from the value pile.
 	/// #END_DOC
-	private func popBooValues(value: Pile<AST_Pi>) throws -> [Bool]
+	private func popBooValue(value: Pile<AST_Pi>) throws -> [Bool]
 	{
 		var nodeHelper: AtomNode = value.pop() as! AtomNode
 		if nodeHelper.operation != "Boo"
 		{
 			throw AutomatonError.ExpectedBooValue
 		}
-		let value1: Bool = Bool(nodeHelper.value)!
-		
-		nodeHelper = value.pop() as! AtomNode
-		if nodeHelper.operation != "Boo"
-		{
-			throw AutomatonError.ExpectedBooValue
-		}
-		let value2: Bool = Bool(nodeHelper.value)!
-		
-		return [value1, value2]
+		return Bool(nodeHelper.value)!
 	}
 
 	/// #START_DOC
@@ -296,44 +277,52 @@ public class PiFramework
 				// Aritimetical Operators
 				case "#MUL":
 					operationResultFunction = "Num"
-					let values: [Float] = try popNumValues(value: value)
-					operationResult = "\(values[0]*values[1])"
+					let value1: Float = try popNumValue(value: value)
+					let value2: Float = try popNumValue(value: value)
+					operationResult = "\(value1*values2)"
 					break
 				case "#DIV":
 					operationResultFunction = "Num"
-					let values: [Float] = try popNumValues(value: value)
-					operationResult = "\(values[0]/values[1])"
+					let value1: Float = try popNumValue(value: value)
+					let value2: Float = try popNumValue(value: value)
+					operationResult = "\(value1/value2)"
 					break
 				case "#SUM":
 					operationResultFunction = "Num"
-					let values: [Float] = try popNumValues(value: value)
-					operationResult = "\(values[0]+values[1])"
+					let value1: Float = try popNumValue(value: value)
+					let value2: Float = try popNumValue(value: value)
+					operationResult = "\(value1+value2)"
 					break
 				case "#SUB":
 					operationResultFunction = "Num"
-					let values: [Float] = try popNumValues(value: value)
-					operationResult = "\(values[0]-values[1])"
+					let value1: Float = try popNumValue(value: value)
+					let value2: Float = try popNumValue(value: value)
+					operationResult = "\(value1-value2)"
 					break
 				// Logical Operators
 				case "#LT":
 					operationResultFunction = "Boo"
-					let values: [Float] = try popNumValues(value: value)
-					operationResult = "\(values[0]<values[1])"
+					let value1: Float = try popNumValue(value: value)
+					let value2: Float = try popNumValue(value: value)
+					operationResult = "\(value1<value2)"
 					break
 				case "#LE":
 					operationResultFunction = "Boo"
-					let values: [Float] = try popNumValues(value: value)
-					operationResult = "\(values[0]<=values[1])"
+					let value1: Float = try popNumValue(value: value)
+					let value2: Float = try popNumValue(value: value)
+					operationResult = "\(value1<=value2)"
 					break
 				case "#GT":
 					operationResultFunction = "Boo"
-					let values: [Float] = try popNumValues(value: value)
-					operationResult = "\(values[0]>values[1])"
+					let value1: Float = try popNumValue(value: value)
+					let value2: Float = try popNumValue(value: value)
+					operationResult = "\(value1>value2)"
 					break
 				case "#GE":
 					operationResultFunction = "Boo"
-					let values: [Float] = try popNumValues(value: value)
-					operationResult = "\(values[0]>=values[1])"
+					let value1: Float = try popNumValue(value: value)
+					let value2: Float = try popNumValue(value: value)
+					operationResult = "\(value1>=value2)"
 					break
 				case "#EQ":
 					operationResultFunction = "Boo"
@@ -359,19 +348,20 @@ public class PiFramework
 					break
 				case "#AND":
 					operationResultFunction = "Boo"
-					let values: [Bool] = try popBooValues(value: value)
-					operationResult = "\(values[0]&&values[1])"
+					let value1: Bool = try popBooValue(value: value)
+					let value2: Bool = try popBooValue(value: value)
+					operationResult = "\(value1&&value2)"
 					break
 				case "#OR":
 					operationResultFunction = "Boo"
-					let values: [Bool] = try popBooValues(value: value)
-					operationResult = "\(values[0]||values[1])"
+					let value1: Bool = try popBooValue(value: value)
+					let value2: Bool = try popBooValue(value: value)
+					operationResult = "\(value1||value2)"
 					break
 				case "#NOT":
 					operationResultFunction = "Boo"
-					let nodeHelper: AtomNode = value.pop() as! AtomNode
-					let booleanHelper: Bool = Bool(nodeHelper.value)!
-					operationResult = "\(!booleanHelper)"
+					let value: Bool = try popBooValue(value: value)
+					operationResult = "\(!value)"
 					break
 				// Other functions
 				case "#ASSIGN":
@@ -396,10 +386,8 @@ public class PiFramework
 					storage[localizable.address] = nodeAsgValue
 					return
 				case "#LOOP":
-					let nodeHelper: AtomNode = value.pop() as! AtomNode
-					let conditionValue: Bool = Bool(nodeHelper.value)!
+					let conditionValue: Bool = try popBooValue(value: value)
 					let loop_node: BinaryOperatorNode = value.pop() as! BinaryOperatorNode
-					
 					if (conditionValue)
 					{
 						control.push(value: loop_node)
@@ -407,10 +395,8 @@ public class PiFramework
 					}
 					return
 				case "#COND":
-					let nodeHelper: AtomNode = value.pop() as! AtomNode
-					let conditionValue: Bool = Bool(nodeHelper.value)!
+					let conditionValue: Bool = try popBooValue(value: value)
 					let cond_node: TernaryOperatorNode = value.pop() as! TernaryOperatorNode
-
 					if (conditionValue)
 					{
 						control.push(value: cond_node.chs)
@@ -419,8 +405,6 @@ public class PiFramework
 					{
 						control.push(value: cond_node.rhs)
 					}
-					return
-				case "#NOP":
 					return
 				default:
 					throw AutomatonError.UndefinedCommand(functNode.function)
@@ -551,7 +535,6 @@ public class PiFramework
 			switch (operatorNode.operation)
 			{
 				case "Nop":
-					control.push(value: PiFuncNode(function: "#NOP"))
 					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
