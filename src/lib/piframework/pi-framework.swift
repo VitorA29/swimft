@@ -20,6 +20,7 @@ public enum AutomatonError: Error
 	case UnexpectedNilValue
 	case InvalidValueExpected
 	case ExpectedIdentifier
+	case ExpectedAtomNode
 	case ExpectedNumValue
 	case ExpectedBooValue
 }
@@ -236,11 +237,15 @@ public class PiFramework
 	}
 	
 	/// #START_DOC
-	/// - Helper function for getting the <number> values from the value pile.
+	/// - Helper function for getting a <number> value from the value pile.
 	/// #END_DOC
-	private func popNumValue(value: Pile<AST_Pi>) throws -> [Float]
+	private func popNumValue(value: Pile<AST_Pi>) throws -> Float
 	{
-		var nodeHelper: AtomNode = value.pop() as! AtomNode
+		if !(value.peek() is AtomNode)
+		{
+			throw AutomatonError.ExpectedAtomNode
+		}
+		let nodeHelper: AtomNode = value.pop() as! AtomNode
 		if nodeHelper.operation != "Num"
 		{
 			throw AutomatonError.ExpectedNumValue
@@ -249,11 +254,15 @@ public class PiFramework
 	}
 	
 	/// #START_DOC
-	/// - Helper function for getting the <bool> values from the value pile.
+	/// - Helper function for getting a <truth> value from the value pile.
 	/// #END_DOC
-	private func popBooValue(value: Pile<AST_Pi>) throws -> [Bool]
+	private func popBooValue(value: Pile<AST_Pi>) throws -> Bool
 	{
-		var nodeHelper: AtomNode = value.pop() as! AtomNode
+		if !(value.peek() is AtomNode)
+		{
+			throw AutomatonError.ExpectedAtomNode
+		}
+		let nodeHelper: AtomNode = value.pop() as! AtomNode
 		if nodeHelper.operation != "Boo"
 		{
 			throw AutomatonError.ExpectedBooValue
@@ -279,7 +288,7 @@ public class PiFramework
 					operationResultFunction = "Num"
 					let value1: Float = try popNumValue(value: value)
 					let value2: Float = try popNumValue(value: value)
-					operationResult = "\(value1*values2)"
+					operationResult = "\(value1*value2)"
 					break
 				case "#DIV":
 					operationResultFunction = "Num"
