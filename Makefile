@@ -52,10 +52,14 @@ download_swift: install_swift
 		rm $(SWIFT_RELEASE).tar.gz; fi
 
 clean_output:
-	rm -r $(OUTPUT_FOLDER);
+	if [ -d $(OUTPUT_FOLDER) ]; \
+	then \
+		rm -r $(OUTPUT_FOLDER); fi
 	
 clean_enviroment:
-	rm -r $(ENV);
+	if [ -d $(ENV) ]; \
+	then \
+		rm -r $(ENV); fi
 	
 build: clean_output compile_src
 	
