@@ -235,6 +235,8 @@ public class Parser
 				return try parseBrackets()
 			case Token.NEGATION:
 				return try parseNegation()
+			case Token.REF:
+				return try parseReference()
 			default:
 				throw ParserError.ExpectedExpressionToken(tokens.peek())
 		}
@@ -436,6 +438,41 @@ public class Parser
 		{
 			return ConditionalNode(condition: condition, commandTrue: commandForest, commandFalse: [AST_Imp]())
 		}
+	}
+	
+	/// #START_DOC
+	/// - This process the logic of the <reference> node.
+	/// - Return
+	/// 	- The associated reference node.
+	/// #END_DOC
+	private func parseReference () throws -> ReferenceNode
+	{
+		guard case let Token.REF(op) = tokens.pop() else
+		{
+			throw ParserError.UnexpectedToken
+		}
+		
+		var operation: String
+		switch(op)
+		{
+			case "&":
+				operation = "address"
+				break
+			case "(*":
+				operation = "value"
+				break
+			default:
+				throw ParserError.UndefinedOperator(op)
+		}
+		
+		let identifier: IdentifierNode = try parseIdentifier()
+		
+		if case Token.BRACKET_RIGHT = tokens.peek()
+		{
+			tokens.skip()
+		}
+		
+		return ReferenceNode(operation: operation, identifier: identifier)
 	}
 	
 	/// #START_DOC

@@ -63,6 +63,19 @@ public struct IdentifierNode: BoolNode, ArithNode
 }
 
 /// #START_DOC
+/// - This wrap the reference operation(<reference>).
+/// #END_DOC
+public struct ReferenceNode: ExpressionNode
+{
+	let operation: String
+	let identifier: IdentifierNode
+	public var description: String
+	{
+		return "ReferenceNode(\(operation), \(identifier))"
+	}
+}
+
+/// #START_DOC
 /// - This wrap the negation operation(<negation>).
 /// #END_DOC
 public struct NegationNode: BoolNode

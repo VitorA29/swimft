@@ -23,9 +23,11 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 <conditional> ::= 'if' <bool_expression> 'then' <cmd><S>* 'else' <cmd><S>* 'end'
 		| 'if' <bool_expression> 'then' <cmd><S>* 'end'
 
-<expression> ::= <bool_expression> | <arith_expression> | '(' <expression> ')'
+<expression> ::= <reference> | <bool_expression> | <arith_expression> | '(' <expression> ')'
 
 <identifier> ::= /(?!\d)\w+/ 
+
+<reference> ::= '&' <identifier>  | '(*' <identifier> ')'
 
 <bool_expression> ::= <truth> | <identifier> | <negation> | <equality> | <conjunction> | <disjunction>
                 | <lowerthan> | <lowereq> | <greaterthan> | <greatereq> | '(' <bool_expression> ')'

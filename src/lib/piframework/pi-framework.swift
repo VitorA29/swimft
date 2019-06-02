@@ -188,6 +188,24 @@ public class PiFramework
 		{
 			return OnlyOperatorNode(operation: "Nop")
 		}
+		else if ast_imp is ReferenceNode
+		{
+			let node: ReferenceNode = ast_imp as! ReferenceNode
+			let identifier: AtomNode = try translateNode(ast_imp: node.identifier) as! AtomNode
+			var operation: String
+			switch (node.operation)
+			{
+				case "address":
+					operation = "DeRef"
+					break
+				case "value":
+					operation = "ValRef"
+					break
+				default:
+					throw TranslatorError.UndefinedOperator(node.operation)
+			}
+			return UnaryOperatorNode(operation: operation, expression: identifier)
+		}
 		else
 		{
 			throw TranslatorError.UndefinedASTNode(ast_imp)
@@ -258,6 +276,35 @@ public class PiFramework
 			throw AutomatonError.ExpectedBooValue
 		}
 		return Bool(nodeHelper.value)!
+	}
+	
+	/// #START_DOC
+	/// - Helper function for getting a location value from the given dict.
+	/// #END_DOC
+	private func getLocValue(key: String, dict: [String:AtomNode]) throws -> AtomNode
+	{
+		if dict[key] == nil
+		{
+			throw AutomatonError.ExpectedAtomNode
+		}
+		let nodeHelper: AtomNode = dict[key]!
+		if nodeHelper.operation != "Loc"
+		{
+			throw AutomatonError.ExpectedLocValue
+		}
+		return nodeHelper
+	}
+	
+	/// #START_DOC
+	/// - Helper function for getting any value from the given dict.
+	/// #END_DOC
+	private func getAnyValue(key: String, dict: [String:AtomNode]) throws -> AtomNode
+	{
+		if dict[key] == nil
+		{
+			throw AutomatonError.ExpectedAtomNode
+		}
+		return dict[key]!
 	}
 
 	/// #START_DOC
@@ -511,11 +558,23 @@ public class PiFramework
 			{
 				case "Not":
 					control.push(value: PiFuncNode(function: "#NOT"))
+					control.push(value: operatorNode.expression)
+					break
+				case "DeRef":
+					let identifier: AtomNode = operatorNode.expression as! AtomNode
+					let localizable: AtomNode = try getLocValue(key: identifier.value, dict: enviroment)
+					value.push(value: localizable)
+					break
+				case "ValRef":
+					let identifier: AtomNode = operatorNode.expression as! AtomNode
+					let localizable: AtomNode = try getLocValue(key: identifier.value, dict: enviroment)
+					let addressLocale: AtomNode = try getLocValue(key: localizable.value, dict: storage)
+					let desiredValue: AtomNode = try getAnyValue(key: addressLocale.value, dict: storage)
+					value.push(value: desiredValue)
 					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
-			control.push(value: operatorNode.expression)
 		}
 		else if command_tree is AtomNode
 		{
@@ -527,8 +586,8 @@ public class PiFramework
 				case "Boo":
 					break
 				case "Id":
-					let localizable: AtomNode = enviroment[operatorNode.value]!
-					let nodeHelper: AtomNode = storage[localizable.value]!
+					let localizable: AtomNode = try getLocValue(key: operatorNode.value, dict: enviroment)
+					let nodeHelper: AtomNode = try getAnyValue(key: localizable.value, dict: storage)
 					value.push(value: nodeHelper)
 					return
 				default:
