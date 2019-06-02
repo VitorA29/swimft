@@ -23,18 +23,8 @@ public enum AutomatonError: Error
 	case ExpectedAtomNode
 	case ExpectedNumValue
 	case ExpectedBooValue
-}
-
-/// #START_DOC
-/// - This define the localizable struct to be used in the memory storage linking.
-/// #END_DOC
-private struct Localizable: CustomStringConvertible
-{
-	let address: Int
-	public var description: String
-	{
-		return "Localizable(address: \(address))"
-	}
+	case ExpectedLocValue
+	case UnexpectedTypeValue
 }
 
 /// #START_DOC
@@ -212,8 +202,8 @@ public class PiFramework
 		let control_pile: Pile<AST_Pi_Extended> = Pile<AST_Pi_Extended>()
 		control_pile.push(value: ast_pi)
 		let value_pile: Pile<AST_Pi> = Pile<AST_Pi>()
-		var storage_pile: [Int: AtomNode] = [Int: AtomNode]()
-		var enviroment_pile: [String: Localizable] = [String: Localizable]()
+		var storage_pile: [String: AtomNode] = [String: AtomNode]()
+		var enviroment_pile: [String: AtomNode] = [String: AtomNode]()
 		var steps_count: Int = 0
 		repeat
 		{
@@ -273,7 +263,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for the automaton, this define the logic for change the state of the automaton based in the argument values.
 	/// #END_DOC
-	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<AST_Pi>, storage: inout [Int: AtomNode], enviroment: inout [String: Localizable]) throws
+	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<AST_Pi>, storage: inout [String: AtomNode], enviroment: inout [String: AtomNode]) throws
 	{
 		let command_tree: AST_Pi_Extended = control.pop()
 		if command_tree is PiFuncNode
@@ -352,6 +342,14 @@ public class PiFramework
 						{
 							throw AutomatonError.ExpectedBooValue
 						}
+						else if type1 == "Loc"
+						{
+							throw AutomatonError.ExpectedLocValue
+						}
+						else
+						{
+							throw AutomatonError.UnexpectedTypeValue
+						}
 					}
 					operationResult = "\(value1==value2)"
 					break
@@ -381,18 +379,18 @@ public class PiFramework
 						throw AutomatonError.ExpectedIdentifier
 					}
 					let idName: String = nodeHelper.value
-					let localizable: Localizable
+					let localizable: AtomNode
 					if enviroment[idName] != nil
 					{
 						localizable = enviroment[idName]!
 					}
 					else
 					{
-						localizable = Localizable(address: memorySpace)
+						localizable = AtomNode(operation: "Loc", value: "\(memorySpace)")
 						memorySpace += 1
 						enviroment[idName] = localizable
 					}
-					storage[localizable.address] = nodeAsgValue
+					storage[localizable.value] = nodeAsgValue
 					return
 				case "#LOOP":
 					let conditionValue: Bool = try popBooValue(value: value)
@@ -529,8 +527,8 @@ public class PiFramework
 				case "Boo":
 					break
 				case "Id":
-					let localizable: Localizable = enviroment[operatorNode.value]!
-					let nodeHelper: AtomNode = storage[localizable.address]!
+					let localizable: AtomNode = enviroment[operatorNode.value]!
+					let nodeHelper: AtomNode = storage[localizable.value]!
 					value.push(value: nodeHelper)
 					return
 				default:
