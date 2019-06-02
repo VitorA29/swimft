@@ -80,7 +80,7 @@ public class Configuration
 	}
 }
 
-public let envConfiguration: Configuration = try Configuration()
+public var envConfiguration: Configuration! = nil
 
 /// #START_DOC
 /// - Function for helping handleling with the opening and reading of the argument file.
@@ -110,6 +110,7 @@ public func main ()
 {
 	do
 	{
+		envConfiguration = try Configuration()
 		let code: String = try filePath()!
 		print("{ code: \(code) }")
 		let lexer = Lexer(input: code)
