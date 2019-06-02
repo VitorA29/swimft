@@ -1,0 +1,11 @@
+# Test file for the reference operators
+let y=3
+in
+	let x=&y
+	in
+		let z=(*x)
+		in
+			nop
+		end
+	end
+end

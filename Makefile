@@ -19,6 +19,7 @@ execute_output: compile_src
 	
 execute_imp_one:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/simple_test.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_reference.imp;
 	
 execute_imp_zero:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_zero/simple_test.imp;
