@@ -49,6 +49,7 @@ let tokenList: [(String, TokenGenerator)] =
 	(":=", { _ in .ASSIGN }),
 	("=", { _ in .INITIALIZER }),
 	(",", { _ in .COMMA }),
+	("(&|!)", { (m: String) in .REF(m) }),
 	("([1-9][0-9]*|0)?(\\.[0-9]*[1-9]|\\.0)?", { (m: String) in .NUMBER((m as NSString).floatValue) }),
 ]
 
