@@ -61,6 +61,10 @@ public class Pile<T>: CustomStringConvertible
 	/// #END_DOC
 	public func skip ()
 	{
+		if top.isEmpty
+		{
+			return
+		}
 		top.remove(at: 0)
 	}
 

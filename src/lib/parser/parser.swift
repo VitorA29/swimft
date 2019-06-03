@@ -134,7 +134,7 @@ public class Parser
 		
 		let expression = try parseExpression()
 		
-		return AssignNode(variable: identifierNode, expression: expression)
+		return AssignNode(identifier: identifierNode, expression: expression)
 	}
 	
 	/// #START_DOC
@@ -157,6 +157,8 @@ public class Parser
 				return try parseAssign(identifierNode: identifierNode)
 			case Token.OPERATOR:
 				return try parseBinaryOp(node: identifierNode)
+			case Token.INITIALIZER:
+				return try parseInitializer(identifierNode: identifierNode)
 			default:
 				return identifierNode
 		}
@@ -452,6 +454,8 @@ public class Parser
 			throw ParserError.UnexpectedToken
 		}
 		
+		let identifier: IdentifierNode = try parseIdentifier()
+		
 		var operation: String
 		switch(op)
 		{
@@ -460,19 +464,31 @@ public class Parser
 				break
 			case "(*":
 				operation = "value"
+				guard case Token.BRACKET_RIGHT = tokens.pop() else
+				{
+					throw ParserError.ExpectedCharacter(")")
+				}
 				break
 			default:
 				throw ParserError.UndefinedOperator(op)
 		}
 		
-		let identifier: IdentifierNode = try parseIdentifier()
-		
-		if case Token.BRACKET_RIGHT = tokens.peek()
-		{
-			tokens.skip()
-		}
-		
 		return ReferenceNode(operation: operation, identifier: identifier)
+	}
+	
+	/// #START_DOC
+	/// - This process the logic of the <declaration> node.
+	/// - Return
+	/// 	- The associated declaration node.
+	/// #END_DOC
+	private func parseInitializer (identifierNode: IdentifierNode) throws -> DeclarationNode
+	{
+		guard case Token.INITIALIZER = tokens.pop() else
+		{
+			throw ParserError.UnexpectedToken
+		}
+		let expression = try parseExpression()
+		return DeclarationNode(identifier: identifierNode, expression: expression)
 	}
 	
 	/// #START_DOC
@@ -491,6 +507,7 @@ public class Parser
 			case Token.IF:
 				return try parseConditional()
 			case Token.NOP:
+				tokens.skip()
 				return NoOpNode()
 			default:
 				return try parseExpression()

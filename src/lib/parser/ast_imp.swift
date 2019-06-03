@@ -131,11 +131,11 @@ public struct NoOpNode: AST_Imp
 /// #END_DOC
 public struct AssignNode: AST_Imp
 {
-	let variable: IdentifierNode
+	let identifier: IdentifierNode
 	let expression: ExpressionNode
 	public var description: String
 	{
-		return "AssignNode(\(variable), \(expression))"
+		return "AssignNode(\(identifier), \(expression))"
 	}
 }
 
@@ -163,5 +163,18 @@ public struct ConditionalNode: AST_Imp
 	public var description: String
 	{
 		return "ConditionalNode(\(condition), [\(commandTrue) - \(commandTrue.count) ], [ \(commandFalse) - \(commandFalse.count) ])"
+	}
+}
+
+/// #START_DOC
+/// - This wrap the declaration operation(<declaration>).
+/// #END_DOC
+public struct DeclarationNode: AST_Imp
+{
+	let identifier: IdentifierNode
+	let expression: ExpressionNode
+	public var description: String
+	{
+		return "DeclarationNode(\(identifier), \(expression))"
 	}
 }

@@ -23,6 +23,7 @@ public enum AutomatonError: Error
 	case ExpectedAtomNode
 	case ExpectedNumValue
 	case ExpectedBooValue
+	case ExpectedIdValue
 	case ExpectedLocValue
 	case UnexpectedTypeValue
 }
@@ -140,7 +141,7 @@ public class PiFramework
 		else if ast_imp is AssignNode
 		{
 			let node: AssignNode = ast_imp as! AssignNode
-			let lhs: AST_Pi = try translateNode(ast_imp: node.variable)
+			let lhs: AST_Pi = try translateNode(ast_imp: node.identifier)
 			let rhs: AST_Pi = try translateNode(ast_imp: node.expression)
 			return BinaryOperatorNode(operation: "Assign", lhs: lhs, rhs: rhs)
 		}
@@ -206,6 +207,13 @@ public class PiFramework
 			}
 			return UnaryOperatorNode(operation: operation, expression: identifier)
 		}
+		else if ast_imp is DeclarationNode
+		{
+			let node: DeclarationNode = ast_imp as! DeclarationNode
+			let identifier: AtomNode = try translateNode(ast_imp: node.identifier) as! AtomNode
+			let expression: AST_Pi = try translateNode(ast_imp: node.expression)
+			return BinaryOperatorNode(operation: "Bind", lhs: identifier, rhs: expression)
+		}
 		else
 		{
 			throw TranslatorError.UndefinedASTNode(ast_imp)
@@ -219,7 +227,7 @@ public class PiFramework
 	{
 		let control_pile: Pile<AST_Pi_Extended> = Pile<AST_Pi_Extended>()
 		control_pile.push(value: ast_pi)
-		let value_pile: Pile<AST_Pi> = Pile<AST_Pi>()
+		let value_pile: Pile<AST_Pi_Value> = Pile<AST_Pi_Value>()
 		var storage_pile: [String: AtomNode] = [String: AtomNode]()
 		var enviroment_pile: [String: AtomNode] = [String: AtomNode]()
 		var steps_count: Int = 0
@@ -247,7 +255,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for getting a <number> value from the value pile.
 	/// #END_DOC
-	private func popNumValue(value: Pile<AST_Pi>) throws -> Float
+	private func popNumValue(value: Pile<AST_Pi_Value>) throws -> Float
 	{
 		if !(value.peek() is AtomNode)
 		{
@@ -264,7 +272,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for getting a <truth> value from the value pile.
 	/// #END_DOC
-	private func popBooValue(value: Pile<AST_Pi>) throws -> Bool
+	private func popBooValue(value: Pile<AST_Pi_Value>) throws -> Bool
 	{
 		if !(value.peek() is AtomNode)
 		{
@@ -276,6 +284,23 @@ public class PiFramework
 			throw AutomatonError.ExpectedBooValue
 		}
 		return Bool(nodeHelper.value)!
+	}
+	
+	/// #START_DOC
+	/// - Helper function for getting a <identifier> value from the value pile.
+	/// #END_DOC
+	private func popIdValue(value: Pile<AST_Pi_Value>) throws -> String
+	{
+		if !(value.peek() is AtomNode)
+		{
+			throw AutomatonError.ExpectedAtomNode
+		}
+		let nodeHelper: AtomNode = value.pop() as! AtomNode
+		if nodeHelper.operation != "Id"
+		{
+			throw AutomatonError.ExpectedIdValue
+		}
+		return nodeHelper.value
 	}
 	
 	/// #START_DOC
@@ -310,7 +335,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for the automaton, this define the logic for change the state of the automaton based in the argument values.
 	/// #END_DOC
-	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<AST_Pi>, storage: inout [String: AtomNode], enviroment: inout [String: AtomNode]) throws
+	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<AST_Pi_Value>, storage: inout [String: AtomNode], enviroment: inout [String: AtomNode]) throws
 	{
 		let command_tree: AST_Pi_Extended = control.pop()
 		if command_tree is PiFuncNode
@@ -420,12 +445,7 @@ public class PiFramework
 				// Other functions
 				case "#ASSIGN":
 					let nodeAsgValue: AtomNode = value.pop() as! AtomNode
-					let nodeHelper: AtomNode = value.pop() as! AtomNode
-					if (nodeHelper.operation != "Id")
-					{
-						throw AutomatonError.ExpectedIdentifier
-					}
-					let idName: String = nodeHelper.value
+					let idName: String = try popIdValue(value: value)
 					let localizable: AtomNode
 					if enviroment[idName] != nil
 					{
@@ -459,6 +479,25 @@ public class PiFramework
 					{
 						control.push(value: cond_node.rhs)
 					}
+					return
+				case "#BIND":
+					let location: AtomNode = value.pop() as! AtomNode
+					if location.operation != "Loc"
+					{
+						throw AutomatonError.ExpectedLocValue
+					}
+					let idName: String = try popIdValue(value: value)
+					var bindList: PiBindableValue
+					if value.isEmpty() || !(value.peek() is PiBindableValue)
+					{
+						bindList = PiBindableValue(bindable: [String: AtomNode]())
+					}
+					else
+					{
+						bindList = value.pop() as! PiBindableValue
+					}
+					bindList.bindable[idName] = location
+					value.push(value: bindList)
 					return
 				default:
 					throw AutomatonError.UndefinedCommand(functNode.function)
@@ -529,6 +568,8 @@ public class PiFramework
 					break
 				case "CSeq":
 					break
+				case "Bind":
+					control.push(value: PiFuncNode(function: "#BIND"))
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
@@ -538,11 +579,11 @@ public class PiFramework
 					control.push(value: operatorNode.lhs)
 					value.push(value: operatorNode)
 					break
-				case "CSeq":
+				case "CSeq", "DSeq":
 					control.push(value: operatorNode.rhs)
 					control.push(value: operatorNode.lhs)
 					break
-				case "Assign":
+				case "Assign", "Bind":
 					value.push(value: operatorNode.lhs)
 					control.push(value: operatorNode.rhs)
 					break

@@ -1,4 +1,4 @@
 #just a test file for debug
 y:=3
-x:=&y
-z:=(*x)
+x=&y
+z=&y
