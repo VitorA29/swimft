@@ -228,7 +228,7 @@ public class Parser
 		switch(tokens.peek())
 		{
 			case Token.IDENTIFIER:
-				return try parseIdentifierWrapper() as! ExpressionNode
+				return try parseIdentifier()
 			case Token.NUMBER:
 				return try parseNumber()
 			case Token.TRUTH:
