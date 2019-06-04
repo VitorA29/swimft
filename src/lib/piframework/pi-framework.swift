@@ -481,11 +481,11 @@ public class PiFramework
 					}
 					return
 				case "#BIND":
-					let location: AtomNode = value.pop() as! AtomNode
-					if location.operation != "Loc"
+					if !(value.peek() is AtomNode)
 					{
-						throw AutomatonError.ExpectedLocValue
+						throw AutomatonError.ExpectedAtomNode
 					}
+					let bindValue: AtomNode = value.pop() as! AtomNode
 					let idName: String = try popIdValue(value: value)
 					var bindList: PiBindableValue
 					if value.isEmpty() || !(value.peek() is PiBindableValue)
@@ -496,7 +496,7 @@ public class PiFramework
 					{
 						bindList = value.pop() as! PiBindableValue
 					}
-					bindList.bindable[idName] = location
+					bindList.bindable[idName] = bindValue
 					value.push(value: bindList)
 					return
 				default:
