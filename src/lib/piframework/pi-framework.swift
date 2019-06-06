@@ -24,8 +24,10 @@ public enum AutomatonError: Error
 	case ExpectedNumValue
 	case ExpectedBooValue
 	case ExpectedIdValue
-	case ExpectedLocValue
 	case UnexpectedTypeValue
+	case ExpectedLocalizable
+	case ExpectedBindableNode
+	case ExpectedStorableNode
 }
 
 /// #START_DOC
@@ -227,9 +229,9 @@ public class PiFramework
 	{
 		let control_pile: Pile<AST_Pi_Extended> = Pile<AST_Pi_Extended>()
 		control_pile.push(value: ast_pi)
-		let value_pile: Pile<AST_Pi_Value> = Pile<AST_Pi_Value>()
-		var storage_pile: [String: AtomNode] = [String: AtomNode]()
-		var enviroment_pile: [String: AtomNode] = [String: AtomNode]()
+		let value_pile: Pile<Automaton_Value> = Pile<Automaton_Value>()
+		var storage_pile: [Int: Automaton_Storable] = [Int: Automaton_Storable]()
+		var enviroment_pile: [String: Automaton_Bindable] = [String: Automaton_Bindable]()
 		var steps_count: Int = 0
 		repeat
 		{
@@ -255,7 +257,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for getting a <number> value from the value pile.
 	/// #END_DOC
-	private func popNumValue(value: Pile<AST_Pi_Value>) throws -> Float
+	private func popNumValue(value: Pile<Automaton_Value>) throws -> Float
 	{
 		if !(value.peek() is AtomNode)
 		{
@@ -272,7 +274,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for getting a <truth> value from the value pile.
 	/// #END_DOC
-	private func popBooValue(value: Pile<AST_Pi_Value>) throws -> Bool
+	private func popBooValue(value: Pile<Automaton_Value>) throws -> Bool
 	{
 		if !(value.peek() is AtomNode)
 		{
@@ -289,7 +291,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for getting a <identifier> value from the value pile.
 	/// #END_DOC
-	private func popIdValue(value: Pile<AST_Pi_Value>) throws -> String
+	private func popIdValue(value: Pile<Automaton_Value>) throws -> String
 	{
 		if !(value.peek() is AtomNode)
 		{
@@ -304,43 +306,14 @@ public class PiFramework
 	}
 	
 	/// #START_DOC
-	/// - Helper function for getting a location value from the given dict.
-	/// #END_DOC
-	private func getLocValue(key: String, dict: [String:AtomNode]) throws -> AtomNode
-	{
-		if dict[key] == nil
-		{
-			throw AutomatonError.ExpectedAtomNode
-		}
-		let nodeHelper: AtomNode = dict[key]!
-		if nodeHelper.operation != "Loc"
-		{
-			throw AutomatonError.ExpectedLocValue
-		}
-		return nodeHelper
-	}
-	
-	/// #START_DOC
-	/// - Helper function for getting any value from the given dict.
-	/// #END_DOC
-	private func getAnyValue(key: String, dict: [String:AtomNode]) throws -> AtomNode
-	{
-		if dict[key] == nil
-		{
-			throw AutomatonError.ExpectedAtomNode
-		}
-		return dict[key]!
-	}
-
-	/// #START_DOC
 	/// - Helper function for the automaton, this define the logic for change the state of the automaton based in the argument values.
 	/// #END_DOC
-	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<AST_Pi_Value>, storage: inout [String: AtomNode], enviroment: inout [String: AtomNode]) throws
+	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<Automaton_Value>, storage: inout [Int: Automaton_Storable], enviroment: inout [String: Automaton_Bindable]) throws
 	{
 		let command_tree: AST_Pi_Extended = control.pop()
-		if command_tree is PiFuncNode
+		if command_tree is PiOpCodeNode
 		{
-			let functNode: PiFuncNode = command_tree as! PiFuncNode
+			let functNode: PiOpCodeNode = command_tree as! PiOpCodeNode
 			var operationResultFunction: String
 			var operationResult: String
 			switch(functNode.function)
@@ -414,10 +387,6 @@ public class PiFramework
 						{
 							throw AutomatonError.ExpectedBooValue
 						}
-						else if type1 == "Loc"
-						{
-							throw AutomatonError.ExpectedLocValue
-						}
 						else
 						{
 							throw AutomatonError.UnexpectedTypeValue
@@ -446,18 +415,23 @@ public class PiFramework
 				case "#ASSIGN":
 					let nodeAsgValue: AtomNode = value.pop() as! AtomNode
 					let idName: String = try popIdValue(value: value)
-					let localizable: AtomNode
+					let localizable: Localizable
 					if enviroment[idName] != nil
 					{
-						localizable = enviroment[idName]!
+						let bindable: Automaton_Bindable = enviroment[idName]!
+						if !(bindable is Localizable)
+						{
+							throw AutomatonError.ExpectedLocalizable
+						}
+						localizable = bindable as! Localizable
 					}
 					else
 					{
-						localizable = AtomNode(operation: "Loc", value: "\(memorySpace)")
+						localizable = Localizable(address: memorySpace)
 						memorySpace += 1
 						enviroment[idName] = localizable
 					}
-					storage[localizable.value] = nodeAsgValue
+					storage[localizable.address] = nodeAsgValue
 					return
 				case "#LOOP":
 					let conditionValue: Bool = try popBooValue(value: value)
@@ -481,23 +455,14 @@ public class PiFramework
 					}
 					return
 				case "#BIND":
-					if !(value.peek() is AtomNode)
+					if !(value.peek() is Automaton_Bindable)
 					{
-						throw AutomatonError.ExpectedAtomNode
+						throw AutomatonError.ExpectedBindableNode
 					}
-					let bindValue: AtomNode = value.pop() as! AtomNode
+					let bindValue: Automaton_Bindable = value.pop() as! Automaton_Bindable
 					let idName: String = try popIdValue(value: value)
-					var bindList: PiBindableValue
-					if value.isEmpty() || !(value.peek() is PiBindableValue)
-					{
-						bindList = PiBindableValue(bindable: [String: AtomNode]())
-					}
-					else
-					{
-						bindList = value.pop() as! PiBindableValue
-					}
-					bindList.bindable[idName] = bindValue
-					value.push(value: bindList)
+					let map: Map<String, Automaton_Bindable> = Map<String, Automaton_Bindable>(key: idName, value: bindValue)
+					value.push(value: map)
 					return
 				default:
 					throw AutomatonError.UndefinedCommand(functNode.function)
@@ -511,7 +476,7 @@ public class PiFramework
 			switch (operatorNode.operation)
 			{
 				case "Cond":
-					control.push(value: PiFuncNode(function: "#COND"))
+					control.push(value: PiOpCodeNode(function: "#COND"))
 					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
@@ -526,50 +491,50 @@ public class PiFramework
 			{
 				// Aritimetical Operators
 				case "Mul":
-					control.push(value: PiFuncNode(function: "#MUL"))
+					control.push(value: PiOpCodeNode(function: "#MUL"))
 					break
 				case "Div":
-					control.push(value: PiFuncNode(function: "#DIV"))
+					control.push(value: PiOpCodeNode(function: "#DIV"))
 					break
 				case "Sum":
-					control.push(value: PiFuncNode(function: "#SUM"))
+					control.push(value: PiOpCodeNode(function: "#SUM"))
 					break
 				case "Sub":
-					control.push(value: PiFuncNode(function: "#SUB"))
+					control.push(value: PiOpCodeNode(function: "#SUB"))
 					break
 				// Logical Operators
 				case "Lt":
-					control.push(value: PiFuncNode(function: "#LT"))
+					control.push(value: PiOpCodeNode(function: "#LT"))
 					break
 				case "Le":
-					control.push(value: PiFuncNode(function: "#LE"))
+					control.push(value: PiOpCodeNode(function: "#LE"))
 					break
 				case "Gt":
-					control.push(value: PiFuncNode(function: "#GT"))
+					control.push(value: PiOpCodeNode(function: "#GT"))
 					break
 				case "Ge":
-					control.push(value: PiFuncNode(function: "#GE"))
+					control.push(value: PiOpCodeNode(function: "#GE"))
 					break
 				case "Eq":
-					control.push(value: PiFuncNode(function: "#EQ"))
+					control.push(value: PiOpCodeNode(function: "#EQ"))
 					break
 				case "And":
-					control.push(value: PiFuncNode(function: "#AND"))
+					control.push(value: PiOpCodeNode(function: "#AND"))
 					break
 				case "Or":
-					control.push(value: PiFuncNode(function: "#OR"))
+					control.push(value: PiOpCodeNode(function: "#OR"))
 					break
 				// Other functions
 				case "Assign":
-					control.push(value: PiFuncNode(function: "#ASSIGN"))
+					control.push(value: PiOpCodeNode(function: "#ASSIGN"))
 					break
 				case "Loop":
-					control.push(value: PiFuncNode(function: "#LOOP"))
+					control.push(value: PiOpCodeNode(function: "#LOOP"))
 					break
 				case "CSeq":
 					break
 				case "Bind":
-					control.push(value: PiFuncNode(function: "#BIND"))
+					control.push(value: PiOpCodeNode(function: "#BIND"))
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
@@ -598,19 +563,36 @@ public class PiFramework
 			switch (operatorNode.operation)
 			{
 				case "Not":
-					control.push(value: PiFuncNode(function: "#NOT"))
+					control.push(value: PiOpCodeNode(function: "#NOT"))
 					control.push(value: operatorNode.expression)
 					break
 				case "DeRef":
 					let identifier: AtomNode = operatorNode.expression as! AtomNode
-					let localizable: AtomNode = try getLocValue(key: identifier.value, dict: enviroment)
+					if enviroment[identifier.value] == nil || !(enviroment[identifier.value] is Localizable)
+					{
+						throw AutomatonError.ExpectedLocalizable
+					}
+					let localizable: Localizable = enviroment[identifier.value]! as! Localizable
 					value.push(value: localizable)
 					break
 				case "ValRef":
 					let identifier: AtomNode = operatorNode.expression as! AtomNode
-					let localizable: AtomNode = try getLocValue(key: identifier.value, dict: enviroment)
-					let addressLocale: AtomNode = try getLocValue(key: localizable.value, dict: storage)
-					let desiredValue: AtomNode = try getAnyValue(key: addressLocale.value, dict: storage)
+					if enviroment[identifier.value] == nil || !(enviroment[identifier.value] is Localizable)
+					{
+						throw AutomatonError.ExpectedLocalizable
+					}
+					let localizable: Localizable = enviroment[identifier.value]! as! Localizable
+					
+					if storage[localizable.address] == nil || !(storage[localizable.address] is Localizable)
+					{
+						throw AutomatonError.ExpectedLocalizable
+					}
+					let addressLocale: Localizable = storage[localizable.address]! as! Localizable
+					if storage[addressLocale.address] == nil
+					{
+						throw AutomatonError.ExpectedStorableNode
+					}
+					let desiredValue: Automaton_Storable = storage[addressLocale.address]!
 					value.push(value: desiredValue)
 					break
 				default:
@@ -627,9 +609,24 @@ public class PiFramework
 				case "Boo":
 					break
 				case "Id":
-					let localizable: AtomNode = try getLocValue(key: operatorNode.value, dict: enviroment)
-					let nodeHelper: AtomNode = try getAnyValue(key: localizable.value, dict: storage)
-					value.push(value: nodeHelper)
+					if enviroment[operatorNode.value] == nil
+					{
+						throw AutomatonError.ExpectedBindableNode
+					}
+					if enviroment[operatorNode.value]! is Localizable
+					{
+						let localizable: Localizable = enviroment[operatorNode.value]! as! Localizable
+						if storage[localizable.address] == nil
+						{
+							throw AutomatonError.ExpectedStorableNode
+						}
+						let desiredValue: Automaton_Storable = storage[localizable.address]!
+						value.push(value: desiredValue)
+					}
+					else
+					{
+						value.push(value: enviroment[operatorNode.value]!)
+					}
 					return
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
