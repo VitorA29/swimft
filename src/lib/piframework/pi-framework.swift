@@ -15,7 +15,11 @@ public enum TranslatorError: Error
 public enum AutomatonError: Error
 {
 	case UndefinedOperation(String)
-	case UndefinedCommand(String)
+	case UndefinedArithOperation(String)
+	case UndefinedTruthOperation(String)
+	case UndefinedOpCode(String)
+	case UndefinedArithOpCode(String)
+	case UndefinedTruthOpCode(String)
 	case UndefinedASTPi(AST_Pi_Extended)
 	case UnexpectedNilValue
 	case InvalidValueExpected
@@ -36,6 +40,10 @@ public enum AutomatonError: Error
 public class PiFramework
 {
 	var memorySpace: Int
+	
+	// handlers
+	let arithHandler: ArithExpressionHandler = ArithExpressionHandler()
+	let truthHandler: TruthExpressionHandler = TruthExpressionHandler()
 	
 	/// #START_DOC
 	/// - This class initializer.
@@ -319,55 +327,13 @@ public class PiFramework
 			switch(functNode.function)
 			{
 				// Aritimetical Operators
-				case "#MUL":
-					operationResultFunction = "Num"
-					let value1: Float = try popNumValue(value: value)
-					let value2: Float = try popNumValue(value: value)
-					operationResult = "\(value1*value2)"
-					break
-				case "#DIV":
-					operationResultFunction = "Num"
-					let value1: Float = try popNumValue(value: value)
-					let value2: Float = try popNumValue(value: value)
-					operationResult = "\(value1/value2)"
-					break
-				case "#SUM":
-					operationResultFunction = "Num"
-					let value1: Float = try popNumValue(value: value)
-					let value2: Float = try popNumValue(value: value)
-					operationResult = "\(value1+value2)"
-					break
-				case "#SUB":
-					operationResultFunction = "Num"
-					let value1: Float = try popNumValue(value: value)
-					let value2: Float = try popNumValue(value: value)
-					operationResult = "\(value1-value2)"
-					break
+				case "#MUL", "#DIV", "#SUM", "#SUB":
+					try arithHandler.processOpCode(code: functNode.function, value: value)
+					return
 				// Logical Operators
-				case "#LT":
-					operationResultFunction = "Boo"
-					let value1: Float = try popNumValue(value: value)
-					let value2: Float = try popNumValue(value: value)
-					operationResult = "\(value1<value2)"
-					break
-				case "#LE":
-					operationResultFunction = "Boo"
-					let value1: Float = try popNumValue(value: value)
-					let value2: Float = try popNumValue(value: value)
-					operationResult = "\(value1<=value2)"
-					break
-				case "#GT":
-					operationResultFunction = "Boo"
-					let value1: Float = try popNumValue(value: value)
-					let value2: Float = try popNumValue(value: value)
-					operationResult = "\(value1>value2)"
-					break
-				case "#GE":
-					operationResultFunction = "Boo"
-					let value1: Float = try popNumValue(value: value)
-					let value2: Float = try popNumValue(value: value)
-					operationResult = "\(value1>=value2)"
-					break
+				case "#LT", "#LE", "#GT", "#GE":
+					try truthHandler.processOpCode(code: functNode.function, value: value)
+					return
 				case "#EQ":
 					operationResultFunction = "Boo"
 					var nodeHelper: AtomNode = value.pop() as! AtomNode
@@ -465,7 +431,7 @@ public class PiFramework
 					value.push(value: map)
 					return
 				default:
-					throw AutomatonError.UndefinedCommand(functNode.function)
+					throw AutomatonError.UndefinedOpCode(functNode.function)
 			}
 			let node: AST_Pi = AtomNode(operation: operationResultFunction, value: operationResult)
 			value.push(value: node)
@@ -490,31 +456,13 @@ public class PiFramework
 			switch (operatorNode.operation)
 			{
 				// Aritimetical Operators
-				case "Mul":
-					control.push(value: PiOpCodeNode(function: "#MUL"))
-					break
-				case "Div":
-					control.push(value: PiOpCodeNode(function: "#DIV"))
-					break
-				case "Sum":
-					control.push(value: PiOpCodeNode(function: "#SUM"))
-					break
-				case "Sub":
-					control.push(value: PiOpCodeNode(function: "#SUB"))
-					break
+				case "Mul", "Div", "Sum", "Sub":
+					try arithHandler.processNode(node: operatorNode, control: control)
+					return
 				// Logical Operators
-				case "Lt":
-					control.push(value: PiOpCodeNode(function: "#LT"))
-					break
-				case "Le":
-					control.push(value: PiOpCodeNode(function: "#LE"))
-					break
-				case "Gt":
-					control.push(value: PiOpCodeNode(function: "#GT"))
-					break
-				case "Ge":
-					control.push(value: PiOpCodeNode(function: "#GE"))
-					break
+				case "Lt", "Le", "Gt", "Ge":
+					try truthHandler.processNode(node: operatorNode, control: control)
+					return
 				case "Eq":
 					control.push(value: PiOpCodeNode(function: "#EQ"))
 					break
