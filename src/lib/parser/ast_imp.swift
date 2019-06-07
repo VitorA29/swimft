@@ -171,10 +171,24 @@ public struct ConditionalNode: AST_Imp
 /// #END_DOC
 public struct DeclarationNode: AST_Imp
 {
+	let isFinal: Bool
 	let identifier: IdentifierNode
 	let expression: ExpressionNode
 	public var description: String
 	{
-		return "DeclarationNode(\(identifier), \(expression))"
+		return "DeclarationNode(\(isFinal), \(identifier), \(expression))"
+	}
+}
+
+/// #START_DOC
+/// - This wrap the block operation(<block>).
+/// #END_DOC
+public struct BlockNode: AST_Imp
+{
+	let declaration: DeclarationNode
+	let command: [AST_Imp]
+	public var description: String
+	{
+		return "BlockNode(\(declaration), [\(command) - \(command.count)])"
 	}
 }

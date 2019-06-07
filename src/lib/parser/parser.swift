@@ -158,7 +158,7 @@ public class Parser
 			case Token.OPERATOR:
 				return try parseBinaryOp(node: identifierNode)
 			case Token.INITIALIZER:
-				return try parseInitializer(identifierNode: identifierNode)
+				return try parseInitializer()
 			default:
 				return identifierNode
 		}
@@ -481,13 +481,64 @@ public class Parser
 	/// - Return
 	/// 	- The associated declaration node.
 	/// #END_DOC
-	private func parseInitializer (identifierNode: IdentifierNode) throws -> DeclarationNode
+	private func parseInitializer () throws -> DeclarationNode
 	{
-		guard case Token.INITIALIZER = tokens.pop() else
+		guard case Token.DEC(op) = tokens.pop() else
 		{
 			throw ParserError.UnexpectedToken
 		}
+		let identifier: IdentifierNode = try parseIdentifier()
+		
+		var final: Bool
+		switch(op)
+		{
+			case "var":
+				final = false
+				break
+			case "cons":
+				final = true
+				break
+			default:
+				throw ParserError.UndefinedOperator(op)
+		}
 		let expression = try parseExpression()
+		return DeclarationNode(isFinal: final, identifier: identifierNode, expression: expression)
+	}
+
+	/// #START_DOC
+	/// - This process the logic of the <block> node.
+	/// - Return
+	/// 	- The associated block node.
+	/// #END_DOC
+	private func parseBlock () throws -> DeclarationNode
+	{
+		guard case Token.LET = tokens.pop() else
+		{
+			throw ParserError.UnexpectedToken
+		}
+
+		let declaration = try parseInitializer()
+		
+		guard case Token.IN = tokens.pop() else
+		{
+			throw ParserError.UnexpectedToken
+		}
+		
+		var commandForest: [AST_Imp] = [AST_Imp]()
+		while(true)
+		{
+			let command = try parseGrammar()
+			commandForest.append(command)
+			if (tokens.isEmpty())
+			{
+				throw ParserError.ExpectedToken(Token.END)
+			}
+			else if case Token.END = tokens.peek()
+			{
+				tokens.skip()
+				break
+			}
+		}
 		return DeclarationNode(identifier: identifierNode, expression: expression)
 	}
 	

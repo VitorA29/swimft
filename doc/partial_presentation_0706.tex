@@ -1,0 +1,75 @@
+\documentclass{beamer}
+
+\usetheme[
+  outer/progressbar=frametitle
+]{metropolis}
+
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=blue}
+
+\title[Compiladores 2017.2]{Swimft}
+\author[Abrev.]{Alunos: Beatriz e Vitor} 
+
+\institute[UFF]{Universidade Federal Fluminense}
+
+\date{Data: 07/06/2019} 
+
+\begin{document}
+
+% ---
+
+\begin{frame}[plain]
+
+\titlepage
+
+\end{frame}
+
+%%%%%%%%
+
+\begin{frame}{Objetivos desta apresentação}
+\begin{description}
+  \item[$\bullet$] Apresentação parcial da P2
+\end{description}
+\end{frame}
+
+% ---
+
+\begin{frame}{O que foi feito}
+\begin{description}
+  \item[$\bullet$] Lexer
+  \item[$\bullet$] Ref e Bind
+\end{description}
+\end{frame}
+
+% ---
+
+\begin{frame}{O que \emph{não} foi feito e porquê}
+\begin{description}
+  \item[$\bullet$] Parser da declaração e Blk em construção...
+  \item[$\bullet$] Refatoração do autômato
+\end{description}
+
+\end{frame}
+
+% ---
+
+\begin{frame}{Dúvidas}
+\begin{description}
+  \item[$\bullet$] Como diferenciar var e cons na declaração?
+  \item[$\bullet$] δ(Blk(D, M) :: C, V, E, S, L) = δ(D :: #BLKDEC :: M :: #BLKCMD :: C, L :: V, E, S, ∅). Nessa declaração, o L são as locations do contexto atual?
+\end{description}
+\end{frame}
+
+% ---
+
+\begin{frame}{Avaliação da evolução do trabalho}
+\begin{description}
+  \item[$\bullet$] Ajustes no código para implementação completa do Blk, Bind e Ref
+\end{description}
+
+\end{frame}
+
+\end{document}
+
