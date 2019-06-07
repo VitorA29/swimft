@@ -6,6 +6,13 @@ public protocol AST_Imp: CustomStringConvertible
 }
 
 /// #START_DOC
+/// - This wraps all the forms of declarations(<declaration>).
+/// #END_DOC
+public protocol DeclarationNode: AST_Imp
+{
+}
+
+/// #START_DOC
 /// - This wraps all the forms of expressions(<expression>).
 /// #END_DOC
 public protocol ExpressionNode: AST_Imp
@@ -169,14 +176,13 @@ public struct ConditionalNode: AST_Imp
 /// #START_DOC
 /// - This wrap the declaration operation(<declaration>).
 /// #END_DOC
-public struct DeclarationNode: AST_Imp
+public struct VarDeclarationNode: DeclarationNode
 {
-	let isFinal: Bool
 	let identifier: IdentifierNode
 	let expression: ExpressionNode
 	public var description: String
 	{
-		return "DeclarationNode(\(isFinal), \(identifier), \(expression))"
+		return "VarDeclarationNode(\(isFinal), \(identifier), \(expression))"
 	}
 }
 

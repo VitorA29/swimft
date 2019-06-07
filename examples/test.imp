@@ -1,4 +1,5 @@
-#just a test file for debug
-y:=3
-x=&y
-w=y
+#simple test for imp-1
+let var x=1
+in
+	x:=x+2
+end

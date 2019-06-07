@@ -8,7 +8,7 @@ UBUNTU_VERSION_NUMBER = 18
 UBUNTU_SUBVERSION_NUMBER = 04
 SWIFT_RELEASE = swift-$(SWIFT_RELEASE_VERSION_NUMBER)-RELEASE-ubuntu$(UBUNTU_VERSION_NUMBER).$(UBUNTU_SUBVERSION_NUMBER)
 SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
-TEST_FLAGS =
+TEST_FLAGS = -tokens -ast_imp
 
 .SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment execute_imp_zero
 
@@ -16,11 +16,11 @@ all: download_swift build execute_imp_one
 
 execute_output: compile_src
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/test.imp $(TEST_FLAGS);
-	
+
 execute_imp_one:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/simple_test.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_reference.imp;
-	
+
 execute_imp_zero:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_zero/simple_test.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_zero/loop_test.imp;
@@ -56,13 +56,12 @@ clean_output:
 	if [ -d $(OUTPUT_FOLDER) ]; \
 	then \
 		rm -r $(OUTPUT_FOLDER); fi
-	
+
 clean_enviroment:
 	if [ -d $(ENV) ]; \
 	then \
 		rm -r $(ENV); fi
-	
-build: clean_output compile_src
-	
-reset: clean_enviroment download_swift build
 
+build: clean_output compile_src
+
+reset: clean_enviroment download_swift build

@@ -157,8 +157,6 @@ public class Parser
 				return try parseAssign(identifierNode: identifierNode)
 			case Token.OPERATOR:
 				return try parseBinaryOp(node: identifierNode)
-			case Token.INITIALIZER:
-				return try parseInitializer()
 			default:
 				return identifierNode
 		}
@@ -481,13 +479,18 @@ public class Parser
 	/// - Return
 	/// 	- The associated declaration node.
 	/// #END_DOC
-	private func parseInitializer () throws -> DeclarationNode
+	private func parseDeclaration () throws -> DeclarationNode
 	{
-		guard case Token.DEC(op) = tokens.pop() else
+		guard case let Token.DEC(op) = tokens.pop() else
 		{
 			throw ParserError.UnexpectedToken
 		}
 		let identifier: IdentifierNode = try parseIdentifier()
+		
+		guard case Token.INITIALIZER = tokens.pop() else
+		{
+			throw ParserError.UnexpectedToken
+		}
 		
 		var final: Bool
 		switch(op)
@@ -502,7 +505,7 @@ public class Parser
 				throw ParserError.UndefinedOperator(op)
 		}
 		let expression = try parseExpression()
-		return DeclarationNode(isFinal: final, identifier: identifierNode, expression: expression)
+		return DeclarationNode(isFinal: final, identifier: identifier, expression: expression)
 	}
 
 	/// #START_DOC
@@ -510,14 +513,14 @@ public class Parser
 	/// - Return
 	/// 	- The associated block node.
 	/// #END_DOC
-	private func parseBlock () throws -> DeclarationNode
+	private func parseBlock () throws -> BlockNode
 	{
 		guard case Token.LET = tokens.pop() else
 		{
 			throw ParserError.UnexpectedToken
 		}
 
-		let declaration = try parseInitializer()
+		let declaration: DeclarationNode = try parseDeclaration()
 		
 		guard case Token.IN = tokens.pop() else
 		{
@@ -539,7 +542,7 @@ public class Parser
 				break
 			}
 		}
-		return DeclarationNode(identifier: identifierNode, expression: expression)
+		return BlockNode(declaration: declaration, command: commandForest)
 	}
 	
 	/// #START_DOC
@@ -560,6 +563,8 @@ public class Parser
 			case Token.NOP:
 				tokens.skip()
 				return NoOpNode()
+			case Token.LET:
+				return try parseBlock()
 			default:
 				return try parseExpression()
 		}

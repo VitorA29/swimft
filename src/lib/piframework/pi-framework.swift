@@ -217,7 +217,7 @@ public class PiFramework
 			}
 			return UnaryOperatorNode(operation: operation, expression: identifier)
 		}
-		else if ast_imp is DeclarationNode
+		else if ast_imp is VarDeclarationNode
 		{
 			let node: DeclarationNode = ast_imp as! DeclarationNode
 			let identifier: AtomNode = try translateNode(ast_imp: node.identifier) as! AtomNode
@@ -227,7 +227,7 @@ public class PiFramework
 		else if ast_imp is BlockNode
 		{
 			let node: BlockNode = ast_imp as! BlockNode
-			let declaration: AST_Pi = try translateNode(ast_imp: node.declaration) as! AtomNode
+			let declaration: AST_Pi = try translateNode(ast_imp: node.declaration) as! BinaryOperatorNode
 			let command: AST_Pi = try translate(ast_imp: node.command)
 			return BinaryOperatorNode(operation: "Block", lhs: declaration, rhs: command)
 		}
@@ -438,10 +438,8 @@ public class PiFramework
 					value.push(value: map)
 					return
 				case "#BLKDEC":
-					
 					return
 				case "#BLKCMD":
-					
 					return
 				default:
 					throw AutomatonError.UndefinedOpCode(functNode.function)
@@ -501,6 +499,7 @@ public class PiFramework
 					control.push(value: operatorNode.rhs)
 					control.push(value: PiOpCodeNode(function: "#BLKDEC"))
 					control.push(value: operatorNode.lhs)
+					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
@@ -520,7 +519,7 @@ public class PiFramework
 					break
 				case "Block":
 					// aqui deveria inserir as Locations do contexto atual
-					value.push(value: environment)
+					break
 				default:
 					control.push(value: operatorNode.lhs)
 					control.push(value: operatorNode.rhs)
