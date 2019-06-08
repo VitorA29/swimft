@@ -14,7 +14,7 @@ public class ExpressionHandler
 	/// #END_DOC
 	internal func popNumValue(value: Pile<Automaton_Value>) throws -> Float
 	{
-		if !(value.peek() is AtomNode)
+		if value.isEmpty() || !(value.peek() is AtomNode)
 		{
 			throw AutomatonError.ExpectedAtomNode
 		}
@@ -31,7 +31,7 @@ public class ExpressionHandler
 	/// #END_DOC
 	internal func popBooValue(value: Pile<Automaton_Value>) throws -> Bool
 	{
-		if !(value.peek() is AtomNode)
+		if value.isEmpty() || !(value.peek() is AtomNode)
 		{
 			throw AutomatonError.ExpectedAtomNode
 		}

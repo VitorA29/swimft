@@ -262,16 +262,19 @@ public class PiFramework
 			let last_state: String = "{ n: \(steps_count), c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile), l: \(localizableList) }"
 			do
 			{
+				if envConfiguration.state_print
+				{
+					print("\(last_state)")
+				}
 				try self.delta(control: control_pile, value: value_pile, storage: &storage_pile, enviroment: &enviroment_pile, localizableList: &localizableList)
 			}
 			catch
 			{
-				print("\(last_state)")
+				if !envConfiguration.state_print
+				{
+					print("\(last_state)")
+				}
 				throw error
-			}
-			if envConfiguration.state_print
-			{
-				print("\(last_state)")
 			}
 			steps_count += 1
 		}while(!control_pile.isEmpty())
@@ -283,7 +286,7 @@ public class PiFramework
 	/// #END_DOC
 	private func popNumValue(value: Pile<Automaton_Value>) throws -> Float
 	{
-		if !(value.peek() is AtomNode)
+		if value.isEmpty() || !(value.peek() is AtomNode)
 		{
 			throw AutomatonError.ExpectedAtomNode
 		}
@@ -300,7 +303,7 @@ public class PiFramework
 	/// #END_DOC
 	private func popBooValue(value: Pile<Automaton_Value>) throws -> Bool
 	{
-		if !(value.peek() is AtomNode)
+		if value.isEmpty() || !(value.peek() is AtomNode)
 		{
 			throw AutomatonError.ExpectedAtomNode
 		}
@@ -317,7 +320,7 @@ public class PiFramework
 	/// #END_DOC
 	private func popIdValue(value: Pile<Automaton_Value>) throws -> String
 	{
-		if !(value.peek() is AtomNode)
+		if value.isEmpty() || !(value.peek() is AtomNode)
 		{
 			throw AutomatonError.ExpectedAtomNode
 		}
@@ -395,6 +398,10 @@ public class PiFramework
 					break
 				// Other functions
 				case "#ASSIGN":
+					if value.isEmpty() || !(value.peek() is AtomNode)
+					{
+						throw AutomatonError.ExpectedAtomNode
+					}
 					let nodeAsgValue: AtomNode = value.pop() as! AtomNode
 					let idName: String = try popIdValue(value: value)
 					if enviroment[idName] == nil
@@ -431,17 +438,26 @@ public class PiFramework
 					}
 					return
 				case "#BIND":
-					if !(value.peek() is Automaton_Bindable)
+					if value.isEmpty() || !(value.peek() is Automaton_Bindable)
 					{
 						throw AutomatonError.ExpectedBindableNode
 					}
 					let bindValue: Automaton_Bindable = value.pop() as! Automaton_Bindable
 					let idName: String = try popIdValue(value: value)
-					let map: Map<String, Automaton_Bindable> = Map<String, Automaton_Bindable>(key: idName, value: bindValue)
-					value.push(value: map)
+					var bindableCollection: BindableCollection
+					if !value.isEmpty() && value.peek() is BindableCollection
+					{
+						bindableCollection = value.pop() as! BindableCollection
+						bindableCollection.add(key: idName, value: bindValue)
+					}
+					else
+					{
+						bindableCollection = BindableCollection(key: idName, value: bindValue)
+					}
+					value.push(value: bindableCollection)
 					return
 				case "#REF":
-					if !(value.peek() is Automaton_Storable)
+					if value.isEmpty() || !(value.peek() is Automaton_Storable)
 					{
 						throw AutomatonError.ExpectedStorableNode
 					}

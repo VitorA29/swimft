@@ -138,15 +138,52 @@ public struct Localizable: Automaton_Bindable, Automaton_Storable
 }
 
 /// #START_DOC
-/// - This defines a pair of key and value, it's just a simplification of a Dictionary.
+/// - This defines a pair of key and value, it's just a class for wrapping a Dictionary.
 /// #END_DOC
-public struct Map<K,V>: Automaton_Value
+public class BindableCollection: Automaton_Value
 {
-	let key: K
-	var value: V
+	private var collection: [String: Automaton_Bindable]
+	
+	/// #START_DOC
+	/// - This class initializer.
+	/// - Parameter(s)
+	/// 	- key: A optional value representing a new entry key, if nothing is passed it will assume the default value of nil.
+	/// 	- value: A optional value representing a new entry value, if nothing is passed it will assume the default value of nil.
+	/// - Return
+	/// 	- A new instance of bindable collection object.
+	/// #END_DOC
+	init (key:String? = nil, value: Automaton_Bindable? = nil)
+	{
+		self.collection = [String: Automaton_Bindable]()
+		if key != nil && value != nil
+		{
+			self.collection[key!] = value!
+		}
+	}
+	
+	/// #START_DOC
+	/// - Function for adding a new entry to the wrapped collection.
+	/// - Parameter(s)
+	/// 	- key: A new entry key.
+	/// 	- value: A new entry value.
+	/// #END_DOC
+	public func add (key: String, value: Automaton_Bindable)
+	{
+		self.collection[key] = value
+	}
+	
+	/// #START_DOC
+	/// - This is the getter for the collection element.
+	/// - Return
+	/// 	- The wrapped dictionary element.
+	/// #END_DOC
+	public func getCollection () -> [String: Automaton_Bindable]
+	{
+		return self.collection
+	}
 	
 	public var description: String
 	{
-		return "\(key):\(value)"
+		return "\(collection)"
 	}
 }
