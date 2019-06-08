@@ -127,7 +127,7 @@ public struct PiOpCodeNode: AST_Pi_Extended
 /// #START_DOC
 /// - This defines the localizable struct to be used in the memory storage linking.
 /// #END_DOC
-public struct Localizable: Automaton_Bindable, Automaton_Storable
+public struct Localizable: Automaton_Value, Automaton_Bindable, Automaton_Storable
 {
 	let address: Int
 	
@@ -147,18 +147,17 @@ public class BindableCollection: Automaton_Value
 	/// #START_DOC
 	/// - This class initializer.
 	/// - Parameter(s)
-	/// 	- key: A optional value representing a new entry key, if nothing is passed it will assume the default value of nil.
-	/// 	- value: A optional value representing a new entry value, if nothing is passed it will assume the default value of nil.
+	/// 	- collection: A optional value representing a starting collection, if nothing is passed it will assume the default value of nil.
 	/// - Return
 	/// 	- A new instance of bindable collection object.
 	/// #END_DOC
-	init (key:String? = nil, value: Automaton_Bindable? = nil)
+	init (collection:[String: Automaton_Bindable]? = nil)
 	{
-		self.collection = [String: Automaton_Bindable]()
-		if key != nil && value != nil
+		if collection != nil
 		{
-			self.collection[key!] = value!
+			self.collection = collection
 		}
+		self.collection = [String: Automaton_Bindable]()
 	}
 	
 	/// #START_DOC

@@ -448,12 +448,12 @@ public class PiFramework
 					if !value.isEmpty() && value.peek() is BindableCollection
 					{
 						bindableCollection = value.pop() as! BindableCollection
-						bindableCollection.add(key: idName, value: bindValue)
 					}
 					else
 					{
-						bindableCollection = BindableCollection(key: idName, value: bindValue)
+						bindableCollection = BindableCollection()
 					}
+					bindableCollection.add(key: idName, value: bindValue)
 					value.push(value: bindableCollection)
 					return
 				case "#REF":
