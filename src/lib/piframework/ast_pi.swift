@@ -157,7 +157,10 @@ public class BindableCollection: Automaton_Value
 		{
 			self.collection = collection
 		}
-		self.collection = [String: Automaton_Bindable]()
+		else
+		{
+			self.collection = [String: Automaton_Bindable]()
+		}
 	}
 	
 	/// #START_DOC
