@@ -8,7 +8,7 @@ UBUNTU_VERSION_NUMBER = 18
 UBUNTU_SUBVERSION_NUMBER = 04
 SWIFT_RELEASE = swift-$(SWIFT_RELEASE_VERSION_NUMBER)-RELEASE-ubuntu$(UBUNTU_VERSION_NUMBER).$(UBUNTU_SUBVERSION_NUMBER)
 SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
-TEST_FLAGS = -tokens -ast_imp
+TEST_FLAGS =-state
 
 .SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment execute_imp_zero
 
@@ -32,7 +32,7 @@ execute_imp_zero:
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \
-	./swiftc -o $(OUT_FROM_BIN)/swimft $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/lib/*/*.swift;
+	./swiftc -o $(OUT_FROM_BIN)/swimft $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/lib/**/*.swift;
 
 prepare_output:
 	if [ ! -d $(OUTPUT_FOLDER) ]; \

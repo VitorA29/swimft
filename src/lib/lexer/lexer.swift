@@ -106,17 +106,9 @@ private func matchName (string: String) -> Token?
 	{	
 		return .LET
 	}
-	else if string == "var"
+	else if string == "var" || string == "cons" 
 	{
-		return .DECVAR
-	}
-	else if string == "cons" 
-	{
-		return .DECCONS
-	}
-	else if string == "fn"
-	{
-		return .DECFN
+		return .DEC(string)
 	}
 	else if string == "in"
 	{

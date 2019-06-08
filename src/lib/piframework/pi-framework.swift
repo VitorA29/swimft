@@ -217,9 +217,16 @@ public class PiFramework
 			}
 			return UnaryOperatorNode(operation: operation, expression: identifier)
 		}
-		else if ast_imp is VarDeclarationNode
+		else if ast_imp is VariableNode
 		{
-			let node: DeclarationNode = ast_imp as! DeclarationNode
+			let node: VariableNode = ast_imp as! VariableNode
+			let identifier: AtomNode = try translateNode(ast_imp: node.identifier) as! AtomNode
+			let expression: AST_Pi = try translateNode(ast_imp: node.expression)
+			return BinaryOperatorNode(operation: "Bind", lhs: identifier, rhs: UnaryOperatorNode(operation: "Ref", expression: expression))
+		}
+		else if ast_imp is ConstantNode
+		{
+			let node: ConstantNode = ast_imp as! ConstantNode
 			let identifier: AtomNode = try translateNode(ast_imp: node.identifier) as! AtomNode
 			let expression: AST_Pi = try translateNode(ast_imp: node.expression)
 			return BinaryOperatorNode(operation: "Bind", lhs: identifier, rhs: expression)

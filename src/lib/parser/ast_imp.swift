@@ -6,13 +6,6 @@ public protocol AST_Imp: CustomStringConvertible
 }
 
 /// #START_DOC
-/// - This wraps all the forms of declarations(<declaration>).
-/// #END_DOC
-public protocol DeclarationNode: AST_Imp
-{
-}
-
-/// #START_DOC
 /// - This wraps all the forms of expressions(<expression>).
 /// #END_DOC
 public protocol ExpressionNode: AST_Imp
@@ -173,16 +166,39 @@ public struct ConditionalNode: AST_Imp
 	}
 }
 
+
 /// #START_DOC
-/// - This wrap the declaration operation(<declaration>).
+/// - This wraps all the forms of declarations(<declaration>).
 /// #END_DOC
-public struct VarDeclarationNode: DeclarationNode
+public protocol DeclarationNode: AST_Imp
+{
+}
+
+/// #START_DOC
+/// - This wrap the variable node(<var>).
+/// #END_DOC
+public struct VariableNode: DeclarationNode
 {
 	let identifier: IdentifierNode
 	let expression: ExpressionNode
+	
 	public var description: String
 	{
-		return "VarDeclarationNode(\(isFinal), \(identifier), \(expression))"
+		return "VariableNode(\(identifier), \(expression))"
+	}
+}
+
+/// #START_DOC
+/// - This wrap the constant node(<const>).
+/// #END_DOC
+public struct ConstantNode: DeclarationNode
+{
+	let identifier: IdentifierNode
+	let expression: ExpressionNode
+	
+	public var description: String
+	{
+		return "ConstantNode(\(identifier), \(expression))"
 	}
 }
 

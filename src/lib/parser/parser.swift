@@ -492,20 +492,17 @@ public class Parser
 			throw ParserError.UnexpectedToken
 		}
 		
-		var final: Bool
+		let expression = try parseExpression()
+		
 		switch(op)
 		{
 			case "var":
-				final = false
-				break
+				return VariableNode(identifier: identifier, expression: expression)
 			case "cons":
-				final = true
-				break
+				return ConstantNode(identifier: identifier, expression: expression)
 			default:
 				throw ParserError.UndefinedOperator(op)
 		}
-		let expression = try parseExpression()
-		return DeclarationNode(isFinal: final, identifier: identifier, expression: expression)
 	}
 
 	/// #START_DOC
