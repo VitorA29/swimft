@@ -33,6 +33,7 @@ public enum AutomatonError: Error
 	case ExpectedBindableNode
 	case ExpectedStorableNode
 	case UndefinedVariable
+	case ExpectedEnviroment
 }
 
 /// #START_DOC
@@ -469,8 +470,35 @@ public class PiFramework
 					value.push(value: localizable)
 					return
 				case "#BLKDEC":
+					let oldEnviroment: BindableCollection = BindableCollection(collection: enviroment)
+					if value.isEmpty() || !(value.peek() is BindableCollection)
+					{
+						throw AutomatonError.ExpectedEnviroment
+					}
+					let bindableCollection: BindableCollection = value.pop() as! BindableCollection
+					enviroment.merge(bindableCollection.getCollection()) { (_, new) in new }
+					value.push(value: oldEnviroment)
 					return
 				case "#BLKCMD":
+					if value.isEmpty() || !(value.peek() is BindableCollection)
+					{
+						throw AutomatonError.ExpectedEnviroment
+					}
+					let oldEnviroment: BindableCollection = value.pop() as! BindableCollection
+					enviroment = oldEnviroment.getCollection()
+					
+					let localizableToRemove: [Localizable] = localizableList
+					if value.isEmpty() || !(value.peek() is LocalizableCollection)
+					{
+						throw AutomatonError.ExpectedLocalizable
+					}
+					let localizableCollection: LocalizableCollection = value.pop() as! LocalizableCollection
+					localizableList = localizableCollection.getCollection()
+					
+					for localizable in localizableToRemove
+					{
+						storage.removeValue(forKey: localizable.address)
+					}
 					return
 				default:
 					throw AutomatonError.UndefinedOpCode(functNode.function)
@@ -525,12 +553,16 @@ public class PiFramework
 					break
 				case "Bind":
 					control.push(value: PiOpCodeNode(function: "#BIND"))
+					break
 				case "Block":
 					control.push(value: PiOpCodeNode(function: "#BLKCMD"))
 					control.push(value: operatorNode.rhs)
 					control.push(value: PiOpCodeNode(function: "#BLKDEC"))
 					control.push(value: operatorNode.lhs)
-					break
+					let localizableCollection: LocalizableCollection = LocalizableCollection(collection: localizableList)
+					localizableList = [Localizable]()
+					value.push(value: localizableCollection)
+					return
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
@@ -547,9 +579,6 @@ public class PiFramework
 				case "Assign", "Bind":
 					value.push(value: operatorNode.lhs)
 					control.push(value: operatorNode.rhs)
-					break
-				case "Block":
-					// aqui deveria inserir as Locations do contexto atual
 					break
 				default:
 					control.push(value: operatorNode.lhs)

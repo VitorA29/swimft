@@ -138,7 +138,7 @@ public struct Localizable: Automaton_Value, Automaton_Bindable, Automaton_Storab
 }
 
 /// #START_DOC
-/// - This defines a pair of key and value, it's just a class for wrapping a Dictionary.
+/// - This is just a class for wrapping a Dictionary.
 /// #END_DOC
 public class BindableCollection: Automaton_Value
 {
@@ -155,7 +155,7 @@ public class BindableCollection: Automaton_Value
 	{
 		if collection != nil
 		{
-			self.collection = collection
+			self.collection = collection!
 		}
 		else
 		{
@@ -180,6 +180,48 @@ public class BindableCollection: Automaton_Value
 	/// 	- The wrapped dictionary element.
 	/// #END_DOC
 	public func getCollection () -> [String: Automaton_Bindable]
+	{
+		return self.collection
+	}
+	
+	public var description: String
+	{
+		return "\(collection)"
+	}
+}
+
+/// #START_DOC
+/// - This is just a class for wrapping a localizable colection.
+/// #END_DOC
+public class LocalizableCollection: Automaton_Value
+{
+	private var collection: [Localizable]
+	
+	/// #START_DOC
+	/// - This class initializer.
+	/// - Parameter(s)
+	/// 	- collection: A optional value representing a starting collection, if nothing is passed it will assume the default value of nil.
+	/// - Return
+	/// 	- A new instance of localizable collection object.
+	/// #END_DOC
+	init (collection: [Localizable]? = nil)
+	{
+		if collection != nil
+		{
+			self.collection = collection!
+		}
+		else
+		{
+			self.collection = [Localizable]()
+		}
+	}
+	
+	/// #START_DOC
+	/// - This is the getter for the collection element.
+	/// - Return
+	/// 	- The wrapped localizable collection element.
+	/// #END_DOC
+	public func getCollection () -> [Localizable]
 	{
 		return self.collection
 	}
