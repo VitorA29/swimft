@@ -32,6 +32,7 @@ public enum AutomatonError: Error
 	case ExpectedLocalizable
 	case ExpectedBindableNode
 	case ExpectedStorableNode
+	case UndefinedVariable
 }
 
 /// #START_DOC
@@ -254,13 +255,14 @@ public class PiFramework
 		let value_pile: Pile<Automaton_Value> = Pile<Automaton_Value>()
 		var storage_pile: [Int: Automaton_Storable] = [Int: Automaton_Storable]()
 		var enviroment_pile: [String: Automaton_Bindable] = [String: Automaton_Bindable]()
+		var localizableList: [Localizable] = [Localizable]()
 		var steps_count: Int = 0
 		repeat
 		{
-			let last_state: String = "{ n: \(steps_count), c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }"
+			let last_state: String = "{ n: \(steps_count), c: \(control_pile), v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile), l: \(localizableList) }"
 			do
 			{
-				try self.delta(control: control_pile, value: value_pile, storage: &storage_pile, enviroment: &enviroment_pile)
+				try self.delta(control: control_pile, value: value_pile, storage: &storage_pile, enviroment: &enviroment_pile, localizableList: &localizableList)
 			}
 			catch
 			{
@@ -273,7 +275,7 @@ public class PiFramework
 			}
 			steps_count += 1
 		}while(!control_pile.isEmpty())
-		print("{ v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile) }")
+		print("{ v: \(value_pile), s: \(storage_pile), e: \(enviroment_pile), l: \(localizableList) }")
 	}
 	
 	/// #START_DOC
@@ -330,7 +332,7 @@ public class PiFramework
 	/// #START_DOC
 	/// - Helper function for the automaton, this define the logic for change the state of the automaton based in the argument values.
 	/// #END_DOC
-	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<Automaton_Value>, storage: inout [Int: Automaton_Storable], enviroment: inout [String: Automaton_Bindable]) throws
+	private func delta (control: Pile<AST_Pi_Extended>, value: Pile<Automaton_Value>, storage: inout [Int: Automaton_Storable], enviroment: inout [String: Automaton_Bindable], localizableList: inout [Localizable]) throws
 	{
 		let command_tree: AST_Pi_Extended = control.pop()
 		if command_tree is PiOpCodeNode
@@ -395,22 +397,16 @@ public class PiFramework
 				case "#ASSIGN":
 					let nodeAsgValue: AtomNode = value.pop() as! AtomNode
 					let idName: String = try popIdValue(value: value)
-					let localizable: Localizable
-					if enviroment[idName] != nil
+					if enviroment[idName] == nil
 					{
-						let bindable: Automaton_Bindable = enviroment[idName]!
-						if !(bindable is Localizable)
-						{
-							throw AutomatonError.ExpectedLocalizable
-						}
-						localizable = bindable as! Localizable
+						throw AutomatonError.UndefinedVariable
 					}
-					else
+					let bindable: Automaton_Bindable = enviroment[idName]!
+					if !(bindable is Localizable)
 					{
-						localizable = Localizable(address: memorySpace)
-						memorySpace += 1
-						enviroment[idName] = localizable
+						throw AutomatonError.ExpectedLocalizable
 					}
+					let localizable: Localizable = bindable as! Localizable
 					storage[localizable.address] = nodeAsgValue
 					return
 				case "#LOOP":
@@ -443,6 +439,18 @@ public class PiFramework
 					let idName: String = try popIdValue(value: value)
 					let map: Map<String, Automaton_Bindable> = Map<String, Automaton_Bindable>(key: idName, value: bindValue)
 					value.push(value: map)
+					return
+				case "#REF":
+					if !(value.peek() is Automaton_Storable)
+					{
+						throw AutomatonError.ExpectedStorableNode
+					}
+					let storableValue: Automaton_Storable = value.pop() as! Automaton_Storable
+					let localizable: Localizable = Localizable(address: memorySpace)
+					memorySpace += 1
+					storage[localizable.address] = storableValue
+					localizableList.append(localizable)
+					value.push(value: localizable)
 					return
 				case "#BLKDEC":
 					return
@@ -569,6 +577,10 @@ public class PiFramework
 					}
 					let desiredValue: Automaton_Storable = storage[addressLocale.address]!
 					value.push(value: desiredValue)
+					break
+				case "Ref":
+					control.push(value: PiOpCodeNode(function: "#REF"))
+					control.push(value: operatorNode.expression)
 					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
