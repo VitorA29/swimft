@@ -26,7 +26,7 @@ release_imp_one_branch:
 release_imp_two_branch:
 	git checkout imp-two;
 
-execute_output: compile_src
+execute_test: compile_src
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/test.imp $(TEST_FLAGS);
 
 execute_imp_one:
