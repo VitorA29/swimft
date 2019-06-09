@@ -10,12 +10,21 @@ SWIFT_RELEASE = swift-$(SWIFT_RELEASE_VERSION_NUMBER)-RELEASE-ubuntu$(UBUNTU_VER
 SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
 TEST_FLAGS =-state
 
-.SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment execute_imp_zero execute_imp_one release_branch
+.SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment execute_imp_zero execute_imp_one release_branch release_imp_zero_branch release_imp_one_branch release_imp_two_branch
 
 all: release_branch download_swift build execute_imp_one
 
 release_branch:
-	echo "will set the right branch using checkout"
+	echo "will set the right branch";
+	
+release_imp_zero_branch:
+	git checkout imp-zero;
+	
+release_imp_one_branch:
+	git checkout imp-one;
+	
+release_imp_two_branch:
+	git checkout imp-two;
 
 execute_output: compile_src
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/test.imp $(TEST_FLAGS);
