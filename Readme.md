@@ -75,7 +75,7 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 The enviroment configuration is ensure by this logic, after everything set up(eq. at least a 'make' call) the swift source code is downloaded and it's dependences resolved(So in order of running this, a internet conection is required) and the Swimft executable is created in the 'output' folder, it's name is swimft.
 
 - 'make release_branch': This will change the branch to the latest release branch;
-- 'make branch\_imp\_zero': This will change the branch to the imp\_zero release branch;
+- 'make branch\_imp\_zero': This will change the branch to the imp-zero release branch;
 - 'make compile_src': This will compile the code;
 - 'make build': This will clean the compiled files and then will call compile\_src
 - 'make execute\_imp\_zero': This will execute the some Imp codes;
