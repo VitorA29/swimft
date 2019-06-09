@@ -85,11 +85,11 @@ The executable will expect at least the imp file name as parameter.
 #### Flags
 ```
 -tokens: Will notice the program to print the tokens list;
--stokens: Will notice the program to print the tokens list and stop execution after.
+-stokens: Will notice the program to print the tokens list and stop execution after;
 -ast_imp: Will notice the program to print the ImΠ AST;
--sast_imp: Will notice the program to print the ImΠ AST and stop execution after.
+-sast_imp: Will notice the program to print the ImΠ AST and stop execution after;
 -ast_pi: Will notice the program to print the Pi AST;
--sast_pi: Will notice the program to print the Pi AST and stop execution after.
+-sast_pi: Will notice the program to print the Pi AST and stop execution after;
 -state: Will notice the program to print every state of the automaton;
 -debug: Will active all print flags.
 ```
