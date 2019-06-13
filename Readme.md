@@ -12,7 +12,7 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 ```
 <S> ::=  <cmd> | <comment>
 
-<cmd> ::= 'nop' | <assign> | <while> | <conditional> | <expression> | <block>
+<cmd> ::= 'nop' | <assign> | <while> | <conditional> | <expression> | <block> | <print>
 
 <comment> ::= /#.*\s/
 
@@ -26,6 +26,8 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 <expression> ::= <bool_expression> | <reference> | <arith_expression> | '(' <expression> ')'
 
 <block> ::= 'let' <declaration> 'in' <cmd><S>* 'end'
+
+<print> ::= 'print' '(' <expression> ')'
 
 <identifier> ::= /(?!\d)\w+/ 
 
