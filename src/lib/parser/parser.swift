@@ -5,7 +5,7 @@ import Foundation
 /// #END_DOC
 public enum ParserError: Error
 {
-	case UnexpectedToken
+	case UnexpectedToken(String)
 	case UndefinedOperator(String)
 	
 	case ExpectedCharacter(Character)
@@ -88,7 +88,7 @@ public class Parser
 	{
 		guard case let Token.NUMBER(value) = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".NUMBER")
 		}
 		
 		return NumberNode(value: value)
@@ -103,7 +103,7 @@ public class Parser
 	{
 		guard case let Token.TRUTH(value) = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".TRUTH")
 		}
 		
 		return TruthNode(value: value)
@@ -118,7 +118,7 @@ public class Parser
 	{
 		guard case let Token.IDENTIFIER(name) = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".IDENTIFIER")
 		}
 		
 		return IdentifierNode(name: name)
@@ -129,7 +129,7 @@ public class Parser
 	{
 		guard case Token.ASSIGN = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".ASSIGN")
 		}
 		
 		let expression = try parseExpression()
@@ -204,7 +204,7 @@ public class Parser
 	{
 		guard case Token.NEGATION = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".NEGATION")
 		}
 		
 		let expressionWrapper: ExpressionNode = try parseExpression()
@@ -288,7 +288,7 @@ public class Parser
 			
 			guard case let Token.OPERATOR(op) = tokens.pop() else
 			{
-				throw ParserError.UnexpectedToken
+				throw ParserError.UnexpectedToken(".OPERATOR")
 			}
 			
 			var rhs = try parsePrimary()
@@ -348,7 +348,7 @@ public class Parser
 	{
 		guard case Token.WHILE = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".WHILE")
 		}
 		
 		let conditionWrapper: ExpressionNode = try parseExpression()
@@ -391,7 +391,7 @@ public class Parser
 	{
 		guard case Token.IF = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".IF")
 		}
 		
 		let conditionWrapper: ExpressionNode = try parseExpression()
@@ -449,7 +449,7 @@ public class Parser
 	{
 		guard case let Token.REF(op) = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".REF")
 		}
 		
 		let identifier: IdentifierNode = try parseIdentifier()
@@ -483,16 +483,16 @@ public class Parser
 	{
 		guard case let Token.DEC(op) = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".DEC")
 		}
 		let identifier: IdentifierNode = try parseIdentifier()
 		
 		guard case Token.INITIALIZER = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".INITIALIZER")
 		}
 		
-		let expression = try parseExpression()
+		let expression: ExpressionNode = try parseExpression()
 		
 		switch(op)
 		{
@@ -514,14 +514,14 @@ public class Parser
 	{
 		guard case Token.LET = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".LET")
 		}
 
 		let declaration: DeclarationNode = try parseDeclaration()
 		
 		guard case Token.IN = tokens.pop() else
 		{
-			throw ParserError.UnexpectedToken
+			throw ParserError.UnexpectedToken(".IN")
 		}
 		
 		var commandForest: [AST_Imp] = [AST_Imp]()
@@ -540,6 +540,33 @@ public class Parser
 			}
 		}
 		return BlockNode(declaration: declaration, command: commandForest)
+	}
+	
+	/// #START_DOC
+	/// - This process the logic of the <print> node.
+	/// - Return
+	/// 	- The associated print node.
+	/// #END_DOC
+	private func parsePrint () throws -> PrintNode
+	{
+		guard case Token.PRINT = tokens.pop() else
+		{
+			throw ParserError.UnexpectedToken(".PRINT")
+		}
+		
+		guard case Token.BRACKET_LEFT = tokens.pop() else
+		{
+			throw ParserError.ExpectedCharacter("(")
+		}
+		
+		let expression: ExpressionNode = try parseExpression()
+		
+		guard case Token.BRACKET_RIGHT = tokens.pop() else
+		{
+			throw ParserError.ExpectedCharacter(")")
+		}
+
+		return PrintNode(expression: expression)
 	}
 	
 	/// #START_DOC
@@ -562,6 +589,8 @@ public class Parser
 				return NoOpNode()
 			case Token.LET:
 				return try parseBlock()
+			case Token.PRINT:
+				return try parsePrint()
 			default:
 				return try parseExpression()
 		}

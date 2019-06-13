@@ -1,11 +1,20 @@
 # Test file for the reference operators
-let y=3
+let var y=3
 in
-	let x=&y
+	print(y)
+	let var x=&y
 	in
-		let z=(*x)
+		print(x)
+		let var z=(*x)
 		in
-			nop
+			print(z)
+			let var x=z
+			in
+				x:=x+10
+				print(z)
+				print(x)
+			end
+			print(x)
 		end
 	end
 end

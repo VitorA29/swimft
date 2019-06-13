@@ -1,0 +1,11 @@
+#test two let aligned using the same variable
+let var x=1
+in
+	x:=x+2
+	print(x)
+	let var x=-10
+	in
+		print(x)
+	end
+	print(x)
+end

@@ -33,6 +33,7 @@ public enum AutomatonError: Error
 	case ExpectedBindableNode
 	case ExpectedStorableNode
 	case UndefinedVariable
+	case UnexpectedImmutableVariable
 	case ExpectedEnviroment
 }
 
@@ -240,6 +241,12 @@ public class PiFramework
 			let command: AST_Pi = try translate(ast_imp: node.command)
 			return BinaryOperatorNode(operation: "Block", lhs: declaration, rhs: command)
 		}
+		else if ast_imp is PrintNode
+		{
+			let node: PrintNode = ast_imp as! PrintNode
+			let expression: AST_Pi = try translateNode(ast_imp: node.expression)
+			return UnaryOperatorNode(operation: "Print", expression: expression)
+		}
 		else
 		{
 			throw TranslatorError.UndefinedASTNode(ast_imp)
@@ -412,7 +419,7 @@ public class PiFramework
 					let bindable: Automaton_Bindable = enviroment[idName]!
 					if !(bindable is Localizable)
 					{
-						throw AutomatonError.ExpectedLocalizable
+						throw AutomatonError.UnexpectedImmutableVariable
 					}
 					let localizable: Localizable = bindable as! Localizable
 					storage[localizable.address] = nodeAsgValue
@@ -499,6 +506,14 @@ public class PiFramework
 					{
 						storage.removeValue(forKey: localizable.address)
 					}
+					return
+				case "#PRINT":
+					if value.isEmpty() || !(value.peek() is Automaton_Bindable)
+					{
+						throw AutomatonError.ExpectedBindableNode
+					}
+					let bindNode: Automaton_Bindable = value.pop() as! Automaton_Bindable
+					print("\(bindNode)")
 					return
 				default:
 					throw AutomatonError.UndefinedOpCode(functNode.function)
@@ -625,6 +640,10 @@ public class PiFramework
 					break
 				case "Ref":
 					control.push(value: PiOpCodeNode(function: "#REF"))
+					control.push(value: operatorNode.expression)
+					break
+				case "Print":
+					control.push(value: PiOpCodeNode(function: "#PRINT"))
 					control.push(value: operatorNode.expression)
 					break
 				default:

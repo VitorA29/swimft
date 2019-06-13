@@ -8,7 +8,7 @@ UBUNTU_VERSION_NUMBER = 18
 UBUNTU_SUBVERSION_NUMBER = 04
 SWIFT_RELEASE = swift-$(SWIFT_RELEASE_VERSION_NUMBER)-RELEASE-ubuntu$(UBUNTU_VERSION_NUMBER).$(UBUNTU_SUBVERSION_NUMBER)
 SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
-TEST_FLAGS =-state
+TEST_FLAGS =
 
 .SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment execute_imp_zero execute_imp_one release_branch
 
@@ -23,6 +23,9 @@ execute_output: compile_src
 execute_imp_one:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/simple_test.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_reference.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_assign_need_block.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_double_block.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_cons.imp;
 
 execute_imp_zero:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_zero/simple_test.imp;

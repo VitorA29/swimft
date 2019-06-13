@@ -214,3 +214,15 @@ public struct BlockNode: AST_Imp
 		return "BlockNode(\(declaration), [\(command) - \(command.count)])"
 	}
 }
+
+/// #START_DOC
+/// - This wrap the print operation(<print>).
+/// #END_DOC
+public struct PrintNode: AST_Imp
+{
+	let expression: ExpressionNode
+	public var description: String
+	{
+		return "PrintNode(\(expression))"
+	}
+}

@@ -1,4 +1,4 @@
-# simple test for imp-1
+# test cons assign value
 let cons x=3
 in
 	x:=x+10

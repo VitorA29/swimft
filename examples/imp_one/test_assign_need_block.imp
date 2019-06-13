@@ -1,0 +1,2 @@
+#test that assing a value to variable need a block creation
+x:=x+2
