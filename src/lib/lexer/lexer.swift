@@ -41,8 +41,8 @@ typealias TokenGenerator = (String) -> Token?
 /// #END_DOC
 let tokenList: [(String, TokenGenerator)] =
 [
-	("[ \t\n]", { _ in nil }),
-	("#.*(\n|$)", { _ in nil }), // ignore comments
+	("[ \t\r\n]", { _ in nil }),
+	("#.*(\r?\n|$)", { _ in nil }), // ignore comments
 	("(?![0-9])[a-zA-Z_][a-zA-Z_0-9]*", { (m: String) in matchName(string: m) }),
 	("(&|\\(\\*)", { (m: String) in .REF(m) }),
 	("\\(", { _ in .BRACKET_LEFT }),
@@ -51,7 +51,7 @@ let tokenList: [(String, TokenGenerator)] =
 	(":=", { _ in .ASSIGN }),
 	("=", { _ in .INITIALIZER }),
 	(",", { _ in .COMMA }),
-	("([1-9][0-9]*|0)?(\\.[0-9]*[1-9]|\\.0)?", { (m: String) in .NUMBER((m as NSString).floatValue) }),
+	("(([1-9][0-9]*|0)(\\.[0-9]*[1-9]|\\.0)?|\\.[0-9]*[1-9]|\\.0)", { (m: String) in .NUMBER((m as NSString).floatValue) }),
 ]
 
 /// #START_DOC
