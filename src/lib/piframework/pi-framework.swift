@@ -60,7 +60,7 @@ public class PiFramework
 	/// - Helper function for combining a pi forest node into a single pi node using CSeq.
 	/// 	This converts the <cmd>+ into a single AST_Pi node.
 	/// #END_DOC
-	private func combineAST_PiNodes (ast_pi_forest: [AST_Pi]) -> AST_Pi
+	private func combineAST_PiCmdNodes (ast_pi_forest: [AST_Pi]) -> AST_Pi
 	{
 		let head: AST_Pi = ast_pi_forest[0]
 		var tail: [AST_Pi] = ast_pi_forest
@@ -69,8 +69,25 @@ public class PiFramework
 		{
 			return head
 		}
-		let rhs: AST_Pi = combineAST_PiNodes(ast_pi_forest: tail)
+		let rhs: AST_Pi = combineAST_PiCmdNodes(ast_pi_forest: tail)
 		return BinaryOperatorNode(operation: "CSeq", lhs: head, rhs: rhs)
+	}
+
+	/// #START_DOC
+	/// - Helper function for combining a pi forest node into a single pi node using DSeq.
+	/// 	This converts the <dec>+ into a single AST_Pi node.
+	/// #END_DOC
+	private func combineAST_PiDecNodes (ast_pi_forest: [AST_Pi]) -> AST_Pi
+	{
+		let head: AST_Pi = ast_pi_forest[0]
+		var tail: [AST_Pi] = ast_pi_forest
+		tail.remove(at: 0)
+		if tail.isEmpty
+		{
+			return head
+		}
+		let rhs: AST_Pi = combineAST_PiDecNodes(ast_pi_forest: tail)
+		return BinaryOperatorNode(operation: "DSeq", lhs: head, rhs: rhs)
 	}
 
 	/// #START_DOC
@@ -84,7 +101,14 @@ public class PiFramework
 			let ast_pi = try translateNode(ast_imp: node)
 			ast_pi_forest.append(ast_pi)
 		}
-		return combineAST_PiNodes(ast_pi_forest: ast_pi_forest)
+		if ast_imp is [DeclarationNode]
+		{
+			return combineAST_PiDecNodes(ast_pi_forest: ast_pi_forest)
+		}
+		else
+		{
+			return combineAST_PiCmdNodes(ast_pi_forest: ast_pi_forest)
+		}
 	}
 
 	/// #START_DOC
@@ -237,7 +261,7 @@ public class PiFramework
 		else if ast_imp is BlockNode
 		{
 			let node: BlockNode = ast_imp as! BlockNode
-			let declaration: AST_Pi = try translateNode(ast_imp: node.declaration) as! BinaryOperatorNode
+			let declaration: AST_Pi = try translate(ast_imp: node.declaration)
 			let command: AST_Pi = try translate(ast_imp: node.command)
 			return BinaryOperatorNode(operation: "Block", lhs: declaration, rhs: command)
 		}
@@ -564,7 +588,7 @@ public class PiFramework
 				case "Loop":
 					control.push(value: PiOpCodeNode(function: "#LOOP"))
 					break
-				case "CSeq":
+				case "CSeq","DSeq":
 					break
 				case "Bind":
 					control.push(value: PiOpCodeNode(function: "#BIND"))

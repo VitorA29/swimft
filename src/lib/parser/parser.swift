@@ -493,7 +493,6 @@ public class Parser
 		}
 		
 		let expression: ExpressionNode = try parseExpression()
-		
 		switch(op)
 		{
 			case "var":
@@ -517,13 +516,26 @@ public class Parser
 			throw ParserError.UnexpectedToken(".LET")
 		}
 
-		let declaration: DeclarationNode = try parseDeclaration()
-		
-		guard case Token.IN = tokens.pop() else
+		var declarationForest: [DeclarationNode] = [DeclarationNode]()
+		while(true)
 		{
-			throw ParserError.UnexpectedToken(".IN")
+			let declaration: DeclarationNode = try parseDeclaration()
+			declarationForest.append(declaration)
+			if (tokens.isEmpty())
+			{
+				throw ParserError.ExpectedToken(Token.IN)
+			}
+			else if case Token.IN = tokens.peek()
+			{
+				tokens.skip()
+				break
+			}
+			else if case Token.COMMA = tokens.peek()
+			{
+				tokens.skip()
+			}
 		}
-		
+
 		var commandForest: [AST_Imp] = [AST_Imp]()
 		while(true)
 		{
@@ -539,7 +551,7 @@ public class Parser
 				break
 			}
 		}
-		return BlockNode(declaration: declaration, command: commandForest)
+		return BlockNode(declaration: declarationForest, command: commandForest)
 	}
 	
 	/// #START_DOC

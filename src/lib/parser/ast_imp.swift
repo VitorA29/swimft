@@ -207,11 +207,11 @@ public struct ConstantNode: DeclarationNode
 /// #END_DOC
 public struct BlockNode: AST_Imp
 {
-	let declaration: DeclarationNode
+	let declaration: [DeclarationNode]
 	let command: [AST_Imp]
 	public var description: String
 	{
-		return "BlockNode(\(declaration), [\(command) - \(command.count)])"
+		return "BlockNode([\(declaration) - \(declaration.count)], [\(command) - \(command.count)])"
 	}
 }
 

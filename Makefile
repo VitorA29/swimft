@@ -35,6 +35,7 @@ execute_imp_one:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_assign_need_block.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_double_block.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_cons.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_multi_variable_block.imp;
 
 execute_imp_zero:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_zero/simple_test.imp;
