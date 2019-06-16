@@ -84,14 +84,21 @@ public class Parser
 	/// - Return
 	/// 	- The relative Number node to the given token.
 	/// #END_DOC
-	private func parseNumber () throws -> ExpressionNode
+	private func parseNumber (isNegative: Bool = false) throws -> ExpressionNode
 	{
 		guard case let Token.NUMBER(value) = tokens.pop() else
 		{
 			throw ParserError.UnexpectedToken(".NUMBER")
 		}
-		
-		return NumberNode(value: value)
+
+		if isNegative
+		{
+			return NumberNode(value: -value)
+		}
+		else
+		{
+			return NumberNode(value: value)
+		}
 	}
 	
 	/// #START_DOC
@@ -227,6 +234,9 @@ public class Parser
 		{
 			case Token.IDENTIFIER:
 				return try parseIdentifier()
+			case Token.OPERATOR("-"):
+				tokens.skip()
+				return try parseNumber(isNegative: true)
 			case Token.NUMBER:
 				return try parseNumber()
 			case Token.TRUTH:

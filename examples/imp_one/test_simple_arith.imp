@@ -1,4 +1,4 @@
-# simple test for imp-1
+# simple test the basic arith operations
 let cons x = 3+(4-5)*2, cons y = 3<4, cons h = 3<4 == False
 in
     print(x)
@@ -17,3 +17,4 @@ in
         end
     end
 end
+        

@@ -27,7 +27,7 @@ release_imp_two_branch:
 	git checkout imp-two;
 
 execute_test: compile_src
-	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_multi_variable_block.imp $(TEST_FLAGS);
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/test.imp $(TEST_FLAGS);
 
 execute_imp_one:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/simple_test.imp;
