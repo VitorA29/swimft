@@ -382,52 +382,9 @@ public class PiFramework
 					try arithHandler.processOpCode(code: functNode.function, value: value)
 					return
 				// Logical Operators
-				case "#LT", "#LE", "#GT", "#GE":
+				case "#LT", "#LE", "#GT", "#GE", "#AND", "#OR", "#EQ", "#NOT":
 					try truthHandler.processOpCode(code: functNode.function, value: value)
 					return
-				case "#EQ":
-					operationResultFunction = "Boo"
-					var nodeHelper: AtomNode = value.pop() as! AtomNode
-					let type1: String = nodeHelper.operation
-					let value1: String = nodeHelper.value
-					
-					nodeHelper = value.pop() as! AtomNode
-					let type2: String = nodeHelper.operation
-					let value2: String = nodeHelper.value
-					if type1 != type2
-					{
-						if type1 == "Num"
-						{
-							throw AutomatonError.ExpectedNumValue
-						}
-						else if type1 == "Boo"
-						{
-							throw AutomatonError.ExpectedBooValue
-						}
-						else
-						{
-							throw AutomatonError.UnexpectedTypeValue
-						}
-					}
-					operationResult = "\(value1==value2)"
-					break
-				case "#AND":
-					operationResultFunction = "Boo"
-					let value1: Bool = try popBooValue(value: value)
-					let value2: Bool = try popBooValue(value: value)
-					operationResult = "\(value1&&value2)"
-					break
-				case "#OR":
-					operationResultFunction = "Boo"
-					let value1: Bool = try popBooValue(value: value)
-					let value2: Bool = try popBooValue(value: value)
-					operationResult = "\(value1||value2)"
-					break
-				case "#NOT":
-					operationResultFunction = "Boo"
-					let value: Bool = try popBooValue(value: value)
-					operationResult = "\(!value)"
-					break
 				// Other functions
 				case "#ASSIGN":
 					if value.isEmpty() || !(value.peek() is AtomNode)
@@ -542,8 +499,6 @@ public class PiFramework
 				default:
 					throw AutomatonError.UndefinedOpCode(functNode.function)
 			}
-			let node: AST_Pi = AtomNode(operation: operationResultFunction, value: operationResult)
-			value.push(value: node)
 		}
 		else if command_tree is TernaryOperatorNode
 		{
