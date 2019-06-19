@@ -500,23 +500,14 @@ public class PiFramework
 			let operatorNode: BinaryOperatorNode = command_tree as! BinaryOperatorNode
 			switch (operatorNode.operation)
 			{
-				// Aritimetical Operators
+				// Arithmetic Operators
 				case "Mul", "Div", "Sum", "Sub":
 					try arithHandler.processNode(node: operatorNode, control: control)
 					return
 				// Logical Operators
-				case "Lt", "Le", "Gt", "Ge":
+				case "Lt", "Le", "Gt", "Ge", "Eq", "And", "Or":
 					try truthHandler.processNode(node: operatorNode, control: control)
 					return
-				case "Eq":
-					control.push(value: PiOpCodeNode(function: "#EQ"))
-					break
-				case "And":
-					control.push(value: PiOpCodeNode(function: "#AND"))
-					break
-				case "Or":
-					control.push(value: PiOpCodeNode(function: "#OR"))
-					break
 				// Other functions
 				case "Assign":
 					control.push(value: PiOpCodeNode(function: "#ASSIGN"))
@@ -566,8 +557,7 @@ public class PiFramework
 			switch (operatorNode.operation)
 			{
 				case "Not":
-					control.push(value: PiOpCodeNode(function: "#NOT"))
-					control.push(value: operatorNode.expression)
+					try truthHandler.processNode(node: operatorNode, control: control)
 					break
 				case "DeRef":
 					let identifier: AtomNode = operatorNode.expression as! AtomNode
