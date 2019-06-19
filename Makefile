@@ -36,6 +36,7 @@ execute_imp_one:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_double_block.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_cons.imp;
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_multi_variable_block.imp;
+	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_one/test_simple_arith.imp;
 
 execute_imp_zero:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/imp_zero/simple_test.imp;
@@ -48,7 +49,9 @@ execute_imp_zero:
 
 compile_src: prepare_output
 	cd $(SWIFT_BIN) && \
-	./swiftc -o $(OUT_FROM_BIN)/swimft $(SRC_FROM_BIN)/main.swift $(SRC_FROM_BIN)/lib/**/*.swift;
+	./swiftc -o $(OUT_FROM_BIN)/swimft $(SRC_FROM_BIN)/main.swift \
+	$(SRC_FROM_BIN)/lib/**/*.swift \
+	$(SRC_FROM_BIN)/lib/**/**/*.swift;
 
 prepare_output:
 	if [ ! -d $(OUTPUT_FOLDER) ]; \

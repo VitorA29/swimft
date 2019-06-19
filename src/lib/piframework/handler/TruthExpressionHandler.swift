@@ -1,6 +1,6 @@
-public class TruthExpressionHandler: ExpressionHandler
+public class TruthExpressionHandler: PiFrameworkHandler
 {
-	override public func processNode(node: BinaryOperatorNode, control: Pile<AST_Pi_Extended>) throws
+	public func processNode(node: BinaryOperatorNode, control: Pile<AST_Pi_Extended>) throws
 	{
 		switch (node.operation)
 		{
@@ -57,7 +57,7 @@ public class TruthExpressionHandler: ExpressionHandler
 		value.push(value: result)
 	}
 	
-	private func processInequalityOperation(code: String, value: Pile<Automaton_Value>) throws
+	private func processJoinOperation(code: String, value: Pile<Automaton_Value>) throws
 	{
 		let value1: Bool = try popBooValue(value: value)
 		let value2: Bool = try popBooValue(value: value)
@@ -76,30 +76,28 @@ public class TruthExpressionHandler: ExpressionHandler
 		value.push(value: result)
 	}
 	
-	override public func processOpCode(code: String, value: Pile<Automaton_Value>) throws
+	public func processOpCode(code: String, value: Pile<Automaton_Value>) throws
 	{
 		switch(code)
 		{
-			case "#LT", "#LE", "#GT", "#GE", "#AND", "#OR":
-				try processBinaryTruthOperation(code: code, value: value)
+			case "#LT", "#LE", "#GT", "#GE":
+				try processInequalityOperation(code: code, value: value)
+				break
+			case "#AND", "#OR":
+				try processJoinOperation(code: code, value: value)
 				break
 			case "#EQ":
-				if value.isEmpty() || !(value.peek() is AtomNode)
-				{
-					throw AutomatonError.ExpectedAtomNode
-				}
-				
-				let type: String = value.peek().type
+				let nodeHelper: AtomNode = try popAtomNode(value: value)
 				var result: AtomNode
-				if type == "Num"
+				if nodeHelper.operation == "Num"
 				{
-					let value1: Float = try popNumValue(value: value)
+					let value1: Float = Float(nodeHelper.value)!
 					let value2: Float = try popNumValue(value: value)
 					result = AtomNode(operation: "Boo", value: "\(value1==value2)")
 				}
-				else if type == "Boo"
+				else if nodeHelper.operation == "Boo"
 				{
-					let value1: Bool = try popBooValue(value: value)
+					let value1: Bool = Bool(nodeHelper.value)!
 					let value2: Bool = try popBooValue(value: value)
 					result = AtomNode(operation: "Boo", value: "\(value1==value2)")
 				}
@@ -110,8 +108,8 @@ public class TruthExpressionHandler: ExpressionHandler
 				value.push(value: result)
 				break
 			case "#NOT":
-				let value: Bool = try popBooValue(value: value)
-				value.push(value: AtomNode(operation: "Boo", value: "\(!value)"))
+				let booValue: Bool = try popBooValue(value: value)
+				value.push(value: AtomNode(operation: "Boo", value: "\(!booValue)"))
 				break
 			default:
 				throw AutomatonError.UndefinedTruthOpCode(code)

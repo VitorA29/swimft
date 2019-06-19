@@ -314,23 +314,6 @@ public class PiFramework
 	}
 	
 	/// #START_DOC
-	/// - Helper function for getting a <number> value from the value pile.
-	/// #END_DOC
-	private func popNumValue(value: Pile<Automaton_Value>) throws -> Float
-	{
-		if value.isEmpty() || !(value.peek() is AtomNode)
-		{
-			throw AutomatonError.ExpectedAtomNode
-		}
-		let nodeHelper: AtomNode = value.pop() as! AtomNode
-		if nodeHelper.operation != "Num"
-		{
-			throw AutomatonError.ExpectedNumValue
-		}
-		return Float(nodeHelper.value)!
-	}
-	
-	/// #START_DOC
 	/// - Helper function for getting a <truth> value from the value pile.
 	/// #END_DOC
 	private func popBooValue(value: Pile<Automaton_Value>) throws -> Bool
@@ -373,18 +356,16 @@ public class PiFramework
 		if command_tree is PiOpCodeNode
 		{
 			let functNode: PiOpCodeNode = command_tree as! PiOpCodeNode
-			var operationResultFunction: String
-			var operationResult: String
 			switch(functNode.function)
 			{
 				// Aritimetical Operators
 				case "#MUL", "#DIV", "#SUM", "#SUB":
 					try arithHandler.processOpCode(code: functNode.function, value: value)
-					return
+					break
 				// Logical Operators
 				case "#LT", "#LE", "#GT", "#GE", "#AND", "#OR", "#EQ", "#NOT":
 					try truthHandler.processOpCode(code: functNode.function, value: value)
-					return
+					break
 				// Other functions
 				case "#ASSIGN":
 					if value.isEmpty() || !(value.peek() is AtomNode)
@@ -404,7 +385,7 @@ public class PiFramework
 					}
 					let localizable: Localizable = bindable as! Localizable
 					storage[localizable.address] = nodeAsgValue
-					return
+					break
 				case "#LOOP":
 					let conditionValue: Bool = try popBooValue(value: value)
 					let loop_node: BinaryOperatorNode = value.pop() as! BinaryOperatorNode
@@ -413,7 +394,7 @@ public class PiFramework
 						control.push(value: loop_node)
 						control.push(value: loop_node.rhs)
 					}
-					return
+					break
 				case "#COND":
 					let conditionValue: Bool = try popBooValue(value: value)
 					let cond_node: TernaryOperatorNode = value.pop() as! TernaryOperatorNode
@@ -425,7 +406,7 @@ public class PiFramework
 					{
 						control.push(value: cond_node.rhs)
 					}
-					return
+					break
 				case "#BIND":
 					if value.isEmpty() || !(value.peek() is Automaton_Bindable)
 					{
@@ -444,7 +425,7 @@ public class PiFramework
 					}
 					bindableCollection.add(key: idName, value: bindValue)
 					value.push(value: bindableCollection)
-					return
+					break
 				case "#REF":
 					if value.isEmpty() || !(value.peek() is Automaton_Storable)
 					{
@@ -456,7 +437,7 @@ public class PiFramework
 					storage[localizable.address] = storableValue
 					localizableList.append(localizable)
 					value.push(value: localizable)
-					return
+					break
 				case "#BLKDEC":
 					let oldEnviroment: BindableCollection = BindableCollection(collection: enviroment)
 					if value.isEmpty() || !(value.peek() is BindableCollection)
@@ -466,7 +447,7 @@ public class PiFramework
 					let bindableCollection: BindableCollection = value.pop() as! BindableCollection
 					enviroment.merge(bindableCollection.getCollection()) { (_, new) in new }
 					value.push(value: oldEnviroment)
-					return
+					break
 				case "#BLKCMD":
 					if value.isEmpty() || !(value.peek() is BindableCollection)
 					{
@@ -487,7 +468,7 @@ public class PiFramework
 					{
 						storage.removeValue(forKey: localizable.address)
 					}
-					return
+					break
 				case "#PRINT":
 					if value.isEmpty() || !(value.peek() is Automaton_Bindable)
 					{
@@ -495,7 +476,7 @@ public class PiFramework
 					}
 					let bindNode: Automaton_Bindable = value.pop() as! Automaton_Bindable
 					print("\(bindNode)")
-					return
+					break
 				default:
 					throw AutomatonError.UndefinedOpCode(functNode.function)
 			}

@@ -1,6 +1,6 @@
-public class ArithExpressionHandler: ExpressionHandler
+public class ArithExpressionHandler: PiFrameworkHandler
 {
-	override public func processNode(node: BinaryOperatorNode, control: Pile<AST_Pi_Extended>) throws
+	public func processNode(node: BinaryOperatorNode, control: Pile<AST_Pi_Extended>) throws
 	{
 		switch (node.operation)
 		{
@@ -23,7 +23,7 @@ public class ArithExpressionHandler: ExpressionHandler
 		control.push(value: node.rhs)
 	}
 	
-	override public func processOpCode(code: String, value: Pile<Automaton_Value>) throws
+	public func processOpCode(code: String, value: Pile<Automaton_Value>) throws
 	{
 		let value1: Float = try popNumValue(value: value)
 		let value2: Float = try popNumValue(value: value)
