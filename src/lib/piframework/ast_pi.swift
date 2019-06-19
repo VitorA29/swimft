@@ -111,6 +111,14 @@ public struct AtomNode: AST_Pi, Automaton_Bindable, Automaton_Storable
 	}
 }
 
+extension Float: Automaton_Value, Automaton_Bindable, Automaton_Storable
+{
+}
+
+extension Bool: Automaton_Value, Automaton_Bindable, Automaton_Storable
+{
+}
+
 /// #START_DOC
 /// - This node defines the extension for the AST_Pi, used by the Pi-Framework.
 /// #END_DOC

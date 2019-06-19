@@ -40,24 +40,22 @@ public class ArithExpressionHandler: PiFrameworkHandler
 	{
 		let value1: Float = try popNumValue(value: value)
 		let value2: Float = try popNumValue(value: value)
-		var result: AtomNode
 		switch(code)
 		{
 			case "#MUL":
-				result = AtomNode(operation: "Num", value: "\(value1*value2)")
+				value.push(value: value1 * value2)
 				break
 			case "#DIV":
-				result = AtomNode(operation: "Num", value: "\(value1/value2)")
+				value.push(value: value1 / value2)
 				break
 			case "#SUM":
-				result = AtomNode(operation: "Num", value: "\(value1+value2)")
+				value.push(value: value1 + value2)
 				break
 			case "#SUB":
-				result = AtomNode(operation: "Num", value: "\(value1-value2)")
+				value.push(value: value1 - value2)
 				break
 			default:
 					throw AutomatonError.UndefinedArithOpCode(code)
 		}
-		value.push(value: result)
 	}
 }

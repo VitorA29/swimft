@@ -66,25 +66,23 @@ public class TruthExpressionHandler: PiFrameworkHandler
 	{
 		let value1: Float = try popNumValue(value: value)
 		let value2: Float = try popNumValue(value: value)
-		var result: AtomNode
 		switch(code)
 		{
 			case "#LT":
-				result = AtomNode(operation: "Boo", value: "\(value1<value2)")
+				value.push(value: value1 < value2)
 				break
 			case "#LE":
-				result = AtomNode(operation: "Boo", value: "\(value1<=value2)")
+				value.push(value: value1 <= value2)
 				break
 			case "#GT":
-				result = AtomNode(operation: "Boo", value: "\(value1>value2)")
+				value.push(value: value1 > value2)
 				break
 			case "#GE":
-				result = AtomNode(operation: "Boo", value: "\(value1>=value2)")
+				value.push(value: value1 >= value2)
 				break
 			default:
 					throw AutomatonError.UndefinedTruthOpCode(code)
 		}
-		value.push(value: result)
 	}
 	
 	/// #START_DOC
@@ -95,19 +93,17 @@ public class TruthExpressionHandler: PiFrameworkHandler
 	{
 		let value1: Bool = try popBooValue(value: value)
 		let value2: Bool = try popBooValue(value: value)
-		var result: AtomNode
 		switch(code)
 		{
 			case "#AND":
-				result = AtomNode(operation: "Boo", value: "\(value1&&value2)")
+				value.push(value: value1 && value2)
 				break
 			case "#OR":
-				result = AtomNode(operation: "Boo", value: "\(value1||value2)")
+				value.push(value: value1 || value2)
 				break
 			default:
 					throw AutomatonError.UndefinedTruthOpCode(code)
 		}
-		value.push(value: result)
 	}
 	
 	/// #START_DOC
@@ -130,29 +126,26 @@ public class TruthExpressionHandler: PiFrameworkHandler
 				try processJoinOperation(code: code, value: value)
 				break
 			case "#EQ":
-				let nodeHelper: AtomNode = try popAtomNode(value: value)
-				var result: AtomNode
-				if nodeHelper.operation == "Num"
+				if value.peek() is Float
 				{
-					let value1: Float = Float(nodeHelper.value)!
+					let value1: Float = try popNumValue(value: value)
 					let value2: Float = try popNumValue(value: value)
-					result = AtomNode(operation: "Boo", value: "\(value1==value2)")
+					value.push(value: value1 == value2)
 				}
-				else if nodeHelper.operation == "Boo"
+				else if value.peek() is Bool
 				{
-					let value1: Bool = Bool(nodeHelper.value)!
+					let value1: Bool = try popBooValue(value: value)
 					let value2: Bool = try popBooValue(value: value)
-					result = AtomNode(operation: "Boo", value: "\(value1==value2)")
+					value.push(value: value1 == value2)
 				}
 				else
 				{
 					throw AutomatonError.UnexpectedTypeValue
 				}
-				value.push(value: result)
 				break
 			case "#NOT":
 				let booValue: Bool = try popBooValue(value: value)
-				value.push(value: AtomNode(operation: "Boo", value: "\(!booValue)"))
+				value.push(value: !booValue)
 				break
 			default:
 				throw AutomatonError.UndefinedTruthOpCode(code)

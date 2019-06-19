@@ -24,16 +24,11 @@ extension PiFrameworkHandler
 	/// #END_DOC
 	func popNumValue(value: Pile<Automaton_Value>) throws -> Float
 	{
-		if value.isEmpty() || !(value.peek() is AtomNode)
-		{
-			throw AutomatonError.ExpectedAtomNode
-		}
-		let nodeHelper: AtomNode = value.pop() as! AtomNode
-		if nodeHelper.operation != "Num"
+		if value.isEmpty() || !(value.peek() is Float)
 		{
 			throw AutomatonError.ExpectedNumValue
 		}
-		return Float(nodeHelper.value)!
+		return value.pop() as! Float
 	}
 	
 	/// #START_DOC
@@ -41,16 +36,11 @@ extension PiFrameworkHandler
 	/// #END_DOC
 	func popBooValue(value: Pile<Automaton_Value>) throws -> Bool
 	{
-		if value.isEmpty() || !(value.peek() is AtomNode)
-		{
-			throw AutomatonError.ExpectedAtomNode
-		}
-		let nodeHelper: AtomNode = value.pop() as! AtomNode
-		if nodeHelper.operation != "Boo"
+		if value.isEmpty() || !(value.peek() is Bool)
 		{
 			throw AutomatonError.ExpectedBooValue
 		}
-		return Bool(nodeHelper.value)!
+		return value.pop() as! Bool
 	}
 
 	/// #START_DOC

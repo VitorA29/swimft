@@ -35,6 +35,7 @@ public enum AutomatonError: Error
 	case UndefinedVariable
 	case UnexpectedImmutableVariable
 	case ExpectedEnviroment
+	case ExpectedStorableValue
 }
 
 /// #START_DOC
@@ -318,16 +319,11 @@ public class PiFramework
 	/// #END_DOC
 	private func popBooValue(value: Pile<Automaton_Value>) throws -> Bool
 	{
-		if value.isEmpty() || !(value.peek() is AtomNode)
-		{
-			throw AutomatonError.ExpectedAtomNode
-		}
-		let nodeHelper: AtomNode = value.pop() as! AtomNode
-		if nodeHelper.operation != "Boo"
+		if value.isEmpty() || !(value.peek() is Bool)
 		{
 			throw AutomatonError.ExpectedBooValue
 		}
-		return Bool(nodeHelper.value)!
+		return value.pop() as! Bool
 	}
 	
 	/// #START_DOC
@@ -368,11 +364,11 @@ public class PiFramework
 					break
 				// Other functions
 				case "#ASSIGN":
-					if value.isEmpty() || !(value.peek() is AtomNode)
+					if value.isEmpty() || !(value.peek() is Automaton_Storable)
 					{
-						throw AutomatonError.ExpectedAtomNode
+						throw AutomatonError.ExpectedStorableValue
 					}
-					let nodeAsgValue: AtomNode = value.pop() as! AtomNode
+					let nodeAsgValue: Automaton_Storable = value.pop() as! Automaton_Storable
 					let idName: String = try popIdValue(value: value)
 					if enviroment[idName] == nil
 					{
@@ -606,8 +602,10 @@ public class PiFramework
 			switch (operatorNode.operation)
 			{
 				case "Num":
+					value.push(value: Float(operatorNode.value)!)
 					break
 				case "Boo":
+					value.push(value: Bool(operatorNode.value)!)
 					break
 				case "Id":
 					if enviroment[operatorNode.value] == nil
@@ -628,11 +626,10 @@ public class PiFramework
 					{
 						value.push(value: enviroment[operatorNode.value]!)
 					}
-					return
+					break
 				default:
 					throw AutomatonError.UndefinedOperation(operatorNode.operation)
 			}
-			value.push(value: operatorNode)
 		}
 		else if command_tree is OnlyOperatorNode
 		{
