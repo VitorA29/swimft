@@ -34,7 +34,7 @@ public class ArithExpressionHandler: PiFrameworkHandler
 	/// #START_DOC
 	/// - Handler for perform the relative arithmetic operation with the desired values.
 	/// 	Here the below delta match will occur,  meaning that `operationOpCode` will be one of '#SUM', '#MUL', '#DIV' and '#SUB' and `aritimetic_operator` will be it relative arithmetic operator.
-	/// 	δ(`operationOpCode` :: C, Num(N₁) :: Num(N₂) :: V, S) = δ(C, N₁ `aritimetic_operator` N₂ :: V, S)
+	/// 	δ(`operationOpCode` :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ `aritimetic_operator` N₂ :: V, S)
 	/// #END_DOC
 	public func processOpCode(code: String, value: Pile<Automaton_Value>) throws
 	{

@@ -1,12 +1,12 @@
 /// #START_DOC
-/// - Handler for all operations relative to <bool_expression> ramifications.
+/// - Handler for all operations relative to <logical_expression> ramifications.
 /// #END_DOC
 public class TruthExpressionHandler: PiFrameworkHandler
 {
 	/// #START_DOC
 	/// - Handler for the analysis of a node contening a logic operation.
 	/// 	Here the below delta matchs will occur,  meaning that `operation` will be one of 'Lt', 'Le', 'Gt', 'Ge', 'Eq', 'And' and 'Or' and `operationOpCode` will be it relative operation code form of the `operation`.
-	/// 	δ(`operation`(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #`operationOpCode` :: C, V, S)
+	/// 	δ(`operation`(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: `operationOpCode` :: C, V, S)
 	/// #END_DOC
 	public func processNode(node: BinaryOperatorNode, control: Pile<AST_Pi_Extended>) throws
 	{
@@ -60,7 +60,7 @@ public class TruthExpressionHandler: PiFrameworkHandler
 	
 	/// #START_DOC
 	/// - Helper function for handling with inequality operations, here the below math will occur and the following pi operations codes will be processed '#LT', '#LE', '#GT' and '#GE'.
-	/// 	δ(`operationOpCode` :: C, Num(N₁) :: Num(N₂) :: V, S) = δ(C, N₁ `inequality_operator` N₂ :: V, S)
+	/// 	δ(`operationOpCode` :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ `inequality_operator` N₂ :: V, S)
 	/// #END_DOC
 	private func processInequalityOperation(code: String, value: Pile<Automaton_Value>) throws
 	{
@@ -86,8 +86,8 @@ public class TruthExpressionHandler: PiFrameworkHandler
 	}
 	
 	/// #START_DOC
-	/// - Helper function for handling with combination logic operations, here the below math will occur and the following pi operations codes will be processed '#AND' and '#OR'.
-	/// 	δ(`operationOpCode` :: C, Boo(B₁) :: Boo(B₂) :: V, S) = δ(C, B₁ `logical_operator` B₂ :: V, S)
+	/// - Helper function for handling with logical connectives, here the below math will occur and the following pi operations codes will be processed '#AND' and '#OR'.
+	/// 	δ(`operationOpCode` :: C, B₁ :: B₂ :: V, S) = δ(C, B₁ `logical_operator` B₂ :: V, S)
 	/// #END_DOC
 	private func processJoinOperation(code: String, value: Pile<Automaton_Value>) throws
 	{
@@ -109,11 +109,11 @@ public class TruthExpressionHandler: PiFrameworkHandler
 	/// #START_DOC
 	/// - Handler for perform the relative logial operation with the desired values.
 	/// 	Here the below delta match will occur,  meaning that `operationOpCode` will be one of '#LT', '#LE', '#GT' and '#GE' and `inequality_operator` will be it relative inequality operator.
-	/// 	δ(`operationOpCode` :: C, Num(N₁) :: Num(N₂) :: V, S) = δ(C, N₁ `inequality_operator` N₂ :: V, S)
+	/// 	δ(`operationOpCode` :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ `inequality_operator` N₂ :: V, S)
 	/// 	Here the below delta match will occur,  meaning that `operationOpCode` will be one of '#AND' and '#OR' and `logical_operator` will be it relative logical operator.
-	/// 	δ(`operationOpCode` :: C, Boo(B₁) :: Boo(B₂) :: V, S) = δ(C, B₁ `logical_operator` B₂ :: V, S)
+	/// 	δ(`operationOpCode` :: C, B₁ :: B₂ :: V, S) = δ(C, B₁ `logical_operator` B₂ :: V, S)
 	/// 	Here the below delta match will occur, meaning that '#NOT' will be processed here.
-	/// 	δ(#NOT :: C, Boo(True) :: V, S) = δ(C, False :: V, S), δ(#NOT :: C, Boo(False) :: V, S) = δ(C, True :: V, S)
+	/// 	δ(#NOT :: C, True :: V, S) = δ(C, False :: V, S), δ(#NOT :: C, False :: V, S) = δ(C, True :: V, S)
 	/// #END_DOC
 	public func processOpCode(code: String, value: Pile<Automaton_Value>) throws
 	{

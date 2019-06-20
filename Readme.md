@@ -18,12 +18,12 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 
 <assign> ::= <identifier> ':=' <expression>
 
-<while> ::= 'while' <bool_expression> 'do' <cmd><S>* 'end'
+<while> ::= 'while' <logical_expression> 'do' <cmd><S>* 'end'
 
-<conditional> ::= 'if' <bool_expression> 'then' <cmd><S>* 'else' <cmd><S>* 'end'
-		| 'if' <bool_expression> 'then' <cmd><S>* 'end'
+<conditional> ::= 'if' <logical_expression> 'then' <cmd><S>* 'else' <cmd><S>* 'end'
+		| 'if' <logical_expression> 'then' <cmd><S>* 'end'
 
-<expression> ::= <bool_expression> | <reference> | <arith_expression> | '(' <expression> ')'
+<expression> ::= <logical_expression> | <reference> | <arith_expression>
 
 <block> ::= 'let' <declaration> 'in' <cmd><S>* 'end'
 
@@ -31,43 +31,43 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 
 <identifier> ::= /(?!\d)\w+/ 
 
-<bool_expression> ::= <truth> | <identifier> | <negation> | <equality> | <conjunction> | <disjunction>
-                | <lowerthan> | <lowereq> | <greaterthan> | <greatereq> | '(' <bool_expression> ')'
+<logical_expression> ::= <logical_classification> | <identifier> | <negation> | <equality> | <conjunction>
+				| <disjunction> | <lowerthan> | <lowereq> | <greaterthan> | <greatereq> | '(' <logical_expression> ')'
 		
 <reference> ::= '&' <identifier>  | '(*' <identifier> ')'
 
 <arith_expression> ::= <number> | <identifier> | <addition> | <subtraction>
-		| <multiplication> | <division> | '(' <arith_expression> ')'
+				| <multiplication> | <division> | '(' <arith_expression> ')'
 		
 <declaration> ::= 'var' <identifier> = <expression> | 'const' <identifier> = <expression>
 
-<truth> ::= 'True' | 'False'
+<logical_classification> ::= 'True' | 'False'
 
-<negation> ::= 'not' <bool_expression> 
+<negation> ::= 'not' <logical_expression> 
 
-<equality> ::= <arith_expression> "==" <arith_expression> | <bool_expression> "==" <bool_expression>
+<equality> ::= <arith_expression> '==' <arith_expression> | <logical_expression> '==' <logical_expression>
 
-<conjunction> ::= <bool_expression> "and" <bool_expression>
+<conjunction> ::= <logical_expression> 'and' <logical_expression>
 
-<disjunction> ::= <bool_expression> "or" <bool_expression>
+<disjunction> ::= <logical_expression> 'or' <logical_expression>
 
-<lowerthan> ::= <arith_expression> "<" <arith_expression>
+<lowerthan> ::= <arith_expression> '<' <arith_expression>
 
-<lowereq> ::= <arith_expression> "<=" <arith_expression>
+<lowereq> ::= <arith_expression> '<=' <arith_expression>
 
-<greaterthan> ::= <arith_expression> ">" <arith_expression>
+<greaterthan> ::= <arith_expression> '>' <arith_expression>
 
-<greatereq> ::= <arith_expression> ">=" <arith_expression>
+<greatereq> ::= <arith_expression> '>=' <arith_expression>
 
 <number> ::= /\d+/
 
-<addition> ::= <arith_expression> "+" <arith_expression>
+<addition> ::= <arith_expression> '+' <arith_expression>
 
-<subtraction> ::= <arith_expression> "-" <arith_expression>
+<subtraction> ::= <arith_expression> '-' <arith_expression>
 
-<multiplication> ::= <arith_expression> "*" <arith_expression>
+<multiplication> ::= <arith_expression> '*' <arith_expression>
 
-<division> ::= <arith_expression> "/" <arith_expression>
+<division> ::= <arith_expression> '/' <arith_expression>
 ```
 
 ## Instalation and Execution
