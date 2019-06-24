@@ -14,6 +14,7 @@ public enum ConfigurationError: Error
 public class Configuration
 {
 	let file_name: String
+	var code_print: Bool = false
 	var tokens_print: Bool = false
 	var stop_tokens: Bool = false
 	var ast_imp_print: Bool = false
@@ -21,6 +22,8 @@ public class Configuration
 	var ast_pi_print: Bool = false
 	var stop_ast_pi: Bool = false
 	var state_print: Bool = false
+	var state_n_print: Int = -1
+	var last_state_print: Bool = false
 	
 	/// #START_DOC
 	/// - This class initializer.
@@ -39,7 +42,8 @@ public class Configuration
 	/// #END_DOC
 	private func processArguments () throws
 	{
-		for i in 2..<CommandLine.arguments.count
+		var i: Int = 2
+		while i < CommandLine.arguments.count
 		{
 			switch (CommandLine.arguments[i])
 			{
@@ -48,34 +52,39 @@ public class Configuration
 					ast_imp_print = true
 					ast_pi_print = true
 					state_print = true
-					break
+				case "-stokens":
+					stop_tokens = true
+					fallthrough
 				case "-tokens":
 					tokens_print = true
-					break
+				case "-sast_imp":
+					stop_ast_imp = true
+					fallthrough
 				case "-ast_imp":
 					ast_imp_print = true
-					break
+				case "-sast_pi":
+					stop_ast_pi = true
+					fallthrough
 				case "-ast_pi":
 					ast_pi_print = true
-					break
 				case "-state":
-					state_print = true
-					break
-				case "-stokens":
-					tokens_print = true
-					stop_tokens = true
-					break
-				case "-sast_imp":
-					ast_imp_print = true
-					stop_ast_imp = true
-					break
-				case "-sast_pi":
-					ast_pi_print = true
-					stop_ast_pi = true
-					break
+					if i+1 < CommandLine.arguments.count && !CommandLine.arguments[i+1].starts(with: "-")
+					{
+						i+=1
+						state_n_print = Int(CommandLine.arguments[i])!
+					}
+					else
+					{
+						state_print = true
+					}
+				case "-last_state":
+					last_state_print = true
+				case "-code":
+					code_print = true
 				default:
 					throw ConfigurationError.InvalidArgument(CommandLine.arguments[i])				
 			}
+			i+=1
 		}
 	}
 }

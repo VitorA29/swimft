@@ -32,9 +32,13 @@ public func main ()
 	{
 		envConfiguration = try Configuration()
 		let code: String = try filePath()!
-		print("{ code: \(code) }")
-		let lexer = Lexer(input: code)
-		let tokens = lexer.tokenize()
+		if envConfiguration.code_print
+		{
+			print("{ code: \(code) }")
+		}
+
+		let lexer:Lexer<ImpToken> = Lexer<ImpToken>(input: code, processor: IMP_TOKEN_PROCESSOR) // should create a lexer factory
+		let tokens: [ImpToken] = try lexer.tokenize()
 		if envConfiguration.tokens_print
 		{
 			print("{ tokens: \(tokens) }")
@@ -44,8 +48,8 @@ public func main ()
 			}
 		}
 		
-		let parser = Parser(tokens: tokens)
-		let ast_imp: [AST_Imp] = try parser.parse()
+		let parser: ImpParser = try ImpParser(tokens: tokens) // should create a parser factory
+		let ast_imp: [AbstractSyntaxTreeImp] = try parser.parse() as! [AbstractSyntaxTreeImp]
 		if envConfiguration.ast_imp_print
 		{
 			print("{ ast_imp: \(ast_imp) - \(ast_imp.count) }")
@@ -54,10 +58,9 @@ public func main ()
 				return
 			}
 		}
-		
-		let piFramework: PiFramework = PiFramework()
-		
-		let ast_pi: AST_Pi = try piFramework.translate(ast_imp: ast_imp)
+
+		let translator: ImpTranslator = try ImpTranslator(ast: ast_imp)
+		let ast_pi: AbstractSyntaxTreePi = try translator.translate()
 		if envConfiguration.ast_pi_print
 		{
 			print("{ ast_pi: \(ast_pi) }")
@@ -67,7 +70,8 @@ public func main ()
 			}
 		}
 		
-		try piFramework.pi_automaton(ast_pi: ast_pi)
+		let piFramework: PiFramework = PiFramework(ast_pi: ast_pi)
+		try piFramework.execute()
 	}
 	catch
 	{

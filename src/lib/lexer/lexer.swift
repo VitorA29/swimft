@@ -1,145 +1,43 @@
 import Foundation
 
 /// #START_DOC
-/// - A enumeration for define all tokens of the ImΠ language.
+/// - Define the enumeration for the error that can be throw during tokenization.
 /// #END_DOC
-public enum Token
+public enum LexerError: Error
 {
-	case IDENTIFIER(String)
-	case NUMBER(Float)
-	case BRACKET_LEFT
-	case BRACKET_RIGHT
-	case OPERATOR(String)
-	case ASSIGN
-	case TRUTH(Bool)
-	case NOP
-	case WHILE
-	case DO
-	case NEGATION
-	case COMMA
-	case END
-	case IF
-	case THEN
-	case ELSE
-	case INITIALIZER
-	case REF(String)
-	case LET
-	case IN
-	case DEC(String)
-	case PRINT
-	case OTHER(String)
+	case NoTokenMatch(String)
 }
 
+/// #START_DOC
+/// - This define a generic token.
+/// #END_DOC
+public protocol Token
+{
+}
 
 /// #START_DOC
 /// - Helper type used in the lexer analysis, it define a func that receives a String and returns a Optional Token.
 /// #END_DOC
-typealias TokenGenerator = (String) -> Token?
-
-/// #START_DOC
-/// - Constant that describ ImΠ grammar.
-/// #END_DOC
-let tokenList: [(String, TokenGenerator)] =
-[
-	("[ \t\r\n]", { _ in nil }),
-	("#.*(\r?\n|$)", { _ in nil }), // ignore comments
-	("(?![0-9])[a-zA-Z_][a-zA-Z_0-9]*", { (m: String) in matchName(string: m) }),
-	("(&|\\(\\*)", { (m: String) in .REF(m) }),
-	("\\(", { _ in .BRACKET_LEFT }),
-	("\\)", { _ in .BRACKET_RIGHT }),
-	("(\\+|\\*|\\/|-|<=?|>=?|==)", { (m: String) in .OPERATOR(m) }),
-	(":=", { _ in .ASSIGN }),
-	("=", { _ in .INITIALIZER }),
-	(",", { _ in .COMMA }),
-	("(([1-9][0-9]*|0)(\\.[0-9]*[1-9]|\\.0)?|\\.[0-9]*[1-9]|\\.0)", { (m: String) in .NUMBER((m as NSString).floatValue) }),
-]
-
-/// #START_DOC
-/// - Helper function for dealing with the word processing.
-/// - Parameter(s)
-/// 	- string: The matched value to be converted into a Token.
-/// - Return
-/// 	- The token relative to the matched value.
-/// #END_DOC
-private func matchName (string: String) -> Token?
-{
-	if string == "True" || string == "False"
-	{
-		return .TRUTH((string.lowercased() as NSString).boolValue)
-	}
-	else if string == "nop"
-	{
-		return .NOP
-	}
-	else if string == "while"
-	{
-		return .WHILE
-	}
-	else if string == "do"
-	{
-		return .DO
-	}
-	else if string == "end"
-	{
-		return .END
-	}
-	else if string == "not"
-	{
-		return .NEGATION
-	}
-	else if string == "and" || string == "or"
-	{
-		return .OPERATOR(string)
-	}
-	else if string == "if"
-	{
-		return .IF
-	}
-	else if string == "then"
-	{
-		return .THEN
-	}
-	else if string == "else"
-	{
-		return .ELSE
-	}
-	else if string == "let"
-	{	
-		return .LET
-	}
-	else if string == "var" || string == "cons" 
-	{
-		return .DEC(string)
-	}
-	else if string == "in"
-	{
-		return .IN
-	}
-	else if string == "print"
-	{
-		return .PRINT
-	}
-	else 
-	{
-		return .IDENTIFIER(string)
-	}
-}
+public typealias TokenGenerator<T: Token> = (String) -> T?
 
 /// #START_DOC
 /// - Class that define all the logic behind the lexer analysis.
 /// #END_DOC
-public class Lexer
+public class Lexer<T: Token>
 {
 	let input: String
+	let processor: [(String, TokenGenerator<T>)]
 	
 	/// #START_DOC
 	/// - This class initializer.
 	/// - Parameter(s)
 	/// 	- The ImΠ program to be processed.
+	/// 	- The processor to be used
 	/// #END_DOC
-	init (input: String)
+	init (input: String, processor: [(String, TokenGenerator<T>)])
 	{
 		self.input = input
+		self.processor = processor
 	}
 	
 	/// #START_DOC
@@ -147,15 +45,15 @@ public class Lexer
 	/// - Return
 	/// 	- The list of tokens that represents the argument ImΠ program.
 	/// #END_DOC
-	public func tokenize () -> [Token]
+	public func tokenize () throws -> [T]
 	{
-		var tokens = [Token]()
+		var tokens = [T]()
 		var content = input
 		
 		while (content.count > 0)
 		{
 			var matched = false
-			for (pattern, generator) in tokenList
+			for (pattern, generator) in processor
 			{
 				if let m = content.match(regex: pattern)
 				{
@@ -173,9 +71,14 @@ public class Lexer
 			
 			if (!matched)
 			{
-				let index: String.Index = content.index(content.startIndex, offsetBy: 1)
-				tokens.append(.OTHER(String(content[..<index])))
-				content = String(content[index...])
+				if let matchTrash = content.match(regex: ".+\\s")
+				{
+					throw LexerError.NoTokenMatch(matchTrash)
+				}
+				else
+				{
+					throw LexerError.NoTokenMatch("")
+				}
 			}
 		}
 		

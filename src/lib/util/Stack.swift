@@ -1,7 +1,7 @@
 /// #START_DOC
 /// - Class that define the concept of pile.
 /// #END_DOC
-public class Pile<T>: CustomStringConvertible
+public class Stack<T>: CustomStringConvertible
 {
 	private var top: [T]
 

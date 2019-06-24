@@ -1,58 +1,80 @@
-/// #START_DOC
-/// - Protocol that defines the basic operation needed in all handlers.
-/// #END_DOC
-protocol PiFrameworkHandler
-{
-	/// #START_DOC
-	/// - This is the function used in the handler for processing the operation node.
-	/// #END_DOC
-	func processNode(node: BinaryOperatorNode, control: Pile<AST_Pi_Extended>) throws
+import Foundation
 
-	/// #START_DOC
-	/// - This is the function used in the handler for processing the pi framework op code.
-	/// #END_DOC
-	func processOpCode(code: String, value: Pile<Automaton_Value>) throws
+/// #START_DOC
+/// - Define the enumeration for the error that can be throw during automaton nodes handling.
+/// #END_DOC
+public enum AutomatonHandlerError: Error
+{
+	case ExpectedIdentifierNode
+    case ExpectedNumValue
+    case ExpectedBooValue
+    case ExpectedStorableValue
+	case ExpectedBindableValue
 }
 
 /// #START_DOC
-/// - Add the basic operations used in most handlers.
+/// - Protocol that defines the basic operation needed in all handlers.
 /// #END_DOC
-extension PiFrameworkHandler
+public class PiFrameworkHandler
 {
 	/// #START_DOC
-	/// - Helper function for getting a <number> value from the value pile.
+	/// - Helper function for getting a <number> value from the value stack.
 	/// #END_DOC
-	func popNumValue(value: Pile<Automaton_Value>) throws -> Float
+	public func popNumValue(valueStack: Stack<AutomatonValue>) throws -> Float
 	{
-		if value.isEmpty() || !(value.peek() is Float)
+		if valueStack.isEmpty() || !(valueStack.peek() is Float)
 		{
-			throw AutomatonError.ExpectedNumValue
+			throw AutomatonHandlerError.ExpectedNumValue
 		}
-		return value.pop() as! Float
+		return valueStack.pop() as! Float
 	}
 	
 	/// #START_DOC
-	/// - Helper function for getting a <truth> value from the value pile.
+	/// - Helper function for getting a <truth> value from the value stack.
 	/// #END_DOC
-	func popBooValue(value: Pile<Automaton_Value>) throws -> Bool
+	public func popBooValue(valueStack: Stack<AutomatonValue>) throws -> Bool
 	{
-		if value.isEmpty() || !(value.peek() is Bool)
+		if valueStack.isEmpty() || !(valueStack.peek() is Bool)
 		{
-			throw AutomatonError.ExpectedBooValue
+			throw AutomatonHandlerError.ExpectedBooValue
 		}
-		return value.pop() as! Bool
+		return valueStack.pop() as! Bool
 	}
 
 	/// #START_DOC
-	/// - Helper function for getting a atomic node from the value pile.
+	/// - Helper function for getting a storable from the value stack.
 	/// #END_DOC
-	func popAtomNode(value: Pile<Automaton_Value>) throws -> AtomNode
+	public func popStorableValue(valueStack: Stack<AutomatonValue>) throws -> AutomatonStorable
 	{
-		if value.isEmpty() || !(value.peek() is AtomNode)
+		if valueStack.isEmpty() || !(valueStack.peek() is AutomatonStorable)
 		{
-			throw AutomatonError.ExpectedAtomNode
+			throw AutomatonHandlerError.ExpectedStorableValue
 		}
+		return valueStack.pop() as! AutomatonStorable
+	}
 
-		return value.pop() as! AtomNode
+	/// #START_DOC
+	/// - Helper function for getting a identifier from the value stack.
+	/// #END_DOC
+	public func popIdValue(valueStack: Stack<AutomatonValue>) throws -> String
+	{
+		if valueStack.isEmpty() || !(valueStack.peek() is IdentifierPiNode)
+		{
+			throw AutomatonHandlerError.ExpectedIdentifierNode
+		}
+		let nodeHelper: IdentifierPiNode = valueStack.pop() as! IdentifierPiNode
+		return nodeHelper.name
+	}
+
+	/// #START_DOC
+	/// - Helper function for getting a bindable from the value stack.
+	/// #END_DOC
+	public func popBindableValue(valueStack: Stack<AutomatonValue>) throws -> AutomatonBindable
+	{
+		if valueStack.isEmpty() || !(valueStack.peek() is AutomatonBindable)
+		{
+			throw AutomatonHandlerError.ExpectedBindableValue
+		}
+		return valueStack.pop() as! AutomatonBindable
 	}
 }

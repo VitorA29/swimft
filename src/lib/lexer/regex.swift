@@ -10,7 +10,6 @@ var expressions = [String: NSRegularExpression]()
 /// #END_DOC
 public extension String
 {
-
 	/// #START_DOC
 	/// - A helper function for processing regular expressions.
 	/// #END_DOC
