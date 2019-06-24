@@ -8,11 +8,20 @@ UBUNTU_VERSION_NUMBER = 18
 UBUNTU_SUBVERSION_NUMBER = 04
 SWIFT_RELEASE = swift-$(SWIFT_RELEASE_VERSION_NUMBER)-RELEASE-ubuntu$(UBUNTU_VERSION_NUMBER).$(UBUNTU_SUBVERSION_NUMBER)
 SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
-TEST_FLAGS =-ast_pi -ast_imp -tokens
+TEST_FLAGS =
 
-.SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment execute_imp_zero
+.SILENT: install_swift download_swift prepare_output compile_src clean_output execute_output clean_enviroment execute_imp_zero release_imp_zero_branch release_imp_one_branch release_imp_two_branch
 
 all: download_swift build execute_imp_zero
+
+release_imp_zero_branch:
+	git checkout imp-zero;
+	
+release_imp_one_branch:
+	git checkout imp-one;
+	
+release_imp_two_branch:
+	git checkout imp-two;
 
 execute_output: compile_src
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/test.imp $(TEST_FLAGS);
@@ -49,10 +58,14 @@ download_swift: install_swift
 		rm $(SWIFT_RELEASE).tar.gz; fi
 
 clean_output:
-	rm -r $(OUTPUT_FOLDER);
+	if [ -d $(OUTPUT_FOLDER) ]; \
+	then \
+		rm -r $(OUTPUT_FOLDER); fi
 	
 clean_enviroment:
-	rm -r $(ENV);
+	if [ -d $(ENV) ]; \
+	then \
+		rm -r $(ENV); fi
 	
 build: clean_output compile_src
 	
