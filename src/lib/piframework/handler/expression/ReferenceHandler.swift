@@ -15,7 +15,7 @@ public struct AddressReferencePiNode: ExpressionPiNode
 	}
 }
 
-public struct ValueReferencePiNode: ExpressionPiNode
+public struct ValueReferencePiNode: ArithmeticExpressionPiNode, LogicalExpressionPiNode
 {
 	let identifier: IdentifierPiNode
 	public var description: String

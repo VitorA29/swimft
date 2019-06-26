@@ -484,7 +484,7 @@ public class ImpParser: Parser
 	/// - Return
 	/// 	- The relative reference imp node to the given token.
 	/// #END_DOC
-	private func parseReference () throws -> ReferenceImpNode
+	private func parseReference () throws -> ExpressionImpNode
 	{
 		guard case let ImpToken.REFERENCE(op) = tokens.pop() else
 		{
@@ -496,13 +496,13 @@ public class ImpParser: Parser
 		switch(op)
 		{
 			case "&":
-				return ReferenceImpNode(operation: "address", identifier: identifier)
+				return AddressReferenceImpNode(identifier: identifier)
 			case "(*":
 				guard case ImpToken.BRACKET_RIGHT = tokens.pop() else
 				{
 					throw ParserError.ExpectedToken("ImpToken.BRACKET_RIGHT")
 				}
-				return ReferenceImpNode(operation: "value", identifier: identifier)
+				return ValueReferenceImpNode(identifier: identifier)
 			default:
 				throw ImpParserError.UndefinedOperator(op)
 		}

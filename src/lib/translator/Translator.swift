@@ -6,7 +6,7 @@ import Foundation
 public enum TranslatorError: Error
 {
 	case UndefinedOperator(String)
-	case UndefinedAbstractSyntaxTreeNode(AbstractSyntaxTree)
+	case UndefinedAbstractSyntaxTreeImpNode(AbstractSyntaxTree)
 }
 
 /// #START_DOC

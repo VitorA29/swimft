@@ -115,17 +115,29 @@ public protocol LogicalExpressionImpNode: ExpressionImpNode
 }
 
 /// #START_DOC
-/// - This wrap the reference operation(<reference>).
+/// - This wrap the address reference operation('&' <identifier>), one of the references operation(<reference>).
 /// #END_DOC
-public struct ReferenceImpNode: ExpressionImpNode
+public struct AddressReferenceImpNode: ExpressionImpNode
 {
-	let operation: String
-	let identifier: IdentifierImpNode
+	public let identifier: IdentifierImpNode
 	public var description: String
 	{
-		return "ReferenceNode(\(operation), \(identifier))"
+		return "AddressReferenceNode(\(identifier))"
 	}
 }
+
+/// #START_DOC
+/// - This wrap the value reference operation('(*' <identifier> ')'), one of the references operation(<reference>).
+/// #END_DOC
+public struct ValueReferenceImpNode: LogicalExpressionImpNode, ArithmeticExpressionImpNode
+{
+	public let identifier: IdentifierImpNode
+	public var description: String
+	{
+		return "ValueReferenceNode(\(identifier))"
+	}
+}
+
 
 /// #START_DOC
 /// - This wraps all the forms of arithmetic expressions(<arithmetic_expression>).

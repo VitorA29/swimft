@@ -57,7 +57,7 @@ public class ImpTranslator: Translator
 		}
 		else
 		{
-			throw TranslatorError.UndefinedAbstractSyntaxTreeNode(node)
+			throw TranslatorError.UndefinedAbstractSyntaxTreeImpNode(node)
 		}
 	}
 
@@ -127,9 +127,13 @@ public class ImpTranslator: Translator
 		{
 			return try translateLogicalExpressionImpNode(node: node as! LogicalExpressionImpNode)
 		}
-		else if node is ReferenceImpNode
+		else if node is AddressReferenceImpNode
 		{
-			return try translateReferenceImpNode(node: node as! ReferenceImpNode)
+			return translateAddressReferenceImpNode(node: node as! AddressReferenceImpNode)
+		}
+		else if node is ValueReferenceImpNode
+		{
+			return translateValueReferenceImpNode(node: node as! ValueReferenceImpNode)
 		}
 		else if node is ArithmeticExpressionImpNode
 		{
@@ -137,7 +141,7 @@ public class ImpTranslator: Translator
 		}
 		else
 		{
-			throw TranslatorError.UndefinedAbstractSyntaxTreeNode(node)
+			throw TranslatorError.UndefinedAbstractSyntaxTreeImpNode(node)
 		}
 	}
 
@@ -165,6 +169,10 @@ public class ImpTranslator: Translator
 		{
 			return translateIdentifierImpNode(node: node as! IdentifierImpNode)
 		}
+		else if node is ValueReferenceImpNode
+		{
+			return translateValueReferenceImpNode(node: node as! ValueReferenceImpNode)
+		}
 		else if node is LogicalClassificationImpNode
 		{
 			return translateLogicalClassificationImpNode(node: node as! LogicalClassificationImpNode)
@@ -179,22 +187,20 @@ public class ImpTranslator: Translator
 		}
 		else
 		{
-			throw TranslatorError.UndefinedAbstractSyntaxTreeNode(node)
+			throw TranslatorError.UndefinedAbstractSyntaxTreeImpNode(node)
 		}
 	}
 
-	private func translateReferenceImpNode (node: ReferenceImpNode) throws -> ExpressionPiNode
+	private func translateAddressReferenceImpNode (node: AddressReferenceImpNode) -> AddressReferencePiNode
 	{
 		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
-		switch (node.operation)
-		{
-			case "address":
-				return AddressReferencePiNode(identifier: identifier)
-			case "value":
-				return ValueReferencePiNode(identifier: identifier)
-			default:
-				throw TranslatorError.UndefinedOperator(node.operation)
-		}
+		return AddressReferencePiNode(identifier: identifier)
+	}
+	
+	private func translateValueReferenceImpNode (node: ValueReferenceImpNode) -> ValueReferencePiNode
+	{
+		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
+		return ValueReferencePiNode(identifier: identifier)
 	}
 
 	private func translateArithmeticExpressionImpNode (node: ArithmeticExpressionImpNode) throws -> ArithmeticExpressionPiNode
@@ -202,6 +208,10 @@ public class ImpTranslator: Translator
 		if node is IdentifierImpNode
 		{
 			return translateIdentifierImpNode(node: node as! IdentifierImpNode)
+		}
+		else if node is ValueReferenceImpNode
+		{
+			return translateValueReferenceImpNode(node: node as! ValueReferenceImpNode)
 		}
 		else if node is NumberImpNode
 		{
@@ -213,7 +223,7 @@ public class ImpTranslator: Translator
 		}
 		else
 		{
-			throw TranslatorError.UndefinedAbstractSyntaxTreeNode(node)
+			throw TranslatorError.UndefinedAbstractSyntaxTreeImpNode(node)
 		}
 	}
 
@@ -229,7 +239,7 @@ public class ImpTranslator: Translator
 		}
 		else
 		{
-			throw TranslatorError.UndefinedAbstractSyntaxTreeNode(node)
+			throw TranslatorError.UndefinedAbstractSyntaxTreeImpNode(node)
 		}
 	}
 
@@ -265,7 +275,7 @@ public class ImpTranslator: Translator
 		}
 		else
 		{
-			throw TranslatorError.UndefinedAbstractSyntaxTreeNode(node)
+			throw TranslatorError.UndefinedAbstractSyntaxTreeImpNode(node)
 		}
 	}
 

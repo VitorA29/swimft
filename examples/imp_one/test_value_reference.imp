@@ -1,4 +1,4 @@
-# simple test for imp-1
+# test that the value reference works like it was a pure identifier
 let var x=10
 in
 	let var y = &x

@@ -31,20 +31,25 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 
 <identifier> ::= /(?!\d)\w+/ 
 
-<logical_expression> ::= <logical_classification> | <identifier> | <negation> 
-					| <logical_operation> | '(' <logical_expression> ')'
+<logical_expression> ::= <logical_classification> | <identifier> | <value_reference>
+									| <negation> | <logical_operation> | '(' <logical_expression> ')'
 		
-<reference> ::= '&' <identifier>  | '(*' <identifier> ')'
+<reference> ::= <address_reference> | <value_reference>
 
-<arithmetic_expression> ::= <number> | <identifier> | <arithmetic_operation> | '(' <arithmetic_expression> ')'
+<arithmetic_expression> ::= <number> | <identifier> | <value_reference>
+									| <arithmetic_operation> | '(' <arithmetic_expression> ')'
 		
 <declaration> ::= <variable_declaration> | <constant_declaration>
 
 <logical_classification> ::= 'True' | 'False'
 
+<value_reference> ::= '(*' <identifier> ')'
+
 <negation> ::= 'not' <logical_expression>
 
 <logical_operation> ::= <equality> | <logical_connection> | <inequality_operation>
+
+<address_reference> ::= '&' <identifier>
 
 <number> ::= /\d+/
 
