@@ -1,12 +1,2 @@
 # simple test for imp-1
-let var x=10
-in
-	let var y = &x
-	in
-		print(x)
-		print((*y))
-		print((*y)+10)
-		print(10*(*y))
-		print(x==(*y))
-	end
-end
+x:=2
