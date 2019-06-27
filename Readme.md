@@ -59,7 +59,8 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 
 <constant_declaration> ::= 'cons' <identifier> = <expression>
 
-<equality> ::= <arithmetic_expression> '==' <arithmetic_expression> | <logical_expression> '==' <logical_expression>
+<equality> ::= <arithmetic_expression> '==' <arithmetic_expression>
+		| <logical_expression> '==' <logical_expression>
 
 <logical_connection> ::= <conjunction> | <disjunction>
 
