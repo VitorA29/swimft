@@ -41,22 +41,16 @@ public extension PiFrameworkHandler
 {
 	func processIdentifierPiNode (node: IdentifierPiNode, valueStack: Stack<AutomatonValue>, storage: [Int: AutomatonStorable], environment: [String: AutomatonBindable]) throws
 	{
-		if environment[node.name] == nil
+		let bindableValue: AutomatonBindable = try getBindableValueFromEnvironment(key: node.name, environment: environment)
+		if bindableValue is Location
 		{
-			throw AutomatonHandlerError.ExpectedBindableValue
-		}
-		if environment[node.name]! is Location
-		{
-			let location: Location = environment[node.name]! as! Location
-			if storage[location.address] == nil
-			{
-				throw AutomatonHandlerError.ExpectedStorableValue
-			}
-			valueStack.push(value: storage[location.address]!)
+			let location: Location = bindableValue as! Location
+			let storageValue: AutomatonStorable = try getStorableValueFromStorage(key: location.address, storage: storage)
+			valueStack.push(value: storageValue)
 		}
 		else
 		{
-			valueStack.push(value: environment[node.name]!)
+			valueStack.push(value: bindableValue)
 		}
 	}
 

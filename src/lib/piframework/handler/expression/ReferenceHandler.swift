@@ -3,7 +3,6 @@ import Foundation
 public enum ReferenceHandlerError: Error
 {
 	case ExpectedLocationValue
-	case ExpectedStorableValue
 }
 
 public struct AddressReferencePiNode: ExpressionPiNode
@@ -38,28 +37,27 @@ public extension PiFrameworkHandler
 		let identifier: IdentifierPiNode = node.identifier
 		let location: Location = try getLocationFromEnvironment(key: identifier.name, environment: environment)
 		let addressLocale: Location = try getLocationFromStorage(key: location.address, storage: storage)
-		if storage[addressLocale.address] == nil
-		{
-			throw ReferenceHandlerError.ExpectedStorableValue
-		}
-		valueStack.push(value: storage[addressLocale.address]!)
+		let storageValue: AutomatonStorable = try getStorableValueFromStorage(key: addressLocale.address, storage: storage)
+		valueStack.push(value: storageValue)
 	}
 
 	func getLocationFromEnvironment (key: String, environment: [String: AutomatonBindable]) throws -> Location
 	{
-		if environment[key] == nil || !(environment[key] is Location)
+		let locationHelper: AutomatonBindable = try getBindableValueFromEnvironment(key: key, environment: environment)
+		if !(locationHelper is Location)
 		{
 			throw ReferenceHandlerError.ExpectedLocationValue
 		}
-		return environment[key]! as! Location
+		return locationHelper as! Location
 	}
 
 	func getLocationFromStorage (key: Int, storage: [Int: AutomatonStorable]) throws -> Location
 	{
-		if storage[key] == nil || !(storage[key] is Location)
+		let locationHelper: AutomatonStorable = try getStorableValueFromStorage(key: key, storage: storage)
+		if !(locationHelper is Location)
 		{
 			throw ReferenceHandlerError.ExpectedLocationValue
 		}
-		return storage[key]! as! Location
+		return locationHelper as! Location
 	}
 }

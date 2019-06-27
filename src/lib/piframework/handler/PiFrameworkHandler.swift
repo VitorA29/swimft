@@ -10,6 +10,8 @@ public enum AutomatonHandlerError: Error
     case ExpectedBooValue
     case ExpectedStorableValue
 	case ExpectedBindableValue
+	case UndefinedVariable
+	case UndefinedStorageAddress
 }
 
 /// #START_DOC
@@ -76,5 +78,23 @@ public class PiFrameworkHandler
 			throw AutomatonHandlerError.ExpectedBindableValue
 		}
 		return valueStack.pop() as! AutomatonBindable
+	}
+
+	public func getBindableValueFromEnvironment (key: String, environment: [String: AutomatonBindable]) throws -> AutomatonBindable
+	{
+		if environment[key] == nil
+		{
+			throw AutomatonHandlerError.UndefinedVariable
+		}
+		return environment[key]!
+	}
+
+	public func getStorableValueFromStorage (key: Int, storage: [Int: AutomatonStorable]) throws -> AutomatonStorable
+	{
+		if storage[key] == nil
+		{
+			throw AutomatonHandlerError.UndefinedStorageAddress
+		}
+		return storage[key]!
 	}
 }

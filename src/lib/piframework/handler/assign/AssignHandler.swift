@@ -2,7 +2,6 @@ import Foundation
 
 public enum AssignHandlerError: Error
 {
-	case UndefinedVariable
 	case UnexpectedImmutableVariable
 }
 
@@ -38,12 +37,8 @@ public extension PiFrameworkHandler
 	{
 		let storable: AutomatonStorable = try popStorableValue(valueStack: valueStack)
 		let identifier: String = try popIdValue(valueStack: valueStack)
-		if environment[identifier] == nil
-		{
-			throw AssignHandlerError.UndefinedVariable
-		}
 
-		let bindable: AutomatonBindable = environment[identifier]!
+		let bindable: AutomatonBindable = try getBindableValueFromEnvironment(key: identifier, environment: environment)
 		if !(bindable is Location)
 		{
 			throw AssignHandlerError.UnexpectedImmutableVariable
