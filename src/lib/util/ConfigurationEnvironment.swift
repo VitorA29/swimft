@@ -5,7 +5,7 @@ import Foundation
 /// #END_DOC
 public enum ConfigurationError: Error
 {
-	case InvalidArgument(String)
+	case UndefinedFlag(String)
 }
 
 /// #START_DOC
@@ -30,10 +30,17 @@ public class Configuration
 	/// #END_DOC
 	init () throws
 	{
-		file_name = CommandLine.arguments[1]
-		if CommandLine.arguments.count > 2
+		if (CommandLine.arguments.count > 1)
 		{
-			try processArguments()
+			file_name = CommandLine.arguments[1]
+			if CommandLine.arguments.count > 2
+			{
+				try processArguments()
+			}
+		}
+		else
+		{
+			throw GenericError.InvalidArgument
 		}
 	}
 	
@@ -82,7 +89,7 @@ public class Configuration
 				case "-code":
 					code_print = true
 				default:
-					throw ConfigurationError.InvalidArgument(CommandLine.arguments[i])				
+					throw ConfigurationError.UndefinedFlag(CommandLine.arguments[i])				
 			}
 			i+=1
 		}
