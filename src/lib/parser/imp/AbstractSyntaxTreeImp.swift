@@ -115,7 +115,7 @@ public protocol LogicalExpressionImpNode: ExpressionImpNode
 }
 
 /// #START_DOC
-/// - This wrap the address reference operation('&' <identifier>), one of the references operation(<reference>).
+/// - This wrap the address reference operation(<address_reference>).
 /// #END_DOC
 public struct AddressReferenceImpNode: ExpressionImpNode
 {
@@ -127,7 +127,7 @@ public struct AddressReferenceImpNode: ExpressionImpNode
 }
 
 /// #START_DOC
-/// - This wrap the value reference operation('(*' <identifier> ')'), one of the references operation(<reference>).
+/// - This wrap the value reference operation(<value_reference>).
 /// #END_DOC
 public struct ValueReferenceImpNode: LogicalExpressionImpNode, ArithmeticExpressionImpNode
 {

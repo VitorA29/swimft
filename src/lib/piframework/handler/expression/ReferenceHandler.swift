@@ -37,8 +37,8 @@ public extension PiFrameworkHandler
 		let identifier: IdentifierPiNode = node.identifier
 		let location: Location = try getLocationFromEnvironment(key: identifier.name, environment: environment)
 		let addressLocale: Location = try getLocationFromStorage(key: location.address, storage: storage)
-		let storageValue: AutomatonStorable = try getStorableValueFromStorage(key: addressLocale.address, storage: storage)
-		valueStack.push(value: storageValue)
+		let storable: AutomatonStorable = try getStorableValueFromStorage(address: addressLocale.address, storage: storage)
+		valueStack.push(value: storable)
 	}
 
 	func getLocationFromEnvironment (key: String, environment: [String: AutomatonBindable]) throws -> Location
@@ -53,7 +53,7 @@ public extension PiFrameworkHandler
 
 	func getLocationFromStorage (key: Int, storage: [Int: AutomatonStorable]) throws -> Location
 	{
-		let locationHelper: AutomatonStorable = try getStorableValueFromStorage(key: key, storage: storage)
+		let locationHelper: AutomatonStorable = try getStorableValueFromStorage(address: key, storage: storage)
 		if !(locationHelper is Location)
 		{
 			throw ReferenceHandlerError.ExpectedLocationValue

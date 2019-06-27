@@ -34,7 +34,7 @@ public protocol AbstractSyntaxTreePi: AbstractSyntaxTreePiExtended
 }
 
 /// #START_DOC
-/// - This node defines the extension for the abstract syntax tree of pi, this is the operation code used in the pi automaton.
+/// - This node defines a extension node for the abstract syntax tree of pi, this is the operation code used by the pi automaton to perform the operations.
 /// #END_DOC
 public protocol OperationCode: AbstractSyntaxTreePiExtended
 {

@@ -1,4 +1,4 @@
-# simple test for imp-1
+# test the protection for a address that was removed
 let var y=10
 in
     let var x=1

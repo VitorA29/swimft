@@ -17,11 +17,7 @@ public class PiFramework
 	var memoryPosition: Int
 	let abstractSyntaxTreePi: AbstractSyntaxTreePi
 	
-	// handlers
 	let piFrameworkHandler: PiFrameworkHandler = PiFrameworkHandler()
-	// let arithmeticExpressionHandler: ArithmeticExpressionHandler = ArithmeticExpressionHandler()
-	// let atomicHandler: AtomicHandler = AtomicHandler()
-	// let logicalExpressionHandler: LogicalExpressionHandler = LogicalExpressionHandler()
 	
 	/// #START_DOC
 	/// - This class initializer.
@@ -33,7 +29,7 @@ public class PiFramework
 	}
 
 	/// #START_DOC
-	/// - Function for define the concept of the Pi-Framework automaton, for executing a AST_Pi.
+	/// - Function for define the concept of the Pi-Framework automaton.
 	/// #END_DOC
 	public func execute () throws
 	{
@@ -73,7 +69,7 @@ public class PiFramework
 	}
 	
 	/// #START_DOC
-	/// - Helper function for the automaton, this define the logic for change the state of the automaton based in the argument values.
+	/// - Helper function for the automaton, this define the logic for changing the state of the automaton based in the argument values.
 	/// #END_DOC
 	private func delta (controlStack: Stack<AbstractSyntaxTreePiExtended>, valueStack: Stack<AutomatonValue>, storage: inout [Int: AutomatonStorable], environment: inout [String: AutomatonBindable], locationList: inout [Location]) throws
 	{

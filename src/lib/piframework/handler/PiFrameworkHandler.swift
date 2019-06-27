@@ -1,7 +1,7 @@
 import Foundation
 
 /// #START_DOC
-/// - Define the enumeration for the error that can be throw during automaton nodes handling.
+/// - Define the enumeration for the error that can be throw during automaton basic nodes handling.
 /// #END_DOC
 public enum AutomatonHandlerError: Error
 {
@@ -80,6 +80,9 @@ public class PiFrameworkHandler
 		return valueStack.pop() as! AutomatonBindable
 	}
 
+	/// #START_DOC
+	/// - Helper function for getting a bindable value from the environment for the given key.
+	/// #END_DOC
 	public func getBindableValueFromEnvironment (key: String, environment: [String: AutomatonBindable]) throws -> AutomatonBindable
 	{
 		if environment[key] == nil
@@ -89,12 +92,15 @@ public class PiFrameworkHandler
 		return environment[key]!
 	}
 
-	public func getStorableValueFromStorage (key: Int, storage: [Int: AutomatonStorable]) throws -> AutomatonStorable
+	/// #START_DOC
+	/// - Helper function for getting a storable value from the storage for the given address.
+	/// #END_DOC
+	public func getStorableValueFromStorage (address: Int, storage: [Int: AutomatonStorable]) throws -> AutomatonStorable
 	{
-		if storage[key] == nil
+		if storage[address] == nil
 		{
 			throw AutomatonHandlerError.UndefinedStorageAddress
 		}
-		return storage[key]!
+		return storage[address]!
 	}
 }
