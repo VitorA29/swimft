@@ -21,35 +21,35 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 <while> ::= 'while' <logical_expression> 'do' <S>*<command><S>* 'end'
 
 <conditional> ::= 'if' <logical_expression> 'then' <S>*<command><S>* 'else' <S>*<command><S>* 'end'
-		| 'if' <logical_expression> 'then' <S>*<command><S>* 'end'
+			| 'if' <logical_expression> 'then' <S>*<command><S>* 'end'
 
-<expression> ::= <logical_expression> | <reference> | <arithmetic_expression>
+<expression> ::= <reference> | <logical_expression> | <arithmetic_expression>
 
 <block> ::= 'let' <declaration> 'in' <S>*<command><S>* 'end'
 
 <print> ::= 'print' '(' <expression> ')'
 
-<identifier> ::= /(?!\d)\w+/ 
+<identifier> ::= /(?!\d)\w+/
 
-<logical_expression> ::= <logical_classification> | <identifier> | <value_reference>
-									| <negation> | <logical_operation> | '(' <logical_expression> ')'
-		
 <reference> ::= <address_reference> | <value_reference>
 
+<logical_expression> ::= <logical_classification> | <identifier> | <value_reference>
+			| <negation> | <logical_operation> | '(' <logical_expression> ')'
+		
 <arithmetic_expression> ::= <number> | <identifier> | <value_reference>
-									| <arithmetic_operation> | '(' <arithmetic_expression> ')'
+		| <arithmetic_operation> | '(' <arithmetic_expression> ')'
 		
 <declaration> ::= <variable_declaration> | <constant_declaration>
 
-<logical_classification> ::= 'True' | 'False'
-
 <value_reference> ::= '(*' <identifier> ')'
+
+<address_reference> ::= '&' <identifier>
+
+<logical_classification> ::= 'True' | 'False'
 
 <negation> ::= 'not' <logical_expression>
 
 <logical_operation> ::= <equality> | <logical_connection> | <inequality_operation>
-
-<address_reference> ::= '&' <identifier>
 
 <number> ::= /\d+/
 
@@ -96,14 +96,13 @@ The enviroment configuration is ensure by this logic, after everything set up(eq
 - 'make release\_imp\_zero': This will change the branch to the imp-zero release branch;
 - 'make compile_src': This will compile the code;
 - 'make build': This will clean the compiled files and then will call compile\_src
-- 'make execute\_imp\_zero': This will execute the some Imp codes;
 - 'make execute\_imp\_one': This will execute the some Imp codes;
 - 'make': This will prepare all environment, installing all dependences if needed after will call build and finally will call execute\_imp\_one;
 - 'make reset': This will clean the instalation, deleting everything after will call make.
 
 ### Using commom bash
 
-_*This will assume a previous execution of 'make' and/or 'make compile\_src*_
+_`This will assume a previous execution of 'make' and/or 'make compile\_src'`_
 
 The executable will expect at least the imp file name as parameter.
 
