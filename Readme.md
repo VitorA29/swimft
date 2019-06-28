@@ -103,7 +103,7 @@ The enviroment configuration is ensure by this logic, after everything set up(eq
 
 ### Using commom bash
 
-_`This will assume a previous execution of 'make' and/or 'make compile\_src'`_
+_`This will assume a previous execution of 'make' and/or 'make compile_src'`_
 
 The executable will expect at least the imp file name as parameter.
 
