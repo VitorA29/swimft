@@ -1,11 +1,13 @@
 import Foundation
 
+/// - Define the enumeration for the error that can be throw during block handling.
 public enum BlockHandlerError: Error
 {
 	case ExpectedEnvironmentCollection
     case ExpectedLocationCollection
 }
 
+/// - This defines the pi node for the block pi node.
 public struct BlockPiNode: CommandPiNode
 {
     let declaration: DeclarationPiNode
@@ -16,18 +18,24 @@ public struct BlockPiNode: CommandPiNode
     }
 }
 
-public struct BlockCommandOperationCode: OperationCode
-{
-	public let code: String = "BLKCMD"
-}
-
+/// - This defines the pi automaton operation code for the block declaration operation.
 public struct BlockDeclarationOperationCode: OperationCode
 {
 	public let code: String = "BLKDEC"
 }
 
+/// - This defines the pi automaton operation code for the block command operation.
+public struct BlockCommandOperationCode: OperationCode
+{
+	public let code: String = "BLKCMD"
+}
+
+/// Addition of the handlers for the block operation.
 public extension PiFrameworkHandler
 {
+	/// - Handler for the analysis of a node contening a block creation operation.
+	/// 	Here the below delta match will occur.
+	/// 	δ(Blk(D, M) :: C, V, E, S, L) = δ(D :: #BLKDEC :: M :: #BLKCMD :: C, L :: V, E, S, ∅)
     func processBlockPiNode (node: BlockPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>, valueStack: Stack<AutomatonValue>, locationList: inout [Location])
     {
         controlStack.push(value: BlockCommandOperationCode())
@@ -39,6 +47,20 @@ public extension PiFrameworkHandler
         valueStack.push(value: locationCollection)
     }
 
+	/// - Handler for perform the relative operations for the block declarations operation code.
+	/// 	Here the below delta match will occur.
+	/// 	δ(#BLKDEC :: C, E' :: V, E, S, L) = δ(C, E :: V, E / E', S, L)
+    func processBlockDeclarationOperationCode (valueStack: Stack<AutomatonValue>, environment: inout [String: AutomatonBindable]) throws
+    {
+        let oldEnvironment: EnvironmentCollection = EnvironmentCollection(collection: environment)
+        let environmentCollection: EnvironmentCollection = try popEnvironmentCollectionValue(valueStack: valueStack)
+        environment.merge(environmentCollection.getCollection()) { (_, new) in new }
+        valueStack.push(value: oldEnvironment)
+    }
+    
+	/// - Handler for perform the relative operations for the block commands operation code.
+	/// 	Here the below delta match will occur.
+	/// 	δ(#BLKCMD :: C, E :: L :: V, E', S, L') = δ(C, V, E, S', L), where S' = S / L'
     func processBlockCommandOperationCode (valueStack: Stack<AutomatonValue>, storage: inout [Int: AutomatonStorable], environment: inout [String: AutomatonBindable], locationList: inout [Location]) throws
     {
         let oldEnvironment: EnvironmentCollection = try popEnvironmentCollectionValue(valueStack: valueStack)
@@ -54,14 +76,7 @@ public extension PiFrameworkHandler
         }
     }
 
-    func processBlockDeclarationOperationCode (valueStack: Stack<AutomatonValue>, environment: inout [String: AutomatonBindable]) throws
-    {
-        let oldEnvironment: EnvironmentCollection = EnvironmentCollection(collection: environment)
-        let environmentCollection: EnvironmentCollection = try popEnvironmentCollectionValue(valueStack: valueStack)
-        environment.merge(environmentCollection.getCollection()) { (_, new) in new }
-        valueStack.push(value: oldEnvironment)
-    }
-    
+    /// - Helper function for getting a environment collection from the value stack.
     func popEnvironmentCollectionValue (valueStack: Stack<AutomatonValue>) throws -> EnvironmentCollection
     {
         if valueStack.isEmpty() || !(valueStack.peek() is EnvironmentCollection)
@@ -71,6 +86,7 @@ public extension PiFrameworkHandler
         return valueStack.pop() as! EnvironmentCollection
     }
 
+    /// - Helper function for getting a location collection from the value stack.
     func popLocationCollectionValue (valueStack: Stack<AutomatonValue>) throws -> LocationCollection
     {
         if valueStack.isEmpty() || !(valueStack.peek() is LocationCollection)

@@ -1,17 +1,13 @@
 import Foundation
 
-/// #START_DOC
 /// - Define the enumeration for the error that can be throw during automaton.
-/// #END_DOC
 public enum AutomatonError: Error
 {
 	case UndefinedOperationCode(OperationCode)
 	case UndefinedAbstractSyntaxTreePiNode(AbstractSyntaxTreePiExtended)
 }
 
-/// #START_DOC
 /// - Define the concept for the Pi-Framework, where the magic will happen.
-/// #END_DOC
 public class PiFramework
 {
 	var memoryPosition: Int
@@ -19,18 +15,14 @@ public class PiFramework
 	
 	let piFrameworkHandler: PiFrameworkHandler = PiFrameworkHandler()
 	
-	/// #START_DOC
 	/// - This class initializer.
-	/// #END_DOC
 	init (ast_pi: AbstractSyntaxTreePi)
 	{
 		self.memoryPosition = 0
 		self.abstractSyntaxTreePi = ast_pi
 	}
 
-	/// #START_DOC
 	/// - Function for define the concept of the Pi-Framework automaton.
-	/// #END_DOC
 	public func execute () throws
 	{
 		let controlStack: Stack<AbstractSyntaxTreePiExtended> = Stack<AbstractSyntaxTreePiExtended>()
@@ -68,9 +60,7 @@ public class PiFramework
 		}
 	}
 	
-	/// #START_DOC
 	/// - Helper function for the automaton, this define the logic for changing the state of the automaton based in the argument values.
-	/// #END_DOC
 	private func delta (controlStack: Stack<AbstractSyntaxTreePiExtended>, valueStack: Stack<AutomatonValue>, storage: inout [Int: AutomatonStorable], environment: inout [String: AutomatonBindable], locationList: inout [Location]) throws
 	{
 		let command: AbstractSyntaxTreePiExtended = controlStack.pop()
@@ -183,11 +173,11 @@ public class PiFramework
 		}
 		else if command is NumberPiNode
 		{
-			try piFrameworkHandler.processNumberPiNode(node: command as! NumberPiNode, valueStack: valueStack)
+			piFrameworkHandler.processNumberPiNode(node: command as! NumberPiNode, valueStack: valueStack)
 		}
 		else if command is LogicalClassificationPiNode
 		{
-			try piFrameworkHandler.processLogicalClassificationPiNode(node: command as! LogicalClassificationPiNode, valueStack: valueStack)
+			piFrameworkHandler.processLogicalClassificationPiNode(node: command as! LogicalClassificationPiNode, valueStack: valueStack)
 		}
 		else if command is EqualToOperationPiNode
 		{

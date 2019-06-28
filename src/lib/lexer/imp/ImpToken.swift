@@ -1,8 +1,6 @@
 import Foundation
 
-/// #START_DOC
 /// - A enumeration for define all tokens of the ImΠ language.
-/// #END_DOC
 public enum ImpToken: Token
 {
 	case IDENTIFIER(String)
@@ -29,9 +27,7 @@ public enum ImpToken: Token
 	case PRINT
 }
 
-/// #START_DOC
 /// - Constant that describ ImΠ grammar.
-/// #END_DOC
 public let IMP_TOKEN_PROCESSOR: [(String, TokenGenerator<ImpToken>)] =
 [
 	("[ \t\r\n]", { _ in nil }),
@@ -47,13 +43,11 @@ public let IMP_TOKEN_PROCESSOR: [(String, TokenGenerator<ImpToken>)] =
 	("(([1-9][0-9]*|0)(\\.[0-9]*[1-9]|\\.0)?|\\.[0-9]*[1-9]|\\.0)", { (m: String) in ImpToken.NUMBER((m as NSString).floatValue) }),
 ]
 
-/// #START_DOC
 /// - Helper function for dealing with the word processing.
 /// - Parameter(s)
 /// 	- string: The matched value to be converted into a Token.
 /// - Return
 /// 	- The token relative to the matched value.
-/// #END_DOC
 private func matchName (string: String) -> ImpToken?
 {
 	if string == "True" || string == "False"

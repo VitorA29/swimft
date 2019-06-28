@@ -1,50 +1,38 @@
 import Foundation
 
-/// #START_DOC
 /// - Define the enumeration for the error that can be throw during tokenization.
-/// #END_DOC
 public enum LexerError: Error
 {
 	case NoTokenMatch(String)
 }
 
-/// #START_DOC
 /// - This define a generic token.
-/// #END_DOC
 public protocol Token
 {
 }
 
-/// #START_DOC
 /// - Helper type used in the lexer analysis, it define a func that receives a String and returns a Optional Token.
-/// #END_DOC
 public typealias TokenGenerator<T: Token> = (String) -> T?
 
-/// #START_DOC
 /// - Class that define all the logic behind the lexer analysis.
-/// #END_DOC
 public class Lexer<T: Token>
 {
 	let input: String
 	let processor: [(String, TokenGenerator<T>)]
 	
-	/// #START_DOC
 	/// - This class initializer.
 	/// - Parameter(s)
 	/// 	- The ImΠ program to be processed.
 	/// 	- The processor to be used
-	/// #END_DOC
 	init (input: String, processor: [(String, TokenGenerator<T>)])
 	{
 		self.input = input
 		self.processor = processor
 	}
 	
-	/// #START_DOC
 	/// - The main function of the lexer, here is where the program is converted into a list of tokens.
 	/// - Return
 	/// 	- The list of tokens that represents the argument ImΠ program.
-	/// #END_DOC
 	public func tokenize () throws -> [T]
 	{
 		var tokens = [T]()

@@ -1,8 +1,6 @@
 import Foundation
 
-/// #START_DOC
 /// - Define the enumeration for the error that can be throw during parsing.
-/// #END_DOC
 public enum ImpParserError: Error
 {
 	case UndefinedOperator(String)
@@ -11,21 +9,15 @@ public enum ImpParserError: Error
 	case ExpectedSameExpressionType
 }
 
-/// #START_DOC
 /// - Class that define all the logic behind the syntax analysis.
-/// #END_DOC
 public class ImpParser: Parser
 {
-	/// #START_DOC
 	/// - The tokens relative to the ImΠ program.
-	/// #END_DOC
 	private let tokens: Stack<ImpToken>
 
-	/// #START_DOC
 	/// - This class initializer.
 	/// - Parameter(s)
 	/// 	- A list of Tokens relative to a ImΠ program.
-	/// #END_DOC
 	required public init (tokens: [Token]) throws
 	{
 		if tokens is [ImpToken]
@@ -38,11 +30,9 @@ public class ImpParser: Parser
 		}
 	}
 
-	/// #START_DOC
 	/// - The main logic of ImΠ grammar, this process <S> node.
 	/// - Return
 	/// 	- The relative forest to the argument ImΠ program.
-	/// #END_DOC
 	public func parse () throws -> [AbstractSyntaxTree]
 	{
 		var nodes = [AbstractSyntaxTreeImp]()
@@ -54,9 +44,7 @@ public class ImpParser: Parser
 		return nodes
 	}
 
-	/// #START_DOC
 	/// - The dictionary that define the precedence of all accepted operators of ImΠ.
-	/// #END_DOC
 	private let OPERATOR_PRECEDENCE: [String: Int] =
 	[
 		"and": 10,
@@ -72,9 +60,7 @@ public class ImpParser: Parser
 		"/": 80
 	]
 
-	/// #START_DOC
 	/// - The collection that defines all arithmetic operators of ImΠ.
-	/// #END_DOC
 	private let ARITHMETIC_OPERATOR_COLLECTION: [String] =
 	[
 		"+",
@@ -83,9 +69,7 @@ public class ImpParser: Parser
 		"/"
 	]
 
-	/// #START_DOC
 	/// - The collection that defines all logical operators of ImΠ.
-	/// #END_DOC
 	private let INEQUALITY_OPERATOR_COLLECTION: [String] =
 	[
 		"<",
@@ -94,20 +78,16 @@ public class ImpParser: Parser
 		">="
 	]
 
-	/// #START_DOC
 	/// - The collection that defines all logical operators of ImΠ.
-	/// #END_DOC
 	private let LOGICAL_CONECTOR_COLLECTION: [String] =
 	[
 		"and",
 		"or",
 	]
 
-	/// #START_DOC
 	/// - Helper function for dealing with the NUMBER imp token processing(<number>).
 	/// - Return
 	/// 	- The relative number imp node to the given token.
-	/// #END_DOC
 	private func parseNumber (isNegative: Bool = false) throws -> NumberImpNode
 	{
 		guard case let ImpToken.NUMBER(value) = tokens.pop() else
@@ -125,11 +105,9 @@ public class ImpParser: Parser
 		}
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the CLASSIFICATION imp token processing(<logical_classification>).
 	/// - Return
 	/// 	- The relative logical classification imp node to the given token.
-	/// #END_DOC
 	private func parseClassification () throws -> LogicalClassificationImpNode
 	{
 		guard case let ImpToken.CLASSIFICATION(value) = tokens.pop() else
@@ -140,11 +118,9 @@ public class ImpParser: Parser
 		return LogicalClassificationImpNode(value: value)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the IDENTIFIER imp token processing(<identifier>).
 	/// - Return
 	/// 	- The relative identifier imp node to the given token.
-	/// #END_DOC
 	private func parseIdentifier () throws -> IdentifierImpNode
 	{
 		guard case let ImpToken.IDENTIFIER(name) = tokens.pop() else
@@ -155,11 +131,9 @@ public class ImpParser: Parser
 		return IdentifierImpNode(name: name)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the assign processing(<assign>).
 	/// - Return
 	/// 	- The relative assign imp node to the given token.
-	/// #END_DOC
 	private func parseAssign (identifier: IdentifierImpNode) throws -> AssignImpNode
 	{
 		guard case ImpToken.ASSIGN = tokens.pop() else
@@ -172,11 +146,9 @@ public class ImpParser: Parser
 		return AssignImpNode(identifier: identifier, expression: expression)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the nodes beginning with a IDENTIFIER imp token.
 	/// - Return
 	/// 	- The relative command imp node based in the tokens in the list.
-	/// #END_DOC
 	private func parseIdentifierWrapper () throws -> CommandImpNode
 	{
 		let identifier: IdentifierImpNode = try parseIdentifier()
@@ -197,22 +169,18 @@ public class ImpParser: Parser
 		}
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the nodes that the imp token is part of a expression(<expression>).
 	/// - Return
 	/// 	- The relative expression imp node to the given tokens.
-	/// #END_DOC
 	public func parseExpression () throws -> ExpressionImpNode
 	{
 		let node = try parsePrimary()
 		return try parseBinaryOperation(node: node)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the BRACKET imp token processing and expressions with brackets.
 	/// - Return
 	/// 	- The relative expression imp node inside the brackets.
-	/// #END_DOC
 	private func parseBrackets () throws -> ExpressionImpNode
 	{
 		guard case ImpToken.BRACKET_LEFT = tokens.pop() else
@@ -230,11 +198,9 @@ public class ImpParser: Parser
 		return expression
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the NEGATION imp token processing(<negation>).
 	/// - Return
 	/// 	- The relative negation imp node to the given token.
-	/// #END_DOC
 	private func parseNegation () throws -> ExpressionImpNode
 	{
 		guard case ImpToken.NEGATION = tokens.pop() else
@@ -251,11 +217,9 @@ public class ImpParser: Parser
 		return NegationImpNode(logicalExpression: expression)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for processing a simple expressions, (<logical_expression>, <reference>, <arithmetic_expression>).
 	/// - Return
 	/// 	- The relative expression imp node to the given token.
-	/// #END_DOC
 	private func parsePrimary () throws -> ExpressionImpNode
 	{
 		switch(tokens.peek())
@@ -280,11 +244,9 @@ public class ImpParser: Parser
 		}
 	}
 	
-	/// #START_DOC
 	/// - Helper fuction for processing the current token, if is a OPERATOR it will get it's precedence priority.
 	/// - Return
 	/// 	- The relative precedence priority for the given OPERATOR or '-1' case is not a OPERATOR.
-	/// #END_DOC
 	private func getCurrentTokenPrecedence () throws -> Int
 	{
 		guard !tokens.isEmpty() else
@@ -305,14 +267,12 @@ public class ImpParser: Parser
 		return precedence
 	}
 	
-	/// #START_DOC
 	/// - This function wraps the logic for processing all forms of operators.
 	/// - Parameter(s)
 	/// 	- node: The expression imp node to try to combine to the next operator.
 	/// 	- lastPrecedence: The precedence value of the last operator.
 	/// - Return
 	/// 	- The relative expression imp node to the operators combination.
-	/// #END_DOC
 	private func parseBinaryOperation (node: ExpressionImpNode, lastPrecedence: Int = 0) throws -> ExpressionImpNode
 	{
 		var lhs = node
@@ -378,11 +338,9 @@ public class ImpParser: Parser
 		}
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the WHILE imp token processing(<while>).
 	/// - Return
 	/// 	- The relative while imp node to the given token.
-	/// #END_DOC
 	private func parseWhile () throws -> WhileImpNode
 	{
 		guard case ImpToken.WHILE = tokens.pop() else
@@ -421,11 +379,9 @@ public class ImpParser: Parser
 		return WhileImpNode(condition: condition, command: commandForest)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the CONDITIONAL imp token processing(<conditional>).
 	/// - Return
 	/// 	- The relative conditional imp node to the given token.
-	/// #END_DOC
 	private func parseConditional () throws -> ConditionalImpNode
 	{
 		guard case ImpToken.CONDITIONAL = tokens.pop() else
@@ -479,11 +435,9 @@ public class ImpParser: Parser
 		}
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the REFERENCE imp token processing(<reference>).
 	/// - Return
 	/// 	- The relative reference imp node to the given token.
-	/// #END_DOC
 	private func parseReference () throws -> ExpressionImpNode
 	{
 		guard case let ImpToken.REFERENCE(op) = tokens.pop() else
@@ -508,12 +462,10 @@ public class ImpParser: Parser
 		}
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the DECLARATION imp token processing(<declaration>).
 	/// 	Also here all its ramifications will be processed(<variable_declaration>, <constant_declaration>))
 	/// - Return
 	/// 	- The relative declaration imp node to the given token.
-	/// #END_DOC
 	private func parseDeclaration () throws -> DeclarationImpNode
 	{
 		guard case let ImpToken.DECLARATION(op) = tokens.pop() else
@@ -539,11 +491,9 @@ public class ImpParser: Parser
 		}
 	}
 
-	/// #START_DOC
 	/// - Helper function for dealing with the BLOCK imp token processing(<block>).
 	/// - Return
 	/// 	- The relative block imp node to the given token.
-	/// #END_DOC
 	private func parseBlock () throws -> BlockImpNode
 	{
 		guard case ImpToken.LET = tokens.pop() else
@@ -589,11 +539,9 @@ public class ImpParser: Parser
 		return BlockImpNode(declaration: declarationForest, command: commandForest)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for dealing with the PRINT imp token processing(<print>).
 	/// - Return
 	/// 	- The relative print imp node to the given token.
-	/// #END_DOC
 	private func parsePrint () throws -> PrintImpNode
 	{
 		guard case ImpToken.PRINT = tokens.pop() else
@@ -616,11 +564,9 @@ public class ImpParser: Parser
 		return PrintImpNode(expression: expression)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for delegate the command for the given imp token(<command>).
 	/// - Return
 	/// 	- The relative command imp node to the given token.
-	/// #END_DOC
 	private func parseGrammar () throws -> CommandImpNode
 	{
 		switch (tokens.peek())

@@ -1,16 +1,12 @@
 import Foundation
 
-/// #START_DOC
 /// - Define the enumeration for the error that can be throw during arguments processing.
-/// #END_DOC
 public enum ConfigurationError: Error
 {
 	case UndefinedFlag(String)
 }
 
-/// #START_DOC
 /// - Class for the used for setting up all the environment configurations.
-/// #END_DOC
 public class Configuration
 {
 	let file_name: String
@@ -25,9 +21,7 @@ public class Configuration
 	var state_n_print: Int = -1
 	var last_state_print: Bool = false
 	
-	/// #START_DOC
 	/// - This class initializer.
-	/// #END_DOC
 	init () throws
 	{
 		if (CommandLine.arguments.count > 1)
@@ -44,9 +38,7 @@ public class Configuration
 		}
 	}
 	
-	/// #START_DOC
 	/// - Helper function for processing the argument flags if exists any.
-	/// #END_DOC
 	private func processArguments () throws
 	{
 		var i: Int = 2

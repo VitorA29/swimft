@@ -2,9 +2,7 @@ public class ImpTranslator: Translator
 {
 	let abstractSyntaxTreeImp: [CommandImpNode]
 
-	/// #START_DOC
 	/// - This class' constructor.
-	/// #END_DOC
 	required public init (ast: [AbstractSyntaxTree]) throws
 	{
 		if ast is [CommandImpNode]
@@ -17,9 +15,7 @@ public class ImpTranslator: Translator
 		}
 	}
 	
-	/// #START_DOC
 	/// - Function for convert a abstract syntax tree of imp into it's correlative abstract syntax tree pi.
-	/// #END_DOC
 	public func translate () throws -> AbstractSyntaxTreePi
 	{
 		return try combineCommandImpNodes(forest: abstractSyntaxTreeImp)
@@ -61,10 +57,8 @@ public class ImpTranslator: Translator
 		}
 	}
 
-    /// #START_DOC
 	/// - Helper function for combining a abstract syntax tree pi forest into a abstract syntax tree single pi node using CSeq.
 	/// 	This converts the <cmd>+ into a single AbstractSyntaxTreePi node.
-	/// #END_DOC
 	private func combineCommandImpNodes (forest: [CommandImpNode]) throws -> CommandPiNode
 	{
 		let head: CommandPiNode = try translateCommandImpNode(node: forest[0])
@@ -78,10 +72,8 @@ public class ImpTranslator: Translator
 		return CommandSequencePiNode(lhs: head, rhs: rhs)
 	}
 
-	/// #START_DOC
 	/// - Helper function for combining a pi forest node into a single pi node using DSeq.
 	/// 	This converts the <dec>+ into a single AbstractSyntaxTreePi node.
-	/// #END_DOC
 	private func combineDeclarationImpNodes (forest: [DeclarationImpNode]) throws -> DeclarationPiNode
 	{
 		let head: DeclarationPiNode = try translateDeclarationImpNode(node: forest[0])

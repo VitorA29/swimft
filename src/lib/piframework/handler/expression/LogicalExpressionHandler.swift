@@ -1,18 +1,17 @@
 import Foundation
 
+/// - Define the enumeration for the error that can be throw during logical expression nodes handling.
 public enum LogicalExpressionHandlerError: Error
 {
-    case UndefinedInequalityOperation(String)
-    case UndefinedLogicalConnection(String)
-    case UndefinedInequalityOperationCode(String)
-    case UndefinedLogicalConnectionOperationCode(String)
-    case UnexpectedAutomatonValue
+	case UnexpectedAutomatonValue
 }
 
+/// - This defines the pi node for all pi logical expressions.
 public protocol LogicalExpressionPiNode: ExpressionPiNode
 {
 }
 
+/// - This defines the pi node for the pi equal to operation.
 public struct EqualToOperationPiNode: LogicalExpressionPiNode
 {
 	let lhs: ExpressionPiNode
@@ -23,6 +22,7 @@ public struct EqualToOperationPiNode: LogicalExpressionPiNode
 	}
 }
 
+/// - This defines the pi node for all pi logical connections
 public protocol LogicalConnectionPiNode: LogicalExpressionPiNode
 {
     var operation: String { get }
@@ -30,6 +30,7 @@ public protocol LogicalConnectionPiNode: LogicalExpressionPiNode
 	var rhs: LogicalExpressionPiNode { get }
 }
 
+/// - This extension is for creating the default description used by all of it's implementations
 public extension LogicalConnectionPiNode
 {
 	var description: String
@@ -38,6 +39,7 @@ public extension LogicalConnectionPiNode
 	}
 }
 
+/// - This defines the pi node for the pi and conective operation.
 public struct AndConnectivePiNode: LogicalConnectionPiNode
 {
 	public let operation: String = "And"
@@ -45,6 +47,7 @@ public struct AndConnectivePiNode: LogicalConnectionPiNode
 	public let rhs: LogicalExpressionPiNode
 }
 
+/// - This defines the pi node for the pi or conective operation.
 public struct OrConnectivePiNode: LogicalConnectionPiNode
 {
 	public let operation: String = "Or"
@@ -52,6 +55,7 @@ public struct OrConnectivePiNode: LogicalConnectionPiNode
 	public let rhs: LogicalExpressionPiNode
 }
 
+/// - This defines the pi node for all pi inequality operation
 public protocol InequalityOperationPiNode: LogicalExpressionPiNode
 {
     var operation: String { get }
@@ -59,6 +63,7 @@ public protocol InequalityOperationPiNode: LogicalExpressionPiNode
 	var rhs: ArithmeticExpressionPiNode { get }
 }
 
+/// - This extension is for creating the default description used by all of it's implementations
 public extension InequalityOperationPiNode
 {
 	var description: String
@@ -67,6 +72,7 @@ public extension InequalityOperationPiNode
 	}
 }
 
+/// - This defines the pi node for the pi lower than operation.
 public struct LowerThanOperationPiNode: InequalityOperationPiNode
 {
 	public let operation: String = "Lt"
@@ -74,6 +80,7 @@ public struct LowerThanOperationPiNode: InequalityOperationPiNode
 	public let rhs: ArithmeticExpressionPiNode
 }
 
+/// - This defines the pi node for the pi lower equal to operation.
 public struct LowerEqualToOperationPiNode: InequalityOperationPiNode
 {
 	public let operation: String = "Le"
@@ -81,6 +88,7 @@ public struct LowerEqualToOperationPiNode: InequalityOperationPiNode
 	public let rhs: ArithmeticExpressionPiNode
 }
 
+/// - This defines the pi node for the pi greater than operation.
 public struct GreaterThanOperationPiNode: InequalityOperationPiNode
 {
 	public let operation: String = "Gt"
@@ -88,6 +96,7 @@ public struct GreaterThanOperationPiNode: InequalityOperationPiNode
 	public let rhs: ArithmeticExpressionPiNode
 }
 
+/// - This defines the pi node for the pi greater equal to operation.
 public struct GreaterEqualToOperationPiNode: InequalityOperationPiNode
 {
 	public let operation: String = "Ge"
@@ -95,6 +104,7 @@ public struct GreaterEqualToOperationPiNode: InequalityOperationPiNode
 	public let rhs: ArithmeticExpressionPiNode
 }
 
+/// - This defines the pi node for the pi negation operation.
 public struct NegationPiNode: LogicalExpressionPiNode
 {
 	public let logicalExpression: LogicalExpressionPiNode
@@ -104,56 +114,60 @@ public struct NegationPiNode: LogicalExpressionPiNode
 	}
 }
 
+/// - This defines the pi automaton operation code for the equal to operation.
 public struct EqualToOperationCode: OperationCode
 {
 	public let code: String = "EQ"
 }
 
+/// - This defines the pi automaton operation code for the and conective operation.
 public struct AndConnectiveOperationCode: OperationCode
 {
 	public let code: String = "AND"
 }
 
+/// - This defines the pi automaton operation code for the or connctive operation.
 public struct OrConnectiveOperationCode: OperationCode
 {
 	public let code: String = "OR"
 }
 
+/// - This defines the pi automaton operation code for the lower than operation.
 public struct LowerThanOperationCode: OperationCode
 {
 	public let code: String = "LT"
 }
 
+/// - This defines the pi automaton operation code for the lower equal to operation.
 public struct LowerEqualToOperationCode: OperationCode
 {
 	public let code: String = "LE"
 }
 
+/// - This defines the pi automaton operation code for the greater than operation.
 public struct GreaterThanOperationCode: OperationCode
 {
 	public let code: String = "GT"
 }
 
+/// - This defines the pi automaton operation code for the greater equal to operation.
 public struct GreaterEqualToOperationCode: OperationCode
 {
 	public let code: String = "GE"
 }
 
+/// - This defines the pi automaton operation code for the negation operation.
 public struct NegationOperationCode: OperationCode
 {
 	public let code: String = "NOT"
 }
 
-
-/// #START_DOC
-/// - Handler for all operations relative to <logical_expression> ramifications.
-/// #END_DOC
+/// Addition of the handlers for the logical expressions.
 public extension PiFrameworkHandler
 {
-	/// #START_DOC
 	/// - Handler for the analysis of a node contening a equality logic operation.
+	/// 	Here the below delta match will occur.
 	/// 	δ(Eq(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #EQ :: C, V, S)
-	/// #END_DOC
 	func processEqualToOperationPiNode (node: EqualToOperationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
 	{
         controlStack.push(value: EqualToOperationCode())
@@ -161,11 +175,10 @@ public extension PiFrameworkHandler
 		controlStack.push(value: node.rhs)
 	}
 
-	/// #START_DOC
 	/// - Helper function for handling with the equality operation.
+	/// 	Here the below delta match will occur.
 	/// 	δ(#EQ :: C, B₁ :: B₂ :: V, S) = δ(C, B₁ == B₂ :: V, S)
     ///     δ(#EQ :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ == N₂ :: V, S)
-	/// #END_DOC
 	func processEqualToOperationCode (valueStack: Stack<AutomatonValue>) throws
 	{
 		if valueStack.peek() is Float
@@ -186,10 +199,9 @@ public extension PiFrameworkHandler
         }
 	}
 
-    /// #START_DOC
 	/// - Handler for the analysis of a node contening a and conective operation.
+	/// 	Here the below delta match will occur.
 	/// 	δ(And(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #AND :: C, V, S)
-	/// #END_DOC
 	func processAndConnectivePiNode (node: AndConnectivePiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
 	{
 		controlStack.push(value: AndConnectiveOperationCode())
@@ -197,10 +209,9 @@ public extension PiFrameworkHandler
 		controlStack.push(value: node.rhs)
 	}
 
-	/// #START_DOC
 	/// - Helper function for handling with the and conective operation with the desired values.
+	/// 	Here the below delta match will occur.
 	/// 	δ(#AND :: C, B₁ :: B₂ :: V, S) = δ(C, B₁ ∧ B₂ :: V, S)
-	/// #END_DOC
 	func processAndConnectiveOperationCode (valueStack: Stack<AutomatonValue>) throws
 	{
 		let value1: Bool = try popBooValue(valueStack: valueStack)
@@ -208,10 +219,9 @@ public extension PiFrameworkHandler
 		valueStack.push(value: value1 && value2)
 	}
 
-	/// #START_DOC
 	/// - Handler for the analysis of a node contening a or conective operation.
+	/// 	Here the below delta match will occur.
 	/// 	δ(Or(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #OR :: C, V, S)
-	/// #END_DOC
 	func processOrConnectivePiNode (node: OrConnectivePiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
 	{
 		controlStack.push(value: OrConnectiveOperationCode())
@@ -219,10 +229,9 @@ public extension PiFrameworkHandler
 		controlStack.push(value: node.rhs)
 	}
 
-	/// #START_DOC
 	/// - Helper function for handling with the or conective operation with the desired values.
+	/// 	Here the below delta match will occur.
 	/// 	δ(#OR :: C, B₁ :: B₂ :: V, S) = δ(C, B₁ ∨ B₂ :: V, S)
-	/// #END_DOC
 	func processOrConnectiveOperationCode (valueStack: Stack<AutomatonValue>) throws
 	{
 		let value1: Bool = try popBooValue(valueStack: valueStack)
@@ -230,10 +239,9 @@ public extension PiFrameworkHandler
 		valueStack.push(value: value1 || value2)
 	}
 
-    /// #START_DOC
 	/// - Handler for the analysis of a node contening a lower than comparation operation.
+	/// 	Here the below delta match will occur.
 	/// 	δ(Lt(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #LT :: C, V, S)
-	/// #END_DOC
 	func processLowerThanOperationPiNode (node: LowerThanOperationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
 	{
 		controlStack.push(value: LowerThanOperationCode())
@@ -241,10 +249,9 @@ public extension PiFrameworkHandler
 		controlStack.push(value: node.rhs)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for handling with the lower than comparation operation with the desired values.
+	/// 	Here the below delta match will occur.
 	/// 	δ(#LT :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ < N₂ :: V, S)
-	/// #END_DOC
 	func processLowerThanOperationCode (valueStack: Stack<AutomatonValue>) throws
 	{
 		let value1: Float = try popNumValue(valueStack: valueStack)
@@ -252,10 +259,9 @@ public extension PiFrameworkHandler
 		valueStack.push(value: value1 < value2)
 	}
 
-	/// #START_DOC
 	/// - Handler for the analysis of a node contening a lower than comparation operation.
+	/// 	Here the below delta match will occur.
 	/// 	δ(Le(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #LE :: C, V, S)
-	/// #END_DOC
 	func processLowerEqualToOperationPiNode (node: LowerEqualToOperationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
 	{
 		controlStack.push(value: LowerEqualToOperationCode())
@@ -263,10 +269,9 @@ public extension PiFrameworkHandler
 		controlStack.push(value: node.rhs)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for handling with the lower than comparation operation with the desired values.
+	/// 	Here the below delta match will occur.
 	/// 	δ(#LE :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ <= N₂ :: V, S)
-	/// #END_DOC
 	func processLowerEqualToOperationCode (valueStack: Stack<AutomatonValue>) throws
 	{
 		let value1: Float = try popNumValue(valueStack: valueStack)
@@ -274,10 +279,9 @@ public extension PiFrameworkHandler
 		valueStack.push(value: value1 <= value2)
 	}
 
-	/// #START_DOC
 	/// - Handler for the analysis of a node contening a greater than comparation operation.
+	/// 	Here the below delta match will occur.
 	/// 	δ(Gt(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #GT :: C, V, S)
-	/// #END_DOC
 	func processGreaterThanOperationPiNode (node: GreaterThanOperationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
 	{
 		controlStack.push(value: GreaterThanOperationCode())
@@ -285,10 +289,9 @@ public extension PiFrameworkHandler
 		controlStack.push(value: node.rhs)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for handling with the greater than comparation operation with the desired values.
+	/// 	Here the below delta match will occur.
 	/// 	δ(#GT :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ > N₂ :: V, S)
-	/// #END_DOC
 	func processGreaterThanOperationCode (valueStack: Stack<AutomatonValue>) throws
 	{
 		let value1: Float = try popNumValue(valueStack: valueStack)
@@ -296,10 +299,9 @@ public extension PiFrameworkHandler
 		valueStack.push(value: value1 > value2)
 	}
 
-	/// #START_DOC
 	/// - Handler for the analysis of a node contening a greater than comparation operation.
+	/// 	Here the below delta match will occur.
 	/// 	δ(Ge(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #GE :: C, V, S)
-	/// #END_DOC
 	func processGreaterEqualToOperationPiNode (node: GreaterEqualToOperationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
 	{
 		controlStack.push(value: GreaterEqualToOperationCode())
@@ -307,10 +309,9 @@ public extension PiFrameworkHandler
 		controlStack.push(value: node.rhs)
 	}
 	
-	/// #START_DOC
 	/// - Helper function for handling with the greater than comparation operation with the desired values.
+	/// 	Here the below delta match will occur.
 	/// 	δ(#GE :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ >= N₂ :: V, S)
-	/// #END_DOC
 	func processGreaterEqualToOperationCode (valueStack: Stack<AutomatonValue>) throws
 	{
 		let value1: Float = try popNumValue(valueStack: valueStack)
@@ -318,20 +319,18 @@ public extension PiFrameworkHandler
 		valueStack.push(value: value1 >= value2)
 	}
 	
-	/// #START_DOC
 	/// - Handler for the analysis of a node contening a <negation> operation.
+	/// 	Here the below delta match will occur.
 	/// 	δ(Not(E) :: C, V, S) = δ(E :: #NOT :: C, V, S)
-	/// #END_DOC
 	func processNegationPiNode (node: NegationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
 	{
 		controlStack.push(value: NegationOperationCode())
 		controlStack.push(value: node.logicalExpression)
 	}
 
-    /// #START_DOC
 	/// - Helper function for handling with the negation operation.
+	/// 	Here the below delta match will occur.
 	/// 	δ(#NOT :: C, True :: V, S) = δ(C, False :: V, S), δ(#NOT :: C, False :: V, S) = δ(C, True :: V, S)
-	/// #END_DOC
 	func processNegationOperationCode (valueStack: Stack<AutomatonValue>) throws
 	{
 		let value: Bool = try popBooValue(valueStack: valueStack)

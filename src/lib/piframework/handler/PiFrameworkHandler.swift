@@ -1,8 +1,6 @@
 import Foundation
 
-/// #START_DOC
 /// - Define the enumeration for the error that can be throw during automaton basic nodes handling.
-/// #END_DOC
 public enum AutomatonHandlerError: Error
 {
 	case ExpectedIdentifierNode
@@ -14,14 +12,10 @@ public enum AutomatonHandlerError: Error
 	case UndefinedStorageAddress
 }
 
-/// #START_DOC
 /// - Protocol that defines the basic operation needed in all handlers.
-/// #END_DOC
 public class PiFrameworkHandler
 {
-	/// #START_DOC
 	/// - Helper function for getting a <number> value from the value stack.
-	/// #END_DOC
 	public func popNumValue(valueStack: Stack<AutomatonValue>) throws -> Float
 	{
 		if valueStack.isEmpty() || !(valueStack.peek() is Float)
@@ -31,9 +25,7 @@ public class PiFrameworkHandler
 		return valueStack.pop() as! Float
 	}
 	
-	/// #START_DOC
 	/// - Helper function for getting a <truth> value from the value stack.
-	/// #END_DOC
 	public func popBooValue(valueStack: Stack<AutomatonValue>) throws -> Bool
 	{
 		if valueStack.isEmpty() || !(valueStack.peek() is Bool)
@@ -43,9 +35,7 @@ public class PiFrameworkHandler
 		return valueStack.pop() as! Bool
 	}
 
-	/// #START_DOC
 	/// - Helper function for getting a storable from the value stack.
-	/// #END_DOC
 	public func popStorableValue(valueStack: Stack<AutomatonValue>) throws -> AutomatonStorable
 	{
 		if valueStack.isEmpty() || !(valueStack.peek() is AutomatonStorable)
@@ -55,9 +45,7 @@ public class PiFrameworkHandler
 		return valueStack.pop() as! AutomatonStorable
 	}
 
-	/// #START_DOC
 	/// - Helper function for getting a identifier from the value stack.
-	/// #END_DOC
 	public func popIdValue(valueStack: Stack<AutomatonValue>) throws -> String
 	{
 		if valueStack.isEmpty() || !(valueStack.peek() is IdentifierPiNode)
@@ -68,9 +56,7 @@ public class PiFrameworkHandler
 		return nodeHelper.name
 	}
 
-	/// #START_DOC
 	/// - Helper function for getting a bindable from the value stack.
-	/// #END_DOC
 	public func popBindableValue(valueStack: Stack<AutomatonValue>) throws -> AutomatonBindable
 	{
 		if valueStack.isEmpty() || !(valueStack.peek() is AutomatonBindable)
@@ -80,9 +66,7 @@ public class PiFrameworkHandler
 		return valueStack.pop() as! AutomatonBindable
 	}
 
-	/// #START_DOC
 	/// - Helper function for getting a bindable value from the environment for the given key.
-	/// #END_DOC
 	public func getBindableValueFromEnvironment (key: String, environment: [String: AutomatonBindable]) throws -> AutomatonBindable
 	{
 		if environment[key] == nil
@@ -92,9 +76,7 @@ public class PiFrameworkHandler
 		return environment[key]!
 	}
 
-	/// #START_DOC
 	/// - Helper function for getting a storable value from the storage for the given address.
-	/// #END_DOC
 	public func getStorableValueFromStorage (address: Int, storage: [Int: AutomatonStorable]) throws -> AutomatonStorable
 	{
 		if storage[address] == nil

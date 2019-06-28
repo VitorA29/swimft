@@ -2,11 +2,9 @@ import Foundation
 
 public var envConfiguration: Configuration! = nil
 
-/// #START_DOC
 /// - Function for helping handleling with the opening and reading of the argument file.
 /// - Return
 /// 	- The content of the file if found, nil otherwise.
-/// #END_DOC
 private func filePath () throws -> String?
 {
 	let currDir = FileManager.default.currentDirectoryPath
@@ -23,13 +21,12 @@ private func filePath () throws -> String?
 	}
 }
 
-/// #START_DOC
 /// - The main function of this compiler logic, this will handle with everything by creating the compilation pipeline, printing every step.
-/// #END_DOC
 public func main ()
 {
 	do
 	{
+		// prepare environment
 		envConfiguration = try Configuration()
 		let code: String = try filePath()!
 		if envConfiguration.code_print
@@ -37,6 +34,7 @@ public func main ()
 			print("{ code: \(code) }")
 		}
 
+		// perform the lexer processing
 		let lexer:Lexer<ImpToken> = Lexer<ImpToken>(input: code, processor: IMP_TOKEN_PROCESSOR) // should create a lexer factory
 		let tokens: [ImpToken] = try lexer.tokenize()
 		if envConfiguration.tokens_print
@@ -48,6 +46,7 @@ public func main ()
 			}
 		}
 		
+		// perform the parser processing
 		let parser: ImpParser = try ImpParser(tokens: tokens) // should create a parser factory
 		let ast_imp: [AbstractSyntaxTreeImp] = try parser.parse() as! [AbstractSyntaxTreeImp]
 		if envConfiguration.ast_imp_print
@@ -59,6 +58,7 @@ public func main ()
 			}
 		}
 
+		// perform the translation to Πir
 		let translator: ImpTranslator = try ImpTranslator(ast: ast_imp)
 		let ast_pi: AbstractSyntaxTreePi = try translator.translate()
 		if envConfiguration.ast_pi_print
@@ -70,6 +70,7 @@ public func main ()
 			}
 		}
 		
+		// execute the pi framework automaton
 		let piFramework: PiFramework = PiFramework(ast_pi: ast_pi)
 		try piFramework.execute()
 	}

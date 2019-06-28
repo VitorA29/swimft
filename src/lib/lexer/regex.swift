@@ -1,18 +1,12 @@
 import Foundation
 
-/// #START_DOC
 /// - A dictionary for helping in execution time the processing of regular expressions.
-/// #END_DOC
 var expressions = [String: NSRegularExpression]()
 
-/// #START_DOC
 /// - A extention of the String class.
-/// #END_DOC
 public extension String
 {
-	/// #START_DOC
 	/// - A helper function for processing regular expressions.
-	/// #END_DOC
 	func match (regex: String) -> String?
 	{
 		let expression: NSRegularExpression
