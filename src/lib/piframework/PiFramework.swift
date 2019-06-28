@@ -76,21 +76,49 @@ public class PiFramework
 		let command: AbstractSyntaxTreePiExtended = controlStack.pop()
 		if command is OperationCode
 		{
-			if command is ArithmeticOperationCode
+			if command is MultiplicationOperationCode
 			{
-				try piFrameworkHandler.processArithmeticOperationCode(operationCode: command as! ArithmeticOperationCode, valueStack: valueStack)
+				try piFrameworkHandler.processMultiplicationOperationCode(valueStack: valueStack)
+			}
+			else if command is DivisionOperationCode
+			{
+				try piFrameworkHandler.processDivisionOperationCode(valueStack: valueStack)
+			}
+			else if command is SumOperationCode
+			{
+				try piFrameworkHandler.processSumOperationCode(valueStack: valueStack)
+			}
+			else if command is SubtractionOperationCode
+			{
+				try piFrameworkHandler.processSubtractionOperationCode(valueStack: valueStack)
 			}
 			else if command is EqualToOperationCode
 			{
 				try piFrameworkHandler.processEqualToOperationCode(valueStack: valueStack)
 			}
-			else if command is LogicalConnectionOperationCode
+			else if command is AndConnectiveOperationCode
 			{
-				try piFrameworkHandler.processLogicalConnectionOperationCode(operationCode: command as! LogicalConnectionOperationCode, valueStack: valueStack)
+				try piFrameworkHandler.processAndConnectiveOperationCode(valueStack: valueStack)
 			}
-			else if command is InequalityOperationCode
+			else if command is OrConnectiveOperationCode
 			{
-				try piFrameworkHandler.processInequalityOperationCode(operationCode: command as! InequalityOperationCode, valueStack: valueStack)
+				try piFrameworkHandler.processOrConnectiveOperationCode(valueStack: valueStack)
+			}
+			else if command is LowerThanOperationCode
+			{
+				try piFrameworkHandler.processLowerThanOperationCode(valueStack: valueStack)
+			}
+			else if command is LowerEqualToOperationCode
+			{
+				try piFrameworkHandler.processLowerEqualToOperationCode(valueStack: valueStack)
+			}
+			else if command is GreaterThanOperationCode
+			{
+				try piFrameworkHandler.processGreaterThanOperationCode(valueStack: valueStack)
+			}
+			else if command is GreaterEqualToOperationCode
+			{
+				try piFrameworkHandler.processGreaterEqualToOperationCode(valueStack: valueStack)
 			}
 			else if command is NegationOperationCode
 			{
@@ -133,9 +161,21 @@ public class PiFramework
 				throw AutomatonError.UndefinedOperationCode(command as! OperationCode)
 			}
 		}
-		else if command is ArithmeticOperationPiNode
+		else if command is MultiplicationOperationPiNode
 		{
-			try piFrameworkHandler.processArithmeticOperationPiNode(node: command as! ArithmeticOperationPiNode, controlStack: controlStack)
+			try piFrameworkHandler.processMultiplicationOperationPiNode(node: command as! MultiplicationOperationPiNode, controlStack: controlStack)
+		}
+		else if command is DivisionOperationPiNode
+		{
+			try piFrameworkHandler.processDivisionOperationPiNode(node: command as! DivisionOperationPiNode, controlStack: controlStack)
+		}
+		else if command is SumOperationPiNode
+		{
+			try piFrameworkHandler.processSumOperationPiNode(node: command as! SumOperationPiNode, controlStack: controlStack)
+		}
+		else if command is SubtractionOperationPiNode
+		{
+			try piFrameworkHandler.processSubtractionOperationPiNode(node: command as! SubtractionOperationPiNode, controlStack: controlStack)
 		}
 		else if command is IdentifierPiNode
 		{
@@ -153,13 +193,29 @@ public class PiFramework
 		{
 			try piFrameworkHandler.processEqualToOperationPiNode(node: command as! EqualToOperationPiNode, controlStack: controlStack)
 		}
-		else if command is LogicalConnectionPiNode
+		else if command is AndConnectivePiNode
 		{
-			try piFrameworkHandler.processLogicalConnectionPiNode(node: command as! LogicalConnectionPiNode, controlStack: controlStack)
+			try piFrameworkHandler.processAndConnectivePiNode(node: command as! AndConnectivePiNode, controlStack: controlStack)
 		}
-		else if command is InequalityOperationPiNode
+		else if command is OrConnectivePiNode
 		{
-			try piFrameworkHandler.processInequalityOperationPiNode(node: command as! InequalityOperationPiNode, controlStack: controlStack)
+			try piFrameworkHandler.processOrConnectivePiNode(node: command as! OrConnectivePiNode, controlStack: controlStack)
+		}
+		else if command is LowerThanOperationPiNode
+		{
+			try piFrameworkHandler.processLowerThanOperationPiNode(node: command as! LowerThanOperationPiNode, controlStack: controlStack)
+		}
+		else if command is LowerEqualToOperationPiNode
+		{
+			try piFrameworkHandler.processLowerEqualToOperationPiNode(node: command as! LowerEqualToOperationPiNode, controlStack: controlStack)
+		}
+		else if command is GreaterThanOperationPiNode
+		{
+			try piFrameworkHandler.processGreaterThanOperationPiNode(node: command as! GreaterThanOperationPiNode, controlStack: controlStack)
+		}
+		else if command is GreaterEqualToOperationPiNode
+		{
+			try piFrameworkHandler.processGreaterEqualToOperationPiNode(node: command as! GreaterEqualToOperationPiNode, controlStack: controlStack)
 		}
 		else if command is NegationPiNode
 		{

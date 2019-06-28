@@ -5,18 +5,23 @@ public enum ReferenceHandlerError: Error
 	case ExpectedLocationValue
 }
 
-public struct AddressReferencePiNode: ExpressionPiNode
+public protocol ReferencePiNode: ExpressionPiNode
 {
-	let identifier: IdentifierPiNode
+	var identifier: IdentifierPiNode { get }
+}
+
+public struct AddressReferencePiNode: ReferencePiNode
+{
+	public let identifier: IdentifierPiNode
 	public var description: String
 	{
 		return "DeRef(\(identifier))"
 	}
 }
 
-public struct ValueReferencePiNode: ArithmeticExpressionPiNode, LogicalExpressionPiNode
+public struct ValueReferencePiNode: ReferencePiNode, ArithmeticExpressionPiNode, LogicalExpressionPiNode
 {
-	let identifier: IdentifierPiNode
+	public let identifier: IdentifierPiNode
 	public var description: String
 	{
 		return "ValRef(\(identifier))"

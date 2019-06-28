@@ -108,34 +108,18 @@ public struct IdentifierImpNode: LogicalExpressionImpNode, ArithmeticExpressionI
 }
 
 /// #START_DOC
+/// - This wrap the reference operations(<reference>).
+/// #END_DOC
+public protocol ReferenceImpNode: ExpressionImpNode
+{
+	var identifier: IdentifierImpNode { get }
+}
+
+/// #START_DOC
 /// - This wraps all the forms of logical expressions(<logical_expression>).
 /// #END_DOC
 public protocol LogicalExpressionImpNode: ExpressionImpNode
 {
-}
-
-/// #START_DOC
-/// - This wrap the address reference operation(<address_reference>).
-/// #END_DOC
-public struct AddressReferenceImpNode: ExpressionImpNode
-{
-	public let identifier: IdentifierImpNode
-	public var description: String
-	{
-		return "AddressReferenceNode(\(identifier))"
-	}
-}
-
-/// #START_DOC
-/// - This wrap the value reference operation(<value_reference>).
-/// #END_DOC
-public struct ValueReferenceImpNode: LogicalExpressionImpNode, ArithmeticExpressionImpNode
-{
-	public let identifier: IdentifierImpNode
-	public var description: String
-	{
-		return "ValueReferenceNode(\(identifier))"
-	}
 }
 
 
@@ -151,6 +135,30 @@ public protocol ArithmeticExpressionImpNode: ExpressionImpNode
 /// #END_DOC
 public protocol DeclarationImpNode: AbstractSyntaxTreeImp
 {
+}
+
+/// #START_DOC
+/// - This wrap the address reference operation(<address_reference>).
+/// #END_DOC
+public struct AddressReferenceImpNode: ReferenceImpNode
+{
+	public let identifier: IdentifierImpNode
+	public var description: String
+	{
+		return "AddressReferenceNode(\(identifier))"
+	}
+}
+
+/// #START_DOC
+/// - This wrap the value reference operation(<value_reference>).
+/// #END_DOC
+public struct ValueReferenceImpNode: ReferenceImpNode, LogicalExpressionImpNode, ArithmeticExpressionImpNode
+{
+	public let identifier: IdentifierImpNode
+	public var description: String
+	{
+		return "ValueReferenceNode(\(identifier))"
+	}
 }
 
 /// #START_DOC

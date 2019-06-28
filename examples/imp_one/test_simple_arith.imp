@@ -14,6 +14,7 @@ in
         in
             print(w)
             print(k)
+            print(j/7)
         end
     end
 end

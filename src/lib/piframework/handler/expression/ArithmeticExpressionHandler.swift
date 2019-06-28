@@ -1,29 +1,70 @@
 import Foundation
 
-public enum ArithmeticExpressionHandlerError: Error
-{
-	case UndefinedArithmeticOperation(String)
-	case UndefinedArithmeticOperationCode(String)
-}
-
 public protocol ArithmeticExpressionPiNode: ExpressionPiNode
 {
 }
 
-public struct ArithmeticOperationPiNode: ArithmeticExpressionPiNode
+public protocol ArithmeticOperationPiNode: ArithmeticExpressionPiNode
 {
-	let operation: String
-	let lhs: ArithmeticExpressionPiNode
-	let rhs: ArithmeticExpressionPiNode
-	public var description: String
+	var operation: String { get }
+	var lhs: ArithmeticExpressionPiNode { get }
+	var rhs: ArithmeticExpressionPiNode { get }
+}
+
+public extension ArithmeticOperationPiNode
+{
+	var description: String
 	{
 		return "\(operation)(\(lhs), \(rhs))"
 	}
 }
 
-public struct ArithmeticOperationCode: OperationCode
+public struct MultiplicationOperationPiNode: ArithmeticOperationPiNode
 {
-	public let code: String
+	public let operation: String = "Mul"
+	public let lhs: ArithmeticExpressionPiNode
+	public let rhs: ArithmeticExpressionPiNode
+}
+
+public struct DivisionOperationPiNode: ArithmeticOperationPiNode
+{
+	public let operation: String = "Div"
+	public let lhs: ArithmeticExpressionPiNode
+	public let rhs: ArithmeticExpressionPiNode
+}
+
+public struct SumOperationPiNode: ArithmeticOperationPiNode
+{
+	public let operation: String = "Sum"
+	public let lhs: ArithmeticExpressionPiNode
+	public let rhs: ArithmeticExpressionPiNode
+}
+
+public struct SubtractionOperationPiNode: ArithmeticOperationPiNode
+{
+	public let operation: String = "Sub"
+	public let lhs: ArithmeticExpressionPiNode
+	public let rhs: ArithmeticExpressionPiNode
+}
+
+public struct MultiplicationOperationCode: OperationCode
+{
+	public let code: String = "MUL"
+}
+
+public struct DivisionOperationCode: OperationCode
+{
+	public let code: String = "DIV"
+}
+
+public struct SumOperationCode: OperationCode
+{
+	public let code: String = "SUM"
+}
+
+public struct SubtractionOperationCode: OperationCode
+{
+	public let code: String = "SUB"
 }
 
 /// #START_DOC
@@ -32,54 +73,90 @@ public struct ArithmeticOperationCode: OperationCode
 public extension PiFrameworkHandler
 {
 	/// #START_DOC
-	/// - Handler for the analysis of a node contening a arithmetic operation.
-	/// 	Here the below delta match will occur,  meaning that `operation` will be one of 'Sum', 'Mul', 'Div' and 'Sub' and `code` will be it relative operation code form of the `operation`.
-	/// 	δ(`operation`(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: `code` :: C, V, S)
+	/// - Handler for the analysis of a node contening a multiplication operation.
+	/// 	δ(Mul(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #MUL :: C, V, S)
 	/// #END_DOC
-	func processArithmeticOperationPiNode (node: ArithmeticOperationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
+	func processMultiplicationOperationPiNode (node: MultiplicationOperationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
 	{
-		switch (node.operation)
-		{
-			case "Mul":
-				controlStack.push(value: ArithmeticOperationCode(code: "MUL"))
-			case "Div":
-				controlStack.push(value: ArithmeticOperationCode(code: "DIV"))
-			case "Sum":
-				controlStack.push(value: ArithmeticOperationCode(code: "SUM"))
-			case "Sub":
-				controlStack.push(value: ArithmeticOperationCode(code: "SUB"))
-			default:
-					throw ArithmeticExpressionHandlerError.UndefinedArithmeticOperation(node.operation)
-		}
+		controlStack.push(value: MultiplicationOperationCode())
 		controlStack.push(value: node.lhs)
 		controlStack.push(value: node.rhs)
 	}
 	
 	/// #START_DOC
-	/// - Handler for perform the relative arithmetic operation with the desired values.
-	/// 	Here the below delta match will occur,  meaning that `code` will be one of '#SUM', '#MUL', '#DIV' and '#SUB' and `aritimetic_operator` will be it relative arithmetic operator.
-	/// 	δ(`code` :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ `aritimetic_operator` N₂ :: V, S)
+	/// - Handler for perform the relative multiplication operation with the desired values.
+	/// 	δ(#MUL :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ * N₂ :: V, S)
 	/// #END_DOC
-	func processArithmeticOperationCode (operationCode: ArithmeticOperationCode, valueStack: Stack<AutomatonValue>) throws
+	func processMultiplicationOperationCode (valueStack: Stack<AutomatonValue>) throws
 	{
 		let value1: Float = try popNumValue(valueStack: valueStack)
 		let value2: Float = try popNumValue(valueStack: valueStack)
-		switch(operationCode.code)
-		{
-			case "MUL":
-				valueStack.push(value: value1 * value2)
-				break
-			case "DIV":
-				valueStack.push(value: value1 / value2)
-				break
-			case "SUM":
-				valueStack.push(value: value1 + value2)
-				break
-			case "SUB":
-				valueStack.push(value: value1 - value2)
-				break
-			default:
-					throw ArithmeticExpressionHandlerError.UndefinedArithmeticOperationCode(operationCode.code)
-		}
+		valueStack.push(value: value1 * value2)
+	}
+
+	/// #START_DOC
+	/// - Handler for the analysis of a node contening a division operation.
+	/// 	δ(Div(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #DIV :: C, V, S)
+	/// #END_DOC
+	func processDivisionOperationPiNode (node: DivisionOperationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
+	{
+		controlStack.push(value: DivisionOperationCode())
+		controlStack.push(value: node.lhs)
+		controlStack.push(value: node.rhs)
+	}
+	
+	/// #START_DOC
+	/// - Handler for perform the relative division operation with the desired values.
+	/// 	δ(#DIV :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ / N₂ :: V, S)
+	/// #END_DOC
+	func processDivisionOperationCode (valueStack: Stack<AutomatonValue>) throws
+	{
+		let value1: Float = try popNumValue(valueStack: valueStack)
+		let value2: Float = try popNumValue(valueStack: valueStack)
+		valueStack.push(value: value1 / value2)
+	}
+
+	/// #START_DOC
+	/// - Handler for the analysis of a node contening a sum operation.
+	/// 	δ(Sum(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #SUM :: C, V, S)
+	/// #END_DOC
+	func processSumOperationPiNode (node: SumOperationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
+	{
+		controlStack.push(value: SumOperationCode())
+		controlStack.push(value: node.lhs)
+		controlStack.push(value: node.rhs)
+	}
+	
+	/// #START_DOC
+	/// - Handler for perform the relative sum operation with the desired values.
+	/// 	δ(#SUM :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ + N₂ :: V, S)
+	/// #END_DOC
+	func processSumOperationCode (valueStack: Stack<AutomatonValue>) throws
+	{
+		let value1: Float = try popNumValue(valueStack: valueStack)
+		let value2: Float = try popNumValue(valueStack: valueStack)
+		valueStack.push(value: value1 + value2)
+	}
+
+	/// #START_DOC
+	/// - Handler for the analysis of a node contening a subtraction operation.
+	/// 	δ(Sub(E₁, E₂) :: C, V, S) = δ(E₁ :: E₂ :: #SUB :: C, V, S)
+	/// #END_DOC
+	func processSubtractionOperationPiNode (node: SubtractionOperationPiNode, controlStack: Stack<AbstractSyntaxTreePiExtended>) throws
+	{
+		controlStack.push(value: SubtractionOperationCode())
+		controlStack.push(value: node.lhs)
+		controlStack.push(value: node.rhs)
+	}
+	
+	/// #START_DOC
+	/// - Handler for perform the relative subtraction operation with the desired values.
+	/// 	δ(#SUB :: C, N₁ :: N₂ :: V, S) = δ(C, N₁ - N₂ :: V, S)
+	/// #END_DOC
+	func processSubtractionOperationCode (valueStack: Stack<AutomatonValue>) throws
+	{
+		let value1: Float = try popNumValue(valueStack: valueStack)
+		let value2: Float = try popNumValue(valueStack: valueStack)
+		valueStack.push(value: value1 - value2)
 	}
 }
