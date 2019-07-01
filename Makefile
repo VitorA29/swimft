@@ -15,7 +15,7 @@ PROGRAM_FLAGS =
 
 all: release_branch download_swift build execute_imp_one
 
-release_branch: release_imp_one
+release_branch:
 	echo "will set the right branch";
 	
 release_imp_zero:
