@@ -1,3 +1,4 @@
+/// Class defining all the logic behind the translation of a Abstract Syntax Tree relative to a ImΠ programm to it's relative Abstract Syntrax Tree of Πr.
 public class ImpTranslator: Translator
 {
 	let abstractSyntaxTreeImp: [CommandImpNode]
@@ -21,6 +22,7 @@ public class ImpTranslator: Translator
 		return try combineCommandImpNodes(forest: abstractSyntaxTreeImp)
 	}
 
+	/// - Helper function for converting a command imp node into it's correlative command pi node
 	private func translateCommandImpNode (node: CommandImpNode) throws -> CommandPiNode
 	{
 		if node is NoOpImpNode
@@ -87,6 +89,7 @@ public class ImpTranslator: Translator
 		return DeclarationSequencePiNode(lhs: head, rhs: rhs)
 	}
 
+	/// - Helper function for converting a assign imp node into it's correlative assign pi node
 	private func translateAssignImpNode (node: AssignImpNode) throws -> AssignPiNode
 	{
 		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
@@ -94,6 +97,7 @@ public class ImpTranslator: Translator
 		return AssignPiNode(identifier: identifier, expression: expression)
 	}
 
+	/// - Helper function for converting a while imp node into it's correlative loop pi node
 	private func translateWhileImpNode (node: WhileImpNode) throws -> LoopPiNode
 	{
 		let condition: LogicalExpressionPiNode = try translateLogicalExpressionImpNode(node: node.condition)
@@ -101,6 +105,7 @@ public class ImpTranslator: Translator
 		return LoopPiNode(condition: condition, command: command)
 	}
 
+	/// - Helper function for converting a conditional imp node into it's correlative conditional pi node
 	private func translateConditionalImpNode (node: ConditionalImpNode) throws -> ConditionalPiNode
 	{
 		let condition: LogicalExpressionPiNode = try translateLogicalExpressionImpNode(node: node.condition)
@@ -113,6 +118,7 @@ public class ImpTranslator: Translator
 		return ConditionalPiNode(condition: condition, commandTrue: commandTrue, commandFalse: commandFalse)
 	}
 
+	/// - Helper function for converting a expression imp node into it's correlative expression pi node
 	private func translateExpressionImpNode (node: ExpressionImpNode) throws -> ExpressionPiNode
 	{
 		if node is LogicalExpressionImpNode
@@ -133,6 +139,7 @@ public class ImpTranslator: Translator
 		}
 	}
 
+	/// - Helper function for converting a block imp node into it's correlative block pi node
 	private func translateBlockImpNode (node: BlockImpNode) throws -> BlockPiNode
 	{
 		let declaration: DeclarationPiNode = try combineDeclarationImpNodes(forest: node.declaration)
@@ -140,17 +147,20 @@ public class ImpTranslator: Translator
 		return BlockPiNode(declaration: declaration, command: command)
 	}
 
+	/// - Helper function for converting a print imp node into it's correlative print pi node
 	private func translatePrintImpNode (node: PrintImpNode) throws -> PrintPiNode
 	{
 		let expression: ExpressionPiNode = try translateExpressionImpNode(node: node.expression)
 		return PrintPiNode(expression: expression)
 	}
 
+	/// - Helper function for converting a identifier imp node into it's correlative identifier pi node
 	private func translateIdentifierImpNode (node: IdentifierImpNode) -> IdentifierPiNode
 	{
 		return IdentifierPiNode(name: node.name)
 	}
 
+	/// - Helper function for converting a reference imp node into it's correlative reference pi node
 	private func translateReferenceImpNode (node: ReferenceImpNode) throws -> ReferencePiNode
 	{
 		if node is AddressReferenceImpNode
@@ -167,6 +177,7 @@ public class ImpTranslator: Translator
 		}
 	}
 
+	/// - Helper function for converting a logical expression imp node into it's correlative logical expression pi node
 	private func translateLogicalExpressionImpNode (node: LogicalExpressionImpNode) throws -> LogicalExpressionPiNode
 	{
 		if node is IdentifierImpNode
@@ -195,6 +206,7 @@ public class ImpTranslator: Translator
 		}
 	}
 
+	/// - Helper function for converting a arithmetic expression imp node into it's correlative arithmetic expression pi node
 	private func translateArithmeticExpressionImpNode (node: ArithmeticExpressionImpNode) throws -> ArithmeticExpressionPiNode
 	{
 		if node is IdentifierImpNode
@@ -219,6 +231,7 @@ public class ImpTranslator: Translator
 		}
 	}
 
+	/// - Helper function for converting a declaration imp node into it's correlative declaration pi node
 	private func translateDeclarationImpNode (node: DeclarationImpNode) throws -> DeclarationPiNode
 	{
 		if node is VariableDeclarationImpNode
@@ -235,34 +248,40 @@ public class ImpTranslator: Translator
 		}
 	}
 
+	/// - Helper function for converting a address reference imp node into it's correlative address reference pi node
 	private func translateAddressReferenceImpNode (node: AddressReferenceImpNode) -> AddressReferencePiNode
 	{
 		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
 		return AddressReferencePiNode(identifier: identifier)
 	}
-	
+
+	/// - Helper function for converting a value reference imp node into it's correlative value reference pi node
 	private func translateValueReferenceImpNode (node: ValueReferenceImpNode) -> ValueReferencePiNode
 	{
 		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
 		return ValueReferencePiNode(identifier: identifier)
 	}
 
+	/// - Helper function for converting a logical classification imp node into it's correlative logical classification pi node
 	private func translateLogicalClassificationImpNode (node: LogicalClassificationImpNode) -> LogicalClassificationPiNode
 	{
 		return LogicalClassificationPiNode(value: node.value)
 	}
 
+	/// - Helper function for converting a negation imp node into it's correlative negation pi node
 	private func translateNegationImpNode (node: NegationImpNode) throws -> NegationPiNode
 	{
 		let logicalExpression: LogicalExpressionPiNode = try translateLogicalExpressionImpNode(node: node.logicalExpression)
 		return NegationPiNode(logicalExpression: logicalExpression)
 	}
 
+	/// - Helper function for converting a number imp node into it's correlative number pi node
 	private func translateNumberImpNode (node: NumberImpNode) -> NumberPiNode
 	{
 		return NumberPiNode(value: node.value)
 	}
 
+	/// - Helper function for converting a logical operation imp node into it's correlative logical expression pi node
 	private func translateLogicalOperationImpNode (node: LogicalOperationImpNode) throws  -> LogicalExpressionPiNode
 	{
 		if node is EqualityImpNode
@@ -283,6 +302,7 @@ public class ImpTranslator: Translator
 		}
 	}
 
+	/// - Helper function for converting a arithmetic operation imp node into it's correlative arithmetic operation pi node
 	private func translateArithmeticOperationImpNode (node: ArithmeticOperationImpNode) throws -> ArithmeticOperationPiNode
 	{
 		let lhs: ArithmeticExpressionPiNode = try translateArithmeticExpressionImpNode(node: node.lhs)
@@ -302,6 +322,7 @@ public class ImpTranslator: Translator
 		}
 	}
 
+	/// - Helper function for converting a variable declaration imp node into it's correlative bindable operation pi node
 	private func translateVariableDeclarationImpNode (node: VariableDeclarationImpNode) throws -> BindableOperationPiNode
 	{
 		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
@@ -309,6 +330,7 @@ public class ImpTranslator: Translator
 		return BindableOperationPiNode(identifier: identifier, expression: AllocateReferencePiNode(expression: expression))
 	}
 
+	/// - Helper function for converting a constant declaration imp node into it's correlative bindable operation pi node
 	private func translateConstantDeclarationImpNode (node: ConstantDeclarationImpNode) throws -> BindableOperationPiNode
 	{
 		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
@@ -316,6 +338,7 @@ public class ImpTranslator: Translator
 		return BindableOperationPiNode(identifier: identifier, expression: expression)
 	}
 
+	/// - Helper function for converting a equality imp node into it's correlative equal to operation pi node
 	private func translateEqualityImpNode (node: EqualityImpNode) throws -> EqualToOperationPiNode
 	{
 		let lhs: ExpressionPiNode = try translateExpressionImpNode(node: node.lhs)
@@ -323,6 +346,7 @@ public class ImpTranslator: Translator
 		return EqualToOperationPiNode(lhs: lhs, rhs: rhs)
 	}
 
+	/// - Helper function for converting a logical connection imp node into it's correlative logical connection pi node
 	private func translateLogicalConnectionImpNode (node: LogicalConnectionImpNode) throws -> LogicalConnectionPiNode
 	{
 		let lhs: LogicalExpressionPiNode = try translateLogicalExpressionImpNode(node: node.lhs)
@@ -338,6 +362,7 @@ public class ImpTranslator: Translator
 		}
 	}
 
+	/// - Helper function for converting a inequality operation imp node into it's correlative inequality operation pi node
 	private func translateInequalityOperationImpNode (node: InequalityOperationImpNode) throws -> InequalityOperationPiNode
 	{
 		let lhs: ArithmeticExpressionPiNode = try translateArithmeticExpressionImpNode(node: node.lhs)
