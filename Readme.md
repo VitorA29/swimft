@@ -104,10 +104,11 @@ The enviroment configuration is ensure by this logic, after everything set up(eq
 
 - 'make release_branch': This will change the branch to the latest release branch;
 - 'make release\_imp\_zero': This will change the branch to the imp-zero release branch;
+- 'make release\_imp\_one': This will change the branch to the imp-one release branch;
 - 'make compile_src': This will compile the code;
 - 'make build': This will clean the compiled files and then will call compile\_src
-- 'make execute\_imp\_one': This will execute some Imp codes;
-- 'make': This will prepare all environment, installing all dependences if needed after will call build and finally will call execute\_imp\_one;
+- 'make execute\_imp\_two': This will execute some Imp codes;
+- 'make': This will prepare all environment, installing all dependences if needed after will call build and finally will call execute\_imp\_two;
 - 'make reset': This will clean the instalation, deleting everything after will call make.
 
 ### Using commom bash
