@@ -8,7 +8,7 @@ public enum AutomatonHandlerError: Error
     case ExpectedBooValue
     case ExpectedStorableValue
 	case ExpectedBindableValue
-	case UndefinedVariable
+	case UndefinedVariable(String)
 	case UndefinedStorageAddress
 }
 
@@ -71,7 +71,7 @@ public class PiFrameworkHandler
 	{
 		if environment[key] == nil
 		{
-			throw AutomatonHandlerError.UndefinedVariable
+			throw AutomatonHandlerError.UndefinedVariable(key)
 		}
 		return environment[key]!
 	}

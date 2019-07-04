@@ -40,6 +40,17 @@ public struct AllocateReferencePiNode: BindablePiNode
 	}
 }
 
+/// - This defines the pi node for the abstraction operation, this is a concept for the closures.
+public struct AbstractionPiNode: BindablePiNode
+{
+	let formalList: [IdentifierPiNode]
+	let block: BlockPiNode
+	public var description: String
+	{
+		return "Abs([\(formalList) - \(formalList.count)], \(block))"
+	}
+}
+
 /// - This defines the pi automaton operation code for the bindable operation.
 public struct BindableOperationCode: OperationCode
 {
@@ -117,4 +128,13 @@ public extension PiFrameworkHandler
         controlStack.push(value: node.rhs)
         controlStack.push(value: node.lhs)
     }
+
+	/// - Handler for the analysis of a node contening a function creation operation.
+	/// 	Here the below delta match will occur.
+	/// δ(Abs(F, B) :: C, V, E, S, L) = δ(C, Closure(F, B, E) :: V, E, S, L)
+	func processAbstractionPiNode (node: AbstractionPiNode, valueStack: Stack<AutomatonValue>, environment: [String: AutomatonBindable])
+	{
+		let closure: ClosurePiNode = ClosurePiNode(formalList: node.formalList, block: node.block, environment: environment)
+		valueStack.push(value: closure)
+	}
 }

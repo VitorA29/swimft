@@ -94,7 +94,7 @@ private func matchName (string: String) -> ImpToken?
 	{	
 		return ImpToken.LET
 	}
-	else if string == "var" || string == "cons" 
+	else if string == "var" || string == "cons"  || string == "fn"
 	{
 		return ImpToken.DECLARATION(string)
 	}

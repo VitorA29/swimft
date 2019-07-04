@@ -77,6 +77,18 @@ public struct PrintImpNode: CommandImpNode
 	}
 }
 
+/// - This wrap the call node(<call>).
+public struct CallImpNode: CommandImpNode
+{
+	let identifier: IdentifierImpNode
+	let actual: [ExpressionImpNode]
+	
+	public var description: String
+	{
+		return "CallNode(\(identifier), [\(actual) - \(actual.count)])"
+	}
+}
+
 /// - This wrap the identifier value(<identifier>).
 public struct IdentifierImpNode: LogicalExpressionImpNode, ArithmeticExpressionImpNode
 {
@@ -197,6 +209,19 @@ public struct ConstantDeclarationImpNode: DeclarationImpNode
 	public var description: String
 	{
 		return "ConstantNode(\(identifier), \(expression))"
+	}
+}
+
+/// - This wrap the function node(<function_declaration>).
+public struct FunctionDeclarationImpNode: DeclarationImpNode
+{
+	let identifier: IdentifierImpNode
+	let formal: [IdentifierImpNode]
+	let block: BlockImpNode
+	
+	public var description: String
+	{
+		return "FunctionNode(\(identifier), [\(formal) - \(formal.count)], \(block))"
 	}
 }
 

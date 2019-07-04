@@ -146,6 +146,10 @@ public class PiFramework
 			{
 				try piFrameworkHandler.processPrintOperationCode(valueStack: valueStack)
 			}
+			else if command is CallOperationCode
+			{
+				try piFrameworkHandler.processCallOperationCode(code: command as! CallOperationCode, controlStack: controlStack, valueStack: valueStack, environment: &environment)
+			}
 			else
 			{
 				throw AutomatonError.UndefinedOperationCode(command as! OperationCode)
@@ -258,6 +262,14 @@ public class PiFramework
 		else if command is AllocateReferencePiNode
 		{
 			piFrameworkHandler.processAllocateReferencePiNode(node: command as! AllocateReferencePiNode, controlStack: controlStack)
+		}
+		else if command is AbstractionPiNode
+		{
+			piFrameworkHandler.processAbstractionPiNode(node: command as! AbstractionPiNode, valueStack: valueStack, environment: environment)
+		}
+		else if command is CallPiNode
+		{
+			piFrameworkHandler.processCallPiNode(node: command as! CallPiNode, controlStack: controlStack)
 		}
 		else
 		{

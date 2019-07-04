@@ -11,9 +11,9 @@ SWIFT_BIN = $(ENV)/$(SWIFT_RELEASE)/usr/bin
 TEST_FLAGS =
 PROGRAM_FLAGS =
 
-.SILENT: install_swift download_swift prepare_output compile_src clean_output execute_test clean_enviroment execute_imp_zero execute_imp_one release_branch release_imp_zero_branch release_imp_one_branch release_imp_two_branch run_test
+.SILENT: install_swift download_swift prepare_output compile_src clean_output execute_test clean_enviroment execute_imp_zero execute_imp_one release_branch release_imp_zero_branch release_imp_one_branch release_imp_two_branch run_test execute_imp_two
 
-all: release_branch download_swift build execute_imp_one
+all: release_branch download_swift build execute_imp_two
 
 release_branch: release_imp_one
 	echo "will set the right branch";
@@ -31,6 +31,12 @@ compile_test: compile_src execute_test
 	
 execute_test:
 	./$(OUTPUT_FOLDER)/swimft $(EXAMPLES)/test.imp $(TEST_FLAGS);
+
+execute_imp_two: $(EXAMPLES)/imp_two/*.imp
+	for file in $^ ; do \
+			echo $${file}; \
+			./$(OUTPUT_FOLDER)/swimft $${file} $(PROGRAM_FLAGS); \
+	done
 
 execute_imp_one: $(EXAMPLES)/imp_one/*.imp
 	for file in $^ ; do \

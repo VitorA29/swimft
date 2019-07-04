@@ -164,9 +164,43 @@ public class ImpParser: Parser
 				return try parseAssign(identifier: identifier)
 			case ImpToken.OPERATOR:
 				return try parseBinaryOperation(node: identifier)
+			case ImpToken.BRACKET_LEFT:
+				return try parseCall(identifier: identifier)
 			default:
 				return identifier
 		}
+	}
+
+	/// - Helper function for processing a function call, this will process the <call>.
+	private func parseCall(identifier: IdentifierImpNode) throws -> CallImpNode
+	{
+		guard case ImpToken.BRACKET_LEFT = tokens.pop() else
+		{
+			throw ParserError.ExpectedToken("ImpToken.BRACKET_LEFT")
+		}
+
+		var actualForest: [ExpressionImpNode] = [ExpressionImpNode]()
+
+		while(true)
+		{
+			if (tokens.isEmpty())
+			{
+				throw ParserError.ExpectedToken("ImpToken.BRACKET_RIGHT")
+			}
+			else if case ImpToken.BRACKET_RIGHT = tokens.peek()
+			{
+				tokens.skip()
+				break
+			}
+			else if case ImpToken.COMMA = tokens.peek()
+			{
+				tokens.skip()
+			}
+			let actual: ExpressionImpNode = try parseExpression()
+			actualForest.append(actual)
+		}
+		
+		return CallImpNode(identifier: identifier, actual: actualForest)
 	}
 	
 	/// - Helper function for dealing with the nodes that the imp token is part of a expression(<expression>).
@@ -463,7 +497,6 @@ public class ImpParser: Parser
 	}
 	
 	/// - Helper function for dealing with the DECLARATION imp token processing(<declaration>).
-	/// 	Also here all its ramifications will be processed(<variable_declaration>, <constant_declaration>))
 	/// - Return
 	/// 	- The relative declaration imp node to the given token.
 	private func parseDeclaration () throws -> DeclarationImpNode
@@ -474,21 +507,80 @@ public class ImpParser: Parser
 		}
 		let identifier: IdentifierImpNode = try parseIdentifier()
 		
+		switch(op)
+		{
+			case "var":
+				return try parseVariableDeclaration(identifier: identifier)
+			case "cons":
+				return try parseConstantDeclaration(identifier: identifier)
+			case "fn":
+				return try parseFunctionDeclaration(identifier: identifier)
+			default:
+				throw ImpParserError.UndefinedOperator(op)
+		}
+	}
+
+	/// - Helper function for dealing with the variable declaration(<variable_declaration>).
+	private func parseVariableDeclaration (identifier: IdentifierImpNode) throws -> VariableDeclarationImpNode
+	{
 		guard case ImpToken.INITIALIZER = tokens.pop() else
 		{
 			throw ParserError.ExpectedToken("ImpToken.INITIALIZER")
 		}
 		
 		let expression: ExpressionImpNode = try parseExpression()
-		switch(op)
+		return VariableDeclarationImpNode(identifier: identifier, expression: expression)
+	}
+
+	/// - Helper function for dealing with the constant declaration(<constant_declaration>).
+	private func parseConstantDeclaration (identifier: IdentifierImpNode) throws -> ConstantDeclarationImpNode
+	{
+		guard case ImpToken.INITIALIZER = tokens.pop() else
 		{
-			case "var":
-				return VariableDeclarationImpNode(identifier: identifier, expression: expression)
-			case "cons":
-				return ConstantDeclarationImpNode(identifier: identifier, expression: expression)
-			default:
-				throw ImpParserError.UndefinedOperator(op)
+			throw ParserError.ExpectedToken("ImpToken.INITIALIZER")
 		}
+		
+		let expression: ExpressionImpNode = try parseExpression()
+		return ConstantDeclarationImpNode(identifier: identifier, expression: expression)
+	}
+
+	/// - Helper function for dealing with the function declaration(<function_declaration>).
+	private func parseFunctionDeclaration (identifier: IdentifierImpNode) throws -> FunctionDeclarationImpNode
+	{
+		guard case ImpToken.BRACKET_LEFT = tokens.pop() else
+		{
+			throw ParserError.ExpectedToken("ImpToken.BRACKET_LEFT")
+		}
+		
+		var formalForest: [IdentifierImpNode] = [IdentifierImpNode]()
+
+		while(true)
+		{
+			if (tokens.isEmpty())
+			{
+				throw ParserError.ExpectedToken("ImpToken.BRACKET_RIGHT")
+			}
+			else if case ImpToken.BRACKET_RIGHT = tokens.peek()
+			{
+				tokens.skip()
+				break
+			}
+			else if case ImpToken.COMMA = tokens.peek()
+			{
+				tokens.skip()
+			}
+			let formal: IdentifierImpNode = try parseIdentifier()
+			formalForest.append(formal)
+		}
+
+		guard case ImpToken.INITIALIZER = tokens.pop() else
+		{
+			throw ParserError.ExpectedToken("ImpToken.INITIALIZER")
+		}
+
+		let block: BlockImpNode = try parseBlock()
+
+		return FunctionDeclarationImpNode(identifier: identifier, formal: formalForest, block: block)
 	}
 
 	/// - Helper function for dealing with the BLOCK imp token processing(<block>).
@@ -504,8 +596,6 @@ public class ImpParser: Parser
 		var declarationForest: [DeclarationImpNode] = [DeclarationImpNode]()
 		while(true)
 		{
-			let declaration: DeclarationImpNode = try parseDeclaration()
-			declarationForest.append(declaration)
 			if (tokens.isEmpty())
 			{
 				throw ParserError.ExpectedToken("ImpToken.IN")
@@ -519,6 +609,8 @@ public class ImpParser: Parser
 			{
 				tokens.skip()
 			}
+			let declaration: DeclarationImpNode = try parseDeclaration()
+			declarationForest.append(declaration)
 		}
 
 		var commandForest: [CommandImpNode] = [CommandImpNode]()
@@ -585,7 +677,8 @@ public class ImpParser: Parser
 			case ImpToken.PRINT:
 				return try parsePrint()
 			default:
-				return try parseExpression()
+				// return try parseExpression()
+				throw ParserError.UnexpectedToken(tokens.peek())
 		}
 	}
 }

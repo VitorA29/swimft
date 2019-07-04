@@ -12,7 +12,7 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 ```
 <S> ::=  <command> | <comment>
 
-<command> ::= 'nop' | <assign> | <while> | <conditional> | <expression> | <block> | <print>
+<command> ::= 'nop' | <assign> | <while> | <conditional> | <expression> | <block> | <print> | <call>
 
 <comment> ::= /#.*\s/
 
@@ -25,9 +25,11 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 
 <expression> ::= <reference> | <logical_expression> | <arithmetic_expression>
 
-<block> ::= 'let' <declaration> 'in' <S>*<command><S>* 'end'
+<block> ::= 'let' (<declaration>)? 'in' <S>*<command><S>* 'end'
 
 <print> ::= 'print' '(' <expression> ')'
+
+<call> ::= <identifier> '(' (<actual>)? ')'
 
 <identifier> ::= /(?!\d)\w+/
 
@@ -39,11 +41,14 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 <arithmetic_expression> ::= <number> | <identifier> | <value_reference>
 		| <arithmetic_operation> | '(' <arithmetic_expression> ')'
 		
-<declaration> ::= <variable_declaration> | <constant_declaration>
+<declaration> ::= <declaration> ',' <declaration> | <variable_declaration>
+			| <constant_declaration> | <function_declaration>
 
-<value_reference> ::= '(*' <identifier> ')'
+<actual> ::= <actual> ',' <actual> | <expression>
 
 <address_reference> ::= '&' <identifier>
+
+<value_reference> ::= '(*' <identifier> ')'
 
 <logical_classification> ::= 'True' | 'False'
 
@@ -59,6 +64,8 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 
 <constant_declaration> ::= 'cons' <identifier> = <expression>
 
+<function_declaration> ::= 'fn' <identifier> '(' (<formal>)? ')' = <block>
+
 <equality> ::= <arithmetic_expression> '==' <arithmetic_expression>
 		| <logical_expression> '==' <logical_expression>
 
@@ -73,6 +80,8 @@ Just a simple compiler and interpreter for the ImΠ programming language.
 <multiplication> ::= <arithmetic_expression> '*' <arithmetic_expression>
 
 <division> ::= <arithmetic_expression> '/' <arithmetic_expression>
+
+<formal> ::= <formal> ',' <formal> | <identifier>
 
 <conjunction> ::= <logical_expression> 'and' <logical_expression>
 

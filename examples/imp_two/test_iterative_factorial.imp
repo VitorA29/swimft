@@ -1,4 +1,4 @@
-# simple test for imp-1
+# simple test for validate the working of a iterative fatorial
 let var z = 1
 in 
     let fn f(x) =

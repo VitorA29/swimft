@@ -53,6 +53,10 @@ public class ImpTranslator: Translator
 		{
 			return try translatePrintImpNode(node: node as! PrintImpNode)
 		}
+		else if node is CallImpNode
+		{
+			return try translateCallImpNode(node: node as! CallImpNode)
+		}
 		else
 		{
 			throw TranslatorError.UndefinedAbstractSyntaxTreeNode(node)
@@ -154,6 +158,18 @@ public class ImpTranslator: Translator
 		return PrintPiNode(expression: expression)
 	}
 
+	/// - Helper function for converting a call imp node into it's correlative call pi node
+	private func translateCallImpNode (node: CallImpNode) throws -> CallPiNode
+	{
+		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
+		var actualList: [ExpressionPiNode] = [ExpressionPiNode]()
+		for actual in node.actual
+		{
+			actualList.append(try translateExpressionImpNode(node: actual))
+		}
+		return CallPiNode(identifier: identifier, actualList: actualList)
+	}
+
 	/// - Helper function for converting a identifier imp node into it's correlative identifier pi node
 	private func translateIdentifierImpNode (node: IdentifierImpNode) -> IdentifierPiNode
 	{
@@ -241,6 +257,10 @@ public class ImpTranslator: Translator
 		else if node is ConstantDeclarationImpNode
 		{
 			return try translateConstantDeclarationImpNode(node: node as! ConstantDeclarationImpNode)
+		}
+		else if node is FunctionDeclarationImpNode
+		{
+			return try translateFunctionDeclarationImpNode(node: node as! FunctionDeclarationImpNode)
 		}
 		else
 		{
@@ -336,6 +356,19 @@ public class ImpTranslator: Translator
 		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
 		let expression: ExpressionPiNode = try translateExpressionImpNode(node: node.expression)
 		return BindableOperationPiNode(identifier: identifier, expression: expression)
+	}
+
+	/// - Helper function for converting a function declaration imp node into it's correlative bindable operation pi node
+	private func translateFunctionDeclarationImpNode (node: FunctionDeclarationImpNode) throws -> BindableOperationPiNode
+	{
+		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
+		var formalList: [IdentifierPiNode] = [IdentifierPiNode]()
+		for formal in node.formal
+		{
+			formalList.append(translateIdentifierImpNode(node: formal))
+		}
+		let block: BlockPiNode = try translateBlockImpNode(node: node.block)
+		return BindableOperationPiNode(identifier: identifier, expression: AbstractionPiNode(formalList: formalList, block: block))
 	}
 
 	/// - Helper function for converting a equality imp node into it's correlative equal to operation pi node
