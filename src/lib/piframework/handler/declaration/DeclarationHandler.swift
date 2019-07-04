@@ -14,11 +14,16 @@ public struct DeclarationSequencePiNode: DeclarationPiNode
 	}
 }
 
+// - This defines the pi nodes that can be associated in the environment to a identifier.
+public protocol BindablePiNode: AbstractSyntaxTreePi
+{
+}
+
 /// - This defines the pi node for the pi bindable operation.
 public struct BindableOperationPiNode: DeclarationPiNode
 {
     let identifier: IdentifierPiNode
-    let expression: ExpressionPiNode
+    let expression: BindablePiNode
     public var description: String
 	{
 		return "Bind(\(identifier), \(expression))"
@@ -26,7 +31,7 @@ public struct BindableOperationPiNode: DeclarationPiNode
 }
 
 /// - This defines the pi node for the pi allocate reference operation.
-public struct AllocateReferencePiNode: ExpressionPiNode
+public struct AllocateReferencePiNode: BindablePiNode
 {
 	let expression: ExpressionPiNode
 	public var description: String

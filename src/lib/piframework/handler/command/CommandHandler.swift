@@ -15,7 +15,7 @@ public struct CommandSequencePiNode: CommandPiNode
 }
 
 /// - This defines the pi node for all pi expressions.
-public protocol ExpressionPiNode: CommandPiNode
+public protocol ExpressionPiNode: CommandPiNode, BindablePiNode
 {
 }
 
