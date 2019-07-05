@@ -62,7 +62,8 @@ public extension PiFrameworkHandler
 
 	/// - Handler for perform the relative operations for the block declarations operation code.
 	/// 	Here the below delta match will occur.
-	/// 	δ(#BLKDEC :: C, E' :: V, E, S, L) = δ(C, E :: V, E / E', S, L)
+	/// 	δ(#BLKDEC(False) :: C, E' :: V, E, S, L) = δ(C, E :: V, E / E', S, L)
+    /// 	δ(#BLKDEC(True) :: C, V, E, S, L) = δ(C, E :: V, E, S, L)
     func processBlockDeclarationOperationCode (code: BlockDeclarationOperationCode, valueStack: Stack<AutomatonValue>, environment: inout [String: AutomatonBindable]) throws
     {
         let oldEnvironment: EnvironmentCollection = EnvironmentCollection(collection: environment)
