@@ -29,12 +29,12 @@ public struct LogicalClassificationPiNode: LogicalExpressionPiNode
 }
 
 /// - Extends the float for being accepted in the pi framework as the number pi node unwrapping.
-extension Float: AutomatonValue, AutomatonBindable, AutomatonStorable
+extension Float: AutomatonBindable, AutomatonStorable
 {
 }
 
 /// - Extends the bool for being accepted in the pi framework as the logical classificarion pi node unwrapping.
-extension Bool: AutomatonValue, AutomatonBindable, AutomatonStorable
+extension Bool: AutomatonBindable, AutomatonStorable
 {
 }
 

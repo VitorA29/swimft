@@ -39,7 +39,7 @@ public extension OperationCode
 }
 
 /// - This defines the localizable struct to be used in the memory storage linking.
-public struct Location: AutomatonValue, AutomatonBindable, AutomatonStorable
+public struct Location: AutomatonBindable, AutomatonStorable
 {
 	let address: Int
 	public var description: String
