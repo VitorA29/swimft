@@ -4,24 +4,37 @@ import Foundation
 public enum BlockHandlerError: Error
 {
 	case ExpectedEnvironmentCollection
+    case UnexpectedEmptyEnvironment
     case ExpectedLocationCollection
 }
 
 /// - This defines the pi node for the block pi node.
 public struct BlockPiNode: CommandPiNode
 {
-    let declaration: DeclarationPiNode
+    let declaration: DeclarationPiNode?
     let command: CommandPiNode
     public var description: String
     {
-        return "Blk(\(declaration), \(command))"
+        if declaration == nil
+        {
+            return "Blk(nil, \(command))"
+        }
+        else
+        {
+            return "Blk(\(declaration!), \(command))"
+        }
     }
 }
 
 /// - This defines the pi automaton operation code for the block declaration operation.
 public struct BlockDeclarationOperationCode: OperationCode
 {
+    let empty: Bool
 	public let code: String = "BLKDEC"
+    public var description: String
+    {
+        return "#\(code)(\(empty))"
+    }
 }
 
 /// - This defines the pi automaton operation code for the block command operation.
@@ -40,7 +53,7 @@ public extension PiFrameworkHandler
     {
         controlStack.push(value: BlockCommandOperationCode())
         controlStack.push(value: node.command)
-        controlStack.push(value: BlockDeclarationOperationCode())
+        controlStack.push(value: BlockDeclarationOperationCode(empty: node.declaration == nil))
         controlStack.push(value: node.declaration)
         let locationCollection: LocationCollection = LocationCollection(collection: locationList)
         locationList = [Location]()
@@ -50,11 +63,18 @@ public extension PiFrameworkHandler
 	/// - Handler for perform the relative operations for the block declarations operation code.
 	/// 	Here the below delta match will occur.
 	/// 	δ(#BLKDEC :: C, E' :: V, E, S, L) = δ(C, E :: V, E / E', S, L)
-    func processBlockDeclarationOperationCode (valueStack: Stack<AutomatonValue>, environment: inout [String: AutomatonBindable]) throws
+    func processBlockDeclarationOperationCode (code: BlockDeclarationOperationCode, valueStack: Stack<AutomatonValue>, environment: inout [String: AutomatonBindable]) throws
     {
         let oldEnvironment: EnvironmentCollection = EnvironmentCollection(collection: environment)
-        let environmentCollection: EnvironmentCollection = try popEnvironmentCollectionValue(valueStack: valueStack)
-        environment.merge(environmentCollection.getCollection()) { (_, new) in new }
+        if !code.empty
+        {
+            let environmentCollection: EnvironmentCollection = try popEnvironmentCollectionValue(valueStack: valueStack)
+            if environmentCollection.getCollection().count == 0
+            {
+                throw BlockHandlerError.UnexpectedEmptyEnvironment
+            }
+            environment.merge(environmentCollection.getCollection()) { (_, new) in new }
+        }
         valueStack.push(value: oldEnvironment)
     }
     

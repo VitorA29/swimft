@@ -132,7 +132,7 @@ public class PiFramework
 			}
 			else if command is BlockDeclarationOperationCode
 			{
-				try piFrameworkHandler.processBlockDeclarationOperationCode(valueStack: valueStack, environment: &environment)
+				try piFrameworkHandler.processBlockDeclarationOperationCode(code: command as! BlockDeclarationOperationCode, valueStack: valueStack, environment: &environment)
 			}
 			else if command is ConditionalOperationCode
 			{

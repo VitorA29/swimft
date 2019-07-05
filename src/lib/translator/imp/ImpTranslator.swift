@@ -146,7 +146,11 @@ public class ImpTranslator: Translator
 	/// - Helper function for converting a block imp node into it's correlative block pi node
 	private func translateBlockImpNode (node: BlockImpNode) throws -> BlockPiNode
 	{
-		let declaration: DeclarationPiNode = try combineDeclarationImpNodes(forest: node.declaration)
+		var declaration: DeclarationPiNode? = nil
+		if node.declaration.count > 0
+		{
+			declaration = try combineDeclarationImpNodes(forest: node.declaration)
+		}
 		let command: CommandPiNode = try combineCommandImpNodes(forest: node.command)
 		return BlockPiNode(declaration: declaration, command: command)
 	}
