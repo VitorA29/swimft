@@ -28,6 +28,14 @@ public class EnvironmentCollection: AutomatonValue
 	{
 		self.collection[key] = value
 	}
+
+	/// - Function for adding a new entry to the wrapped collection.
+	/// - Parameter(s)
+	/// 	- entry: A dict contening a dictionary entry.
+	public func add (entry: [String: AutomatonBindable])
+	{
+		self.collection.merge(entry) { (_, new) in new }
+	}
 	
 	/// - This is the getter for the collection element.
 	/// - Return

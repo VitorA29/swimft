@@ -259,6 +259,10 @@ public class PiFramework
 		{
 			piFrameworkHandler.processBindableOperationPiNode(node: command as! BindableOperationPiNode, controlStack: controlStack, valueStack: valueStack)
 		}
+		else if command is RecursiveBindableOperationPiNode
+		{
+			try piFrameworkHandler.processRecursiveBindableOperationPiNode(node: command as! RecursiveBindableOperationPiNode, valueStack: valueStack, environment: environment)
+		}
 		else if command is AllocateReferencePiNode
 		{
 			piFrameworkHandler.processAllocateReferencePiNode(node: command as! AllocateReferencePiNode, controlStack: controlStack)

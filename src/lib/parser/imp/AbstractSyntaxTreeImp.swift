@@ -218,6 +218,7 @@ public struct FunctionDeclarationImpNode: DeclarationImpNode
 	let identifier: IdentifierImpNode
 	let formal: [IdentifierImpNode]
 	let block: BlockImpNode
+	let isRecursive: Bool
 	
 	public var description: String
 	{

@@ -501,20 +501,35 @@ public class ImpParser: Parser
 	/// 	- The relative declaration imp node to the given token.
 	private func parseDeclaration () throws -> DeclarationImpNode
 	{
+		var recursiveDeclaration: Bool = false
+		if case  ImpToken.RECURSIVE = tokens.peek()
+		{
+			recursiveDeclaration = true
+			tokens.skip()
+		}
+
 		guard case let ImpToken.DECLARATION(op) = tokens.pop() else
 		{
 			throw ParserError.ExpectedToken("ImpToken.DECLARATION")
 		}
 		let identifier: IdentifierImpNode = try parseIdentifier()
-		
+
 		switch(op)
 		{
 			case "var":
+				if recursiveDeclaration
+				{
+					throw ParserError.UnexpectedToken(ImpToken.RECURSIVE)
+				}
 				return try parseVariableDeclaration(identifier: identifier)
 			case "cons":
+				if recursiveDeclaration
+				{
+					throw ParserError.UnexpectedToken(ImpToken.RECURSIVE)
+				}
 				return try parseConstantDeclaration(identifier: identifier)
 			case "fn":
-				return try parseFunctionDeclaration(identifier: identifier)
+				return try parseFunctionDeclaration(identifier: identifier, isRecursive: recursiveDeclaration)
 			default:
 				throw ImpParserError.UndefinedOperator(op)
 		}
@@ -545,7 +560,7 @@ public class ImpParser: Parser
 	}
 
 	/// - Helper function for dealing with the function declaration(<function_declaration>).
-	private func parseFunctionDeclaration (identifier: IdentifierImpNode) throws -> FunctionDeclarationImpNode
+	private func parseFunctionDeclaration (identifier: IdentifierImpNode, isRecursive: Bool) throws -> FunctionDeclarationImpNode
 	{
 		guard case ImpToken.BRACKET_LEFT = tokens.pop() else
 		{
@@ -580,7 +595,7 @@ public class ImpParser: Parser
 
 		let block: BlockImpNode = try parseBlock()
 
-		return FunctionDeclarationImpNode(identifier: identifier, formal: formalForest, block: block)
+		return FunctionDeclarationImpNode(identifier: identifier, formal: formalForest, block: block, isRecursive: isRecursive)
 	}
 
 	/// - Helper function for dealing with the BLOCK imp token processing(<block>).

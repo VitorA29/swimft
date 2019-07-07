@@ -363,7 +363,7 @@ public class ImpTranslator: Translator
 	}
 
 	/// - Helper function for converting a function declaration imp node into it's correlative bindable operation pi node
-	private func translateFunctionDeclarationImpNode (node: FunctionDeclarationImpNode) throws -> BindableOperationPiNode
+	private func translateFunctionDeclarationImpNode (node: FunctionDeclarationImpNode) throws -> DeclarationPiNode
 	{
 		let identifier: IdentifierPiNode = translateIdentifierImpNode(node: node.identifier)
 		var formalList: [IdentifierPiNode] = [IdentifierPiNode]()
@@ -372,7 +372,15 @@ public class ImpTranslator: Translator
 			formalList.append(translateIdentifierImpNode(node: formal))
 		}
 		let block: BlockPiNode = try translateBlockImpNode(node: node.block)
-		return BindableOperationPiNode(identifier: identifier, expression: AbstractionPiNode(formalList: formalList, block: block))
+
+		if !node.isRecursive
+		{
+			return BindableOperationPiNode(identifier: identifier, expression: AbstractionPiNode(formalList: formalList, block: block))
+		}
+		else
+		{
+			return RecursiveBindableOperationPiNode(identifier: identifier, abstraction: AbstractionPiNode(formalList: formalList, block: block))
+		}
 	}
 
 	/// - Helper function for converting a equality imp node into it's correlative equal to operation pi node

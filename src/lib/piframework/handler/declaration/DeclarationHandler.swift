@@ -30,6 +30,17 @@ public struct BindableOperationPiNode: DeclarationPiNode
 	}
 }
 
+/// - This defines the pi node for the pi recursive bindable operation.
+public struct RecursiveBindableOperationPiNode: DeclarationPiNode
+{
+    let identifier: IdentifierPiNode
+    let abstraction: AbstractionPiNode
+    public var description: String
+	{
+		return "Rbnd(\(identifier), \(abstraction))"
+	}
+}
+
 /// - This defines the pi node for the pi allocate reference operation.
 public struct AllocateReferencePiNode: BindablePiNode
 {
@@ -84,17 +95,22 @@ public extension PiFrameworkHandler
 	{
 		let bindable: AutomatonBindable = try popBindableValue(valueStack: valueStack)
 		let identifier: String = try popIdValue(valueStack: valueStack)
-		var environmentCollection: EnvironmentCollection
+		let environmentCollection: EnvironmentCollection = try getOrCreateEnvironmentCollectionFromValueStack(valueStack: valueStack)
+		environmentCollection.add(key: identifier, value: bindable)
+		valueStack.push(value: environmentCollection)
+	}
+
+	/// - Get from the value stack or create a new enviroment collection.
+	func getOrCreateEnvironmentCollectionFromValueStack (valueStack: Stack<AutomatonValue>) throws -> EnvironmentCollection
+	{
 		if !valueStack.isEmpty() && valueStack.peek() is EnvironmentCollection
 		{
-			environmentCollection = valueStack.pop() as! EnvironmentCollection
+			return valueStack.pop() as! EnvironmentCollection
 		}
 		else
 		{
-			environmentCollection = EnvironmentCollection()
+			return EnvironmentCollection()
 		}
-		environmentCollection.add(key: identifier, value: bindable)
-		valueStack.push(value: environmentCollection)
 	}
 
 	/// - Handler for the analysis of a node contening a allocate reference operation.
@@ -131,10 +147,26 @@ public extension PiFrameworkHandler
 
 	/// - Handler for the analysis of a node contening a function creation operation.
 	/// 	Here the below delta match will occur.
-	/// δ(Abs(F, B) :: C, V, E, S, L) = δ(C, Closure(F, B, E) :: V, E, S, L)
+	/// 	δ(Abs(F, B) :: C, V, E, S, L) = δ(C, Closure(F, B, E) :: V, E, S, L)
 	func processAbstractionPiNode (node: AbstractionPiNode, valueStack: Stack<AutomatonValue>, environment: [String: AutomatonBindable])
 	{
-		let closure: ClosurePiNode = ClosurePiNode(formalList: node.formalList, block: node.block, environment: environment)
+		let closure: ClosurePiNode = ClosurePiNodeImpl(formalList: node.formalList, block: node.block, environment: environment)
 		valueStack.push(value: closure)
+	}
+
+	/// - Handler for the analysis of a node contening a function creation operation.
+	/// 	Here the below delta match will occur.
+	/// 	δ(Rbnd(W, Abs(F, B)) :: C, V, E, S, L) = δ(C, unfold(W ↦ Closure(F, B, E)) :: V, E, S, L)
+	func processRecursiveBindableOperationPiNode (node: RecursiveBindableOperationPiNode, valueStack: Stack<AutomatonValue>, environment: [String: AutomatonBindable]) throws
+	{
+		// process the abstraction pi node
+		let abstraction: AbstractionPiNode = node.abstraction
+		let closure: ClosurePiNode = ClosurePiNodeImpl(formalList: abstraction.formalList, block: abstraction.block, environment: environment)
+
+		// add the new recursive closure to the environment collection
+		let environmentCollection: EnvironmentCollection = try getOrCreateEnvironmentCollectionFromValueStack(valueStack: valueStack)
+		let environmentEntry: [String: AutomatonBindable] = [node.identifier.name: closure]
+		environmentCollection.add(entry: try unfold(environment: environmentEntry))
+		valueStack.push(value: environmentCollection)
 	}
 }

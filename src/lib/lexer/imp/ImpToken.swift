@@ -25,6 +25,7 @@ public enum ImpToken: Token
 	case IN
 	case DECLARATION(String)
 	case PRINT
+	case RECURSIVE
 }
 
 /// - Constant that describ ImΠ grammar.
@@ -105,6 +106,10 @@ private func matchName (string: String) -> ImpToken?
 	else if string == "print"
 	{
 		return ImpToken.PRINT
+	}
+	else if string == "rec"
+	{
+		return ImpToken.RECURSIVE
 	}
 	else 
 	{
