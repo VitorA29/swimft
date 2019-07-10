@@ -1,18 +1,38 @@
 # simple test for imp-1
 let var z = 1
-in 
-    let fn f(x) =
-        let var y = x
-        in      
-            while not (y == 0)
-            do 
-                z := z * y
-                y := y - 1
-            end
-        end
-    in
-        print(z)
-        f(10)
-        print(z)
-    end
+in
+	let
+		fn f(x) =
+		  let
+		  in      
+		      if x > 1
+		      then 
+		          z := z * x
+		          f(x-1)
+		      end
+		  end,
+		rec fn a(x) =
+			let
+			in
+					if x > 1
+					then
+							print(10)
+							b(x-1)
+					end
+			end,
+		rec fn b(x) =
+			let
+			in
+					if x > 1
+					then
+					    print(20)
+					    a(x-1)
+					end
+			end
+	in
+		print(z)
+    f(10)
+    print(z)
+		a(5)
+	end
 end

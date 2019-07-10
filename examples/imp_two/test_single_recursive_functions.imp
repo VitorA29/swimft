@@ -1,0 +1,18 @@
+# test the simple recursive function
+let var z = 1
+in 
+    let fn f(x) =
+        let
+        in      
+            if x > 1
+            then 
+                z := z * x
+                f(x-1)
+            end
+        end
+    in
+        print(z)
+        f(10)
+        print(z)
+    end
+end

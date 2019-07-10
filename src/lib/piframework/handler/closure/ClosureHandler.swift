@@ -35,15 +35,15 @@ public protocol ClosurePiNode: AutomatonBindable
 {
 	var formalList: [IdentifierPiNode] { get }
 	var block: BlockPiNode { get }
-    var environment: [String: AutomatonBindable] { get }
+  var environment: [String: AutomatonBindable] { get }
 }
 
 public struct ClosurePiNodeImpl: ClosurePiNode
 {
-    public let formalList: [IdentifierPiNode]
+  public let formalList: [IdentifierPiNode]
 	public let block: BlockPiNode
-    public let environment: [String: AutomatonBindable]
-    public var description: String
+  public let environment: [String: AutomatonBindable]
+  public var description: String
 	{
 		return "Closure([\(formalList) - \(formalList.count)], \(block), \(environment))"
 	}
@@ -52,11 +52,11 @@ public struct ClosurePiNodeImpl: ClosurePiNode
 /// - This defines the recusive closure bindable node
 public struct RecursiveClosurePiNode: ClosurePiNode
 {
-    public let formalList: [IdentifierPiNode]
+  public let formalList: [IdentifierPiNode]
 	public let block: BlockPiNode
-    public let environment: [String: AutomatonBindable]
-    var recursiveEnvironment: [String: AutomatonBindable]
-    public var description: String
+  public let environment: [String: AutomatonBindable]
+  var recursiveEnvironment: [String: AutomatonBindable]
+  public var description: String
 	{
 		return "Rec([\(formalList) - \(formalList.count)], \(block), \(environment), \(recursiveEnvironment))"
 	}
@@ -116,7 +116,7 @@ public extension PiFrameworkHandler
         valueStack.push(value: oldEnvironment)
 
         // create the new environment for the call
-        environment = closure.environment
+        environment.merge(closure.environment) { (_, new) in new } 
         environment.merge(associatedEnv) { (_, new) in new }
 
         // add the recursive call in the environment if it's a recursive closure
@@ -160,7 +160,9 @@ public extension PiFrameworkHandler
             var resultEnvironment: [String: AutomatonBindable] = [String: AutomatonBindable]()
             for (key, value) in entry
             {
-                resultEnvironment.merge(try reclose(baseEnvironment: baseEnvironment, entry: [key: value])) { (_, new) in new }
+            	let batata = try reclose(baseEnvironment: baseEnvironment, entry: [key: value])
+            	print("\(batata)")
+              resultEnvironment.merge(batata) { (_, new) in new }
             }
             return resultEnvironment
         }

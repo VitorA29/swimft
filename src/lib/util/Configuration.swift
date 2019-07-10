@@ -20,6 +20,7 @@ public class Configuration
 	var state_print: Bool = false
 	var state_n_print: Int = -1
 	var last_state_print: Bool = false
+	var ignore_error: Bool = false
 	
 	/// - This class initializer.
 	init () throws
@@ -80,6 +81,8 @@ public class Configuration
 					last_state_print = true
 				case "-code":
 					code_print = true
+				case "-ignore":
+					ignore_error = true
 				default:
 					throw ConfigurationError.UndefinedFlag(CommandLine.arguments[i])				
 			}

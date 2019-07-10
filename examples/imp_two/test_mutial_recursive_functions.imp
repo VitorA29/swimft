@@ -1,0 +1,23 @@
+# test the mutual recursive function
+let 
+	rec fn a(x) =
+		let
+		in
+				if x > 1
+				then
+					  print(10)
+					  b(x-1)
+				end
+		end,
+	rec fn b(x) =
+		let
+		in
+		    if x > 1
+		    then
+		        print(20)
+		        a(x-1)
+		    end
+		end
+in
+	a(5)
+end

@@ -45,7 +45,7 @@ public class PiFramework
 			}
 			catch
 			{
-				if !envConfiguration.state_print && envConfiguration.state_n_print != steps_count
+				if !envConfiguration.ignore_error && !envConfiguration.state_print && envConfiguration.state_n_print != steps_count 
 				{
 					print("\(last_state)")
 				}
