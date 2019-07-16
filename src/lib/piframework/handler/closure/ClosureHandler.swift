@@ -30,36 +30,41 @@ public struct CallOperationCode: OperationCode
     }
 }
 
-/// - This defines the closure bindable node
-public protocol ClosurePiNode: AutomatonBindable
+/// - This defines the closure bindable node class
+public class ClosurePiNode: AutomatonBindable
 {
-	var formalList: [IdentifierPiNode] { get }
-	var block: BlockPiNode { get }
-  var environment: [String: AutomatonBindable] { get }
-}
-
-public struct ClosurePiNodeImpl: ClosurePiNode
-{
-  public let formalList: [IdentifierPiNode]
-	public let block: BlockPiNode
-  public let environment: [String: AutomatonBindable]
-  public var description: String
+    var formalList: [IdentifierPiNode]
+	var block: BlockPiNode
+    var environment: [String: AutomatonBindable]
+    public var description: String
 	{
 		return "Closure([\(formalList) - \(formalList.count)], \(block), \(environment))"
 	}
+
+    /// - This class' initializer
+    init (formalList: [IdentifierPiNode], block: BlockPiNode, environment: [String: AutomatonBindable])
+    {
+        self.formalList = formalList
+        self.block = block
+        self.environment = environment
+    }
 }
 
-/// - This defines the recusive closure bindable node
-public struct RecursiveClosurePiNode: ClosurePiNode
+/// - This defines the recusive closure bindable node class
+public class RecursiveClosurePiNode: ClosurePiNode
 {
-  public let formalList: [IdentifierPiNode]
-	public let block: BlockPiNode
-  public let environment: [String: AutomatonBindable]
-  var recursiveEnvironment: [String: AutomatonBindable]
-  public var description: String
+    var recursiveEnvironment: [String: AutomatonBindable]
+    public override var description: String
 	{
 		return "Rec([\(formalList) - \(formalList.count)], \(block), \(environment), \(recursiveEnvironment))"
 	}
+
+    /// - This class' initializer
+    init (closure: ClosurePiNode, recursiveEnvironment: [String: AutomatonBindable])
+    {
+        self.recursiveEnvironment = recursiveEnvironment
+        super.init(formalList: closure.formalList, block: closure.block, environment: closure.environment)
+    }
 }
 
 /// Addition of the handlers for the declaration operations.
@@ -80,8 +85,8 @@ public extension PiFrameworkHandler
     /// - Handler for the analysis of the operation relative to a call operation.
     /// 	Here the below delta match will occur.
     ///     δ(#CALL(W, u) ::C, V₁ :: V₂ :: ... :: Vᵤ :: V, E, S, L) = δ(B :: #BLKCMD :: C, E :: V, E', S, L)
-    ///     where E = {W ↦ Closure(F, B, E₁)} ∪ E₂, E'= E₁ / match(F, [V₁, V₂, ..., Vᵤ])
-    ///     where E = {W ↦ Rec(F, B, E₁, E₂)} ∪ E₃, E'= E₁ / unfold(E₂) / match(F, [V₁, V₂, ..., Vᵤ])
+    ///     where E = {W ↦ Closure(F, B, E₁)} ∪ E₂, E'= E / E₁ / match(F, [V₁, V₂, ..., Vᵤ])
+    ///     where E = {W ↦ Rec(F, B, E₁, E₂)} ∪ E₃, E'= E/ E₁ / unfold(E₂) / match(F, [V₁, V₂, ..., Vᵤ])
     func processCallOperationCode (code: CallOperationCode, controlStack: Stack<AbstractSyntaxTreePiExtended>, valueStack: Stack<AutomatonValue>, environment: inout [String: AutomatonBindable]) throws
     {
         // get the closure from the environment
@@ -115,9 +120,8 @@ public extension PiFrameworkHandler
         let oldEnvironment: EnvironmentCollection = EnvironmentCollection(collection: environment)
         valueStack.push(value: oldEnvironment)
 
-        // create the new environment for the call
+        // add the static environment to the environment
         environment.merge(closure.environment) { (_, new) in new } 
-        environment.merge(associatedEnv) { (_, new) in new }
 
         // add the recursive call in the environment if it's a recursive closure
         if closure is RecursiveClosurePiNode
@@ -125,6 +129,9 @@ public extension PiFrameworkHandler
             let recursiveClosure: RecursiveClosurePiNode = closure as! RecursiveClosurePiNode
             environment.merge(try unfold(environment: recursiveClosure.recursiveEnvironment)) { (_, new) in new }
         }
+
+        // add initialize the function formal environment
+        environment.merge(associatedEnv) { (_, new) in new }
     }
 
     /// - Function for dealing with the recursive closure handling
@@ -144,13 +151,12 @@ public extension PiFrameworkHandler
                 var resultValue: AutomatonBindable = value
                 if value is RecursiveClosurePiNode
                 {
-                    var resultHelper: RecursiveClosurePiNode = resultValue as! RecursiveClosurePiNode
+                    let resultHelper: RecursiveClosurePiNode = resultValue as! RecursiveClosurePiNode
                     resultHelper.recursiveEnvironment = baseEnvironment
                 }
-                else if value is ClosurePiNodeImpl
+                else if value is ClosurePiNode
                 {
-                    let resultHelper: ClosurePiNodeImpl = resultValue as! ClosurePiNodeImpl
-                    resultValue = RecursiveClosurePiNode(formalList: resultHelper.formalList, block: resultHelper.block, environment: resultHelper.environment, recursiveEnvironment: baseEnvironment)
+                    resultValue = RecursiveClosurePiNode(closure: resultValue as! ClosurePiNode, recursiveEnvironment: baseEnvironment)
                 }
                 return [key: resultValue]
             }

@@ -150,7 +150,7 @@ public extension PiFrameworkHandler
 	/// 	δ(Abs(F, B) :: C, V, E, S, L) = δ(C, Closure(F, B, E) :: V, E, S, L)
 	func processAbstractionPiNode (node: AbstractionPiNode, valueStack: Stack<AutomatonValue>, environment: [String: AutomatonBindable])
 	{
-		let closure: ClosurePiNode = ClosurePiNodeImpl(formalList: node.formalList, block: node.block, environment: environment)
+		let closure: ClosurePiNode = ClosurePiNode(formalList: node.formalList, block: node.block, environment: environment)
 		valueStack.push(value: closure)
 	}
 
@@ -161,7 +161,7 @@ public extension PiFrameworkHandler
 	{
 		// process the abstraction pi node
 		let abstraction: AbstractionPiNode = node.abstraction
-		let closure: ClosurePiNode = ClosurePiNodeImpl(formalList: abstraction.formalList, block: abstraction.block, environment: environment)
+		let closure: ClosurePiNode = ClosurePiNode(formalList: abstraction.formalList, block: abstraction.block, environment: environment)
 
 		// add the new recursive closure to the environment collection
 		let environmentCollection: EnvironmentCollection = try getOrCreateEnvironmentCollectionFromValueStack(valueStack: valueStack)
