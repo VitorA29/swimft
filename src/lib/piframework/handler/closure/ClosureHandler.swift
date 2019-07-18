@@ -135,6 +135,7 @@ public extension PiFrameworkHandler
     }
 
     /// - Function for dealing with the recursive closure handling
+    ///     unfold(e) = recloseₑ(e)
     func unfold(environment: [String: AutomatonBindable]) throws -> [String: AutomatonBindable]
     {
         let environment: [String: AutomatonBindable] = try reclose(baseEnvironment: environment, entry: environment)
@@ -142,6 +143,11 @@ public extension PiFrameworkHandler
     }
 
     /// - Function for dealing with the recursive closure handling
+    ///     recloseₑ(I ↦ Closure(F, B, E)) = (I ↦ Rec(F, B, E, e))
+    ///     recloseₑ(I ↦ Rec(F, B, E, E′)) = (I ↦ Rec(F, B, E, e))
+    ///     recloseₑ(I ↦ v) = (I ↦ v) if v ≠ Closure(F, B, E) and v ≠ Rec(F, B, E, E′)
+    ///     recloseₑ(e₁ ∪ e₂) = recloseₑ(e₁) ∪ recloseₑ(e₂)
+    ///     recloseₑ(∅) = ∅
     func reclose(baseEnvironment: [String: AutomatonBindable], entry: [String: AutomatonBindable]) throws -> [String: AutomatonBindable]
     {
         if entry.count == 1
@@ -161,17 +167,11 @@ public extension PiFrameworkHandler
                 return [key: resultValue]
             }
         }
-        else
+        var resultEnvironment: [String: AutomatonBindable] = [String: AutomatonBindable]()
+        for (key, value) in entry
         {
-            var resultEnvironment: [String: AutomatonBindable] = [String: AutomatonBindable]()
-            for (key, value) in entry
-            {
-            	let batata = try reclose(baseEnvironment: baseEnvironment, entry: [key: value])
-            	print("\(batata)")
-              resultEnvironment.merge(batata) { (_, new) in new }
-            }
-            return resultEnvironment
+            resultEnvironment.merge(try reclose(baseEnvironment: baseEnvironment, entry: [key: value])) { (_, new) in new }
         }
-        throw GenericError.InvalidArgument
+        return resultEnvironment
     }
 }
