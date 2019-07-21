@@ -156,7 +156,8 @@ public extension PiFrameworkHandler
 
 	/// - Handler for the analysis of a node contening a function creation operation.
 	/// 	Here the below delta match will occur.
-	/// 	δ(Rbnd(W, Abs(F, B)) :: C, V, E, S, L) = δ(C, unfold(W ↦ Closure(F, B, E)) :: V, E, S, L)
+	/// 	δ(Rbnd(W, Abs(F, B)) :: C, E' :: V, E, S, L) = δ(C, ({unfold(W ↦ Closure(F, B, E)} ∪ E') :: V, E, S, L), where E' ∈ Env
+    /// 	δ(Rbnd(W, Abs(F, B)) :: C, H :: V, E, S, L) = δ(C, {unfold(W ↦ Closure(F, B, E)} :: H :: V, E, S, L), where H ∉ Env
 	func processRecursiveBindableOperationPiNode (node: RecursiveBindableOperationPiNode, valueStack: Stack<AutomatonValue>, environment: [String: AutomatonBindable]) throws
 	{
 		// process the abstraction pi node
